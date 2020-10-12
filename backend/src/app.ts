@@ -8,7 +8,8 @@ import {
     GraphQLInt,
     GraphQLList
 } from 'graphql';
-import { argsToArgsConfig } from 'graphql/type/definition';
+import mongoose from 'mongoose';
+require('dotenv').config();
 
 const app: Application = express();
 
@@ -78,4 +79,10 @@ app.use(
     })
 );
 
-app.listen(process.env.PORT || 8000);
+mongoose
+    .connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.snhzr.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+        { useNewUrlParser: true }
+    )
+    .then(() => app.listen(process.env.PORT || 8000))
+    .catch((err) => console.error(err));
