@@ -1,9 +1,11 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import schema from './graphql/schema/schema';
 import mongoose from 'mongoose';
 
-require('dotenv').config(); // load ENVIRONMENT VARIABLES
+// load ENVIRONMENT VARIABLES
+import dotenv from 'dotenv';
+dotenv.config();
 
 // spawn express server
 const app: Application = express();
