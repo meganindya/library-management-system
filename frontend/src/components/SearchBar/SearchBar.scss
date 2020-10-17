@@ -1,0 +1,59 @@
+@import '../../colors';
+
+.search-box {
+  width: 40rem;
+  height: 3rem;
+  box-sizing: border-box;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: white;
+  box-shadow: 0 0 1rem 0 $shadow;
+
+  * {
+    box-sizing: border-box;
+    border: none;
+    font-family: 'Open Sans' sans-serif;
+    font-size: 1rem;
+  }
+
+  *:focus {
+    outline: none;
+  }
+
+  svg {
+    margin-left: 1rem;
+    font-size: 1.25rem;
+    color: $lightgray;
+  }
+
+  ::placeholder {
+    color: $lightgray;
+  }
+
+  input[type='text'] {
+    height: 100%;
+    width: 100%;
+    margin: 0 0.75rem;
+    color: $darkgray;
+  }
+
+  input[type='submit'] {
+    height: 2.5rem;
+    width: 6rem;
+    margin: 0.25rem;
+    border-radius: 1.25rem;
+    font-weight: 600;
+    color: white;
+    background: $accentSecondary;
+    box-shadow: 0 0 0.5rem 0 $shadow;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  input[type='submit']:hover,
+  input[type='submit']:focus {
+    background: $accentDark;
+  }
+}
