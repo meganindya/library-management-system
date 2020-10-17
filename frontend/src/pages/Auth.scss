@@ -1,17 +1,4 @@
-@import '../App';
-
-#back-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: $shadow;
-  mask-image: url('/images/back-stencil.png');
-  mask-size: 10%;
-  mask-repeat: repeat;
-  opacity: 0.15;
-}
+@import '../colors';
 
 #back-shape {
   position: fixed;

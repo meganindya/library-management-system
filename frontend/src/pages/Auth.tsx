@@ -4,11 +4,10 @@ import LoginModal from '../components/LoginModal/LoginModal';
 
 import './Auth.scss';
 
-class AuthPage extends React.Component {
+export default class AuthPage extends React.Component {
   render() {
     const background = (
       <React.Fragment>
-        <div id="back-overlay"></div>
         <div id="back-shape">
           <div></div>
         </div>
@@ -22,5 +21,3 @@ class AuthPage extends React.Component {
     return background;
   }
 }
-
-export default AuthPage;

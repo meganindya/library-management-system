@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faIdBadge, faKey } from '@fortawesome/free-solid-svg-icons';
 import './LoginModal.scss';
 
-class LoginModal extends React.Component {
+export default class LoginModal extends React.Component {
   render() {
     return (
       <div className="login-modal">
@@ -37,5 +37,3 @@ class LoginModal extends React.Component {
     );
   }
 }
-
-export default LoginModal;
