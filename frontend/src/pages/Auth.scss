@@ -36,10 +36,23 @@
 }
 
 #title {
-  position: absolute;
-  top: 0%;
-  width: 100vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  font-family: 'Open Sans', sans-serif;
-  color: $accentDark;
+
+  span {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-right: 1rem;
+    background: url('/logo.png') no-repeat;
+    background-size: cover;
+  }
+
+  h1 {
+    font-family: 'Open Sans', sans-serif;
+    color: $accentDark;
+  }
 }

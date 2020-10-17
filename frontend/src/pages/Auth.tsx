@@ -12,7 +12,10 @@ class AuthPage extends React.Component {
         <div id="back-shape">
           <div></div>
         </div>
-        <h1 id="title">My Library Inc.</h1>
+        <div id="title">
+          <span></span>
+          <h1>My Library Inc.</h1>
+        </div>
         <LoginModal />
       </React.Fragment>
     );
