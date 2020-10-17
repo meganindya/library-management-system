@@ -1,4 +1,4 @@
-@import '../colors';
+@import '../../colors';
 
 nav {
   position: fixed;
@@ -70,21 +70,4 @@ nav {
     top: 18rem;
     top: 6rem;
   }
-}
-
-// nav:hover {
-//   height: 13rem;
-
-//   form {
-//     top: 6rem;
-//   }
-// }
-
-#book-list-section {
-  width: 100vw;
-  margin-top: 13rem;
-  display: grid;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
 }
