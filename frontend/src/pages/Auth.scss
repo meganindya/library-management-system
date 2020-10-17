@@ -1,3 +1,45 @@
-.hello {
+@import '../App';
+
+#back-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: $shadow;
+  mask-image: url('/images/back-stencil.png');
+  mask-size: 10%;
+  mask-repeat: repeat;
+  opacity: 0.15;
+}
+
+#back-shape {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50vw;
+  height: 100vh;
+  clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 70% 0%);
+  background: $accentDark;
+
+  div {
+    position: absolute;
+    bottom: 2rem;
+    left: 4rem;
+    width: 20rem;
+    height: 20rem;
+    background-color: $accentLight;
+    mask-image: url('/images/books-stencil.png');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+  }
+}
+
+#title {
+  position: absolute;
+  top: 0%;
+  width: 100vw;
   text-align: center;
+  font-family: 'Open Sans', sans-serif;
+  color: $accentDark;
 }
