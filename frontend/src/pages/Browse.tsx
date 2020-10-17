@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import BookList from '../components/BookList/BookList';
 
 import SearchBar from '../components/SearchBar/SearchBar';
 
@@ -26,7 +27,9 @@ export default class BrowsePage extends React.Component {
           </div>
           <SearchBar />
         </nav>
-        <section></section>
+        <section>
+          <BookList />
+        </section>
       </React.Fragment>
     );
   }
