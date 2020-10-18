@@ -1,6 +1,6 @@
-@import '../colors';
+@import '../css-utils/colors';
 
-#back-shape {
+#auth-back-shape {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,6 +9,7 @@
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 70% 0%);
   background: $accentDark;
 
+  /* stencil */
   div {
     position: absolute;
     bottom: 2rem;
@@ -22,7 +23,7 @@
   }
 }
 
-#title {
+#auth-heading {
   margin: 0 auto;
   display: flex;
   flex-direction: row;
@@ -30,6 +31,7 @@
   justify-content: center;
   text-align: center;
 
+  /* logo */
   span {
     width: 3.5rem;
     height: 3.5rem;
@@ -39,7 +41,15 @@
   }
 
   h1 {
+    margin: 1.25rem 0;
     font-family: 'Open Sans', sans-serif;
     color: $accentDark;
   }
+}
+
+#auth-modal-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

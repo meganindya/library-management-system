@@ -1,15 +1,15 @@
-@import './colors';
+@import './css-utils/colors';
 
 #back-overlay {
   position: fixed;
-  z-index: -1;
+  z-index: -99;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   background-color: $shadow;
   mask-image: url('/images/back-stencil.png');
-  mask-size: auto 16rem;
+  mask-size: auto 10rem;
   mask-repeat: repeat;
-  opacity: 0.15;
+  opacity: 0.1;
 }

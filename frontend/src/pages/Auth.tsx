@@ -1,23 +1,30 @@
 import React from 'react';
 
-import LoginModal from '../components/LoginModal/LoginModal';
+import AuthModal from '../components/AuthModal/AuthModal';
 
 import './Auth.scss';
 
-export default class AuthPage extends React.Component {
+interface IAuthProps {}
+
+interface IAuthState {}
+
+export default class AuthPage extends React.Component<IAuthProps, IAuthState> {
   render() {
-    const background = (
+    return (
       <React.Fragment>
-        <div id="back-shape">
+        <div id="auth-back-shape">
+          {/* stencil */}
           <div></div>
         </div>
-        <div id="title">
+        <div id="auth-heading">
+          {/* logo */}
           <span></span>
           <h1>My Library Inc.</h1>
         </div>
-        <LoginModal />
+        <div id="auth-modal-wrapper">
+          <AuthModal />
+        </div>
       </React.Fragment>
     );
-    return background;
   }
 }
