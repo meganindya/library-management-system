@@ -1,9 +1,20 @@
 import {
     GraphQLInputObjectType,
+    GraphQLInt,
     GraphQLNonNull,
     GraphQLObjectType,
     GraphQLString
 } from 'graphql';
+
+export const GQLUserAuth = new GraphQLObjectType({
+    name: 'AuthData',
+    description: 'This represents a User',
+    fields: {
+        userID: { type: GraphQLNonNull(GraphQLString) },
+        token: { type: GraphQLNonNull(GraphQLString) },
+        tokenExpiration: { type: GraphQLNonNull(GraphQLInt) }
+    }
+});
 
 export const GQLUser = new GraphQLObjectType({
     name: 'User',

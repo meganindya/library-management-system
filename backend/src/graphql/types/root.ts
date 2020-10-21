@@ -1,16 +1,30 @@
-import { GraphQLList, GraphQLObjectType, GraphQLString } from 'graphql';
-import { GQLUser, GQLUserInp } from './user';
-import { addUser, user, users } from '../resolvers/user';
+import {
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLObjectType,
+    GraphQLString
+} from 'graphql';
+import { GQLUser, GQLUserAuth, GQLUserInp } from './user';
+import { addUser, login, user, users } from '../resolvers/user';
 
 export const RootQueryType = new GraphQLObjectType({
     name: 'Query',
     description: 'Root Query',
     fields: () => ({
+        login: {
+            type: GQLUserAuth,
+            description: "An user's login data",
+            args: {
+                userID: { type: GraphQLNonNull(GraphQLString) },
+                password: { type: GraphQLNonNull(GraphQLString) }
+            },
+            resolve: (_, args) => login(args.userID, args.password)
+        },
         user: {
             type: GQLUser,
             description: 'A single user',
             args: {
-                userID: { type: GraphQLString }
+                userID: { type: GraphQLNonNull(GraphQLString) }
             },
             resolve: (_, args) => user(args.userID)
         },
