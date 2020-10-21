@@ -13,6 +13,20 @@ const app: Application = express();
 // use JSON parse bodyParser middleware
 app.use(express.json());
 
+// avoid CORS
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization'
+    );
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 // handle /api path as graphQL endpoint
 app.use('/api', graphqlHTTP({ schema: schema, graphiql: true }));
 
@@ -27,8 +41,4 @@ mongoose
             console.log(`listening on port ${process.env.PORT || 8000}`)
         )
     )
-    .catch(err => console.error(err));
-
-// app.listen(process.env.PORT || 8000, () =>
-//     console.log(`listening on port ${process.env.PORT || 8000}`)
-// );
+    .catch((err) => console.error(err));
