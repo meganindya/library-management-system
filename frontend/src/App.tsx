@@ -47,11 +47,11 @@ export default function App() {
         >
           <main id="main-content">
             <Switch>
-              {/* {userState.token && <Redirect from="/" to="/auth" exact />}
+              {userState.token && <Redirect from="/" to="/dashboard" exact />}
               {!userState.token && <Route path="/auth" component={AuthPage} />}
-              {!userState.token && <Redirect to="/auth" exact />} */}
-              <Redirect from="/" to="/auth" exact></Redirect>
-              <Route path="/auth" component={AuthPage}></Route>
+              {!userState.token && <Redirect to="/auth" exact />}
+              {/* <Redirect from="/" to="/auth" exact></Redirect>
+              <Route path="/auth" component={AuthPage}></Route> */}
             </Switch>
           </main>
         </AuthContext.Provider>
