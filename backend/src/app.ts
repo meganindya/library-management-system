@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
 import { graphqlHTTP } from 'express-graphql';
-import schema from './graphql/schema/schema';
+import schema from './graphql/schema';
 import mongoose from 'mongoose';
 
 // load ENVIRONMENT VARIABLES
@@ -27,7 +27,7 @@ mongoose
             console.log(`listening on port ${process.env.PORT || 8000}`)
         )
     )
-    .catch((err) => console.error(err));
+    .catch(err => console.error(err));
 
 // app.listen(process.env.PORT || 8000, () =>
 //     console.log(`listening on port ${process.env.PORT || 8000}`)
