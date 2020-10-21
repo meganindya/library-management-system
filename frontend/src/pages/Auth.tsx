@@ -6,16 +6,29 @@ import './Auth.scss';
 
 export default function AuthPage() {
   return (
-    <React.Fragment>
-      <div id="auth-back">
-        <div id="auth-back-stencil"></div>
+    <div id="auth-back">
+      <div id="auth-back-shape">
+        <div id="auth-back-overlay"></div>
       </div>
       <div id="auth-banner">
-        <div id="auth-heading"></div>
-        <div id="auth-modal-wrap">
-          <AuthModal />
+        <div id="auth-main" className="container">
+          <div id="auth-heading">
+            <h1>mylibrary.inc</h1>
+            <h2>
+              Connects – people to people, people to place, people to learning.
+              <br />
+              Cutting libraries in a recession is like cutting hospitals in a
+              plague.
+            </h2>
+          </div>
+          <div id="auth-modal-wrap">
+            <AuthModal />
+          </div>
         </div>
       </div>
-    </React.Fragment>
+      <footer id="auth-footer" className="container">
+        <span>meganindya&nbsp;&copy;&nbsp;2020</span>
+      </footer>
+    </div>
   );
 }
