@@ -2,12 +2,8 @@ import React, { useState } from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import AuthPage from './pages/Auth';
-import BrowsePage from './pages/Browse';
-import HistoryPage from './pages/History';
 
 import AuthContext from './context/auth-context';
-
-import './App.scss';
 
 interface IAppState {
   userID: string | null;
@@ -49,19 +45,13 @@ export default function App() {
             logout: logout
           }}
         >
-          <div id="back-overlay"></div>
           <main id="main-content">
             <Switch>
-              {userState.token && <Redirect from="/" to="/browse" exact />}
-              {userState.token && <Redirect from="/auth" to="/browse" exact />}
+              {/* {userState.token && <Redirect from="/" to="/auth" exact />}
               {!userState.token && <Route path="/auth" component={AuthPage} />}
-              {userState.token && (
-                <Route path="/browse" component={BrowsePage} />
-              )}
-              {userState.token && (
-                <Route path="/history" component={HistoryPage} />
-              )}
-              {!userState.token && <Redirect to="/auth" exact />}
+              {!userState.token && <Redirect to="/auth" exact />} */}
+              <Redirect from="/" to="/auth" exact></Redirect>
+              <Route path="/auth" component={AuthPage}></Route>
             </Switch>
           </main>
         </AuthContext.Provider>

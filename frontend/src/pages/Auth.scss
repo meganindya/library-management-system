@@ -1,55 +1,7 @@
 @import '../css-utils/colors';
 
-#auth-back-shape {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 50vw;
-  height: 100vh;
-  clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 70% 0%);
-  background: $accentDark;
-
-  /* stencil */
-  div {
-    position: absolute;
-    bottom: 2rem;
-    left: 4rem;
-    width: 20rem;
-    height: 20rem;
-    background-color: $accentLight;
-    mask-image: url('/images/books-stencil.png');
-    mask-size: contain;
-    mask-repeat: no-repeat;
-  }
-}
-
-#auth-heading {
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-
-  /* logo */
-  span {
-    width: 3.5rem;
-    height: 3.5rem;
-    margin-right: 1rem;
-    background: url('/logo.png') no-repeat;
-    background-size: cover;
-  }
-
-  h1 {
-    margin: 1.25rem 0;
-    font-family: 'Open Sans', sans-serif;
-    color: $accentDark;
-  }
-}
-
-#auth-modal-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+#auth-back {
+  width: 100%;
+  height: 100%;
+  background-color: gray;
 }

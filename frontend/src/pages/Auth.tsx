@@ -1,23 +1,20 @@
 import React from 'react';
 
-import AuthModal from '../components/AuthModal/AuthModal';
+import AuthModal from '../components/AuthModal';
 
 import './Auth.scss';
 
 export default function AuthPage() {
   return (
     <React.Fragment>
-      <div id="auth-back-shape">
-        {/* stencil */}
-        <div></div>
+      <div id="auth-back">
+        <div id="auth-back-stencil"></div>
       </div>
-      <div id="auth-heading">
-        {/* logo */}
-        <span></span>
-        <h1>My Library Inc.</h1>
-      </div>
-      <div id="auth-modal-wrapper">
-        <AuthModal />
+      <div id="auth-banner">
+        <div id="auth-heading"></div>
+        <div id="auth-modal-wrap">
+          <AuthModal />
+        </div>
       </div>
     </React.Fragment>
   );
