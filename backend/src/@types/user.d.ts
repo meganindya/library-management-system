@@ -4,8 +4,14 @@ export interface IUser {
     middleName: string | null;
     lastName: string;
     email: string;
-    password: string | null;
+    password: string;
     type: string;
+}
+
+export interface IUserAuth {
+    userID: string;
+    token: string;
+    tokenExpiration: int;
 }
 
 export interface IUserInp {
