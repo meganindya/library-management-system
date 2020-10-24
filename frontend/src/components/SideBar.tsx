@@ -17,6 +17,7 @@ export default function SideBar(props: ISideBarProps) {
   return (
     <div id="sidebar">
       <div id="sidebar-overlay"></div>
+      <div id="sidebar-inner-shadow"></div>
       <ul>
         <li className={props.activeLinkName == 'browse' ? 'link-active' : ''}>
           <Link to="/browse">

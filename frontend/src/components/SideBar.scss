@@ -3,12 +3,13 @@
 #sidebar {
   position: relative;
   box-sizing: border-box;
-  width: max-content;
+  width: 5rem;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: $accent;
+  overflow: hidden;
 
   #sidebar-overlay {
     position: absolute;
@@ -20,6 +21,15 @@
     mask-size: auto 15rem;
     mask-repeat: repeat;
     opacity: 0.25;
+  }
+
+  #sidebar-inner-shadow {
+    position: absolute;
+    z-index: 3;
+    right: -1rem;
+    width: 1rem;
+    height: 100%;
+    box-shadow: 0 0 1rem 0 $darkshadow;
   }
 
   ul {
