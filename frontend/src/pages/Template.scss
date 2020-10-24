@@ -1,0 +1,13 @@
+@import '../css-utils/colors';
+
+#sidebar-wrap {
+  position: fixed;
+  left: 0;
+  width: auto;
+  height: 100vh;
+}
+
+#page-body {
+  margin-left: 5rem;
+  height: 1000px;
+}

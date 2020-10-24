@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import AuthPage from './pages/Auth';
+import TemplatePage from './pages/Template';
 
 import AuthContext from './context/auth-context';
 
@@ -47,11 +48,16 @@ export default function App() {
         >
           <main id="main-content">
             <Switch>
-              {userState.token && <Redirect from="/" to="/dashboard" exact />}
+              {userState.token && <Redirect from="/" to="/browse" exact />}
+              {userState.token && <Redirect from="/auth" to="/browse" exact />}
               {!userState.token && <Route path="/auth" component={AuthPage} />}
+              {userState.token && (
+                <Route
+                  path="/browse"
+                  render={() => <TemplatePage pageName="browse" />}
+                />
+              )}
               {!userState.token && <Redirect to="/auth" exact />}
-              {/* <Redirect from="/" to="/auth" exact></Redirect>
-              <Route path="/auth" component={AuthPage}></Route> */}
             </Switch>
           </main>
         </AuthContext.Provider>
