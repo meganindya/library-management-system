@@ -11,12 +11,12 @@ export async function login(
     const user = await User.findOne({ userID });
 
     if (!user) {
-        throw new Error('user does not exist.');
+        throw new Error('user does not exist');
     }
 
     const isPassEqual: boolean = await bcrypt.compare(password, user.password);
     if (!isPassEqual) {
-        throw new Error('password is incorrect.');
+        throw new Error('password is incorrect');
     }
 
     const token = jwt.sign(
