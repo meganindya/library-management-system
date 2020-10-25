@@ -1,7 +1,8 @@
 import React from 'react';
-import NavBar from '../components/NavBar';
 
 import SideBar from '../components/SideBar';
+import NavBar from '../components/NavBar';
+import BrowseContent from '../components/page-components/BrowseContent';
 
 import './Template.scss';
 
@@ -17,6 +18,7 @@ export default function TemplatePage(props: ITemplatePage) {
       </div>
       <div id="page-body">
         <NavBar />
+        {props.pageName === 'browse' && <BrowseContent />}
       </div>
     </React.Fragment>
   );
