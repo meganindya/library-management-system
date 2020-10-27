@@ -1,6 +1,10 @@
 import { IBook } from '../../@types/book';
 import Book, { IBookDoc } from '../../models/book';
 
+export async function bookSearch(queryString: string): Promise<IBook[]> {
+    return await Book.find({ title: new RegExp(`.*${queryString}.*`) });
+}
+
 export async function book(bookID: string): Promise<IBook | null> {
     return await Book.findOne({ bookID: bookID });
 }

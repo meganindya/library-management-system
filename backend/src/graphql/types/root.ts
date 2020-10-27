@@ -7,7 +7,7 @@ import {
 import { GQLUser, GQLUserInp, GQLUserAuth } from './user';
 import { GQLBook, GQLBookInp } from './book';
 import { addUser, user, users, login } from '../resolvers/user';
-import { addBook, book, books } from '../resolvers/book';
+import { addBook, book, books, bookSearch } from '../resolvers/book';
 
 export const RootQueryType = new GraphQLObjectType({
     name: 'Query',
@@ -34,6 +34,14 @@ export const RootQueryType = new GraphQLObjectType({
             type: GraphQLList(GQLUser),
             description: 'A list of users',
             resolve: () => users()
+        },
+        bookSearch: {
+            type: GraphQLList(GQLBook),
+            description: "A list of books whose title's match query string",
+            args: {
+                queryString: { type: GraphQLNonNull(GraphQLString) }
+            },
+            resolve: (_, args) => bookSearch(args.queryString)
         },
         book: {
             type: GQLBook,
