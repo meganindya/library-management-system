@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { IUser, IUserAuth, IUserInp } from '../../@types/user';
+import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
 
 export async function login(
@@ -61,7 +61,7 @@ export async function users(): Promise<IUser[]> {
     }));
 }
 
-export async function addUser(input: IUserInp): Promise<IUser> {
+export async function addUser(input: IUser): Promise<IUser> {
     const existingUser = await User.findOne({ userID: input.userID });
     if (existingUser) throw new Error('User already exists');
 

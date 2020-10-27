@@ -4,8 +4,10 @@ import {
     GraphQLObjectType,
     GraphQLString
 } from 'graphql';
-import { GQLUser, GQLUserAuth, GQLUserInp } from './user';
-import { addUser, login, user, users } from '../resolvers/user';
+import { GQLUser, GQLUserInp, GQLUserAuth } from './user';
+import { GQLBook, GQLBookInp } from './book';
+import { addUser, user, users, login } from '../resolvers/user';
+import { addBook, book, books } from '../resolvers/book';
 
 export const RootQueryType = new GraphQLObjectType({
     name: 'Query',
@@ -32,6 +34,19 @@ export const RootQueryType = new GraphQLObjectType({
             type: GraphQLList(GQLUser),
             description: 'A list of users',
             resolve: () => users()
+        },
+        book: {
+            type: GQLBook,
+            description: 'A single book',
+            args: {
+                bookID: { type: GraphQLNonNull(GraphQLString) }
+            },
+            resolve: (_, args) => book(args.bookID)
+        },
+        books: {
+            type: GraphQLList(GQLBook),
+            description: 'A list of books',
+            resolve: () => books()
         }
     })
 });
@@ -44,9 +59,17 @@ export const RootMutationType = new GraphQLObjectType({
             type: GQLUser,
             description: 'This creates a new user',
             args: {
-                input: { type: GQLUserInp }
+                userInput: { type: GQLUserInp }
             },
-            resolve: (_, args) => addUser(args.input)
+            resolve: (_, args) => addUser(args.userInput)
+        },
+        addBook: {
+            type: GQLBook,
+            description: 'This creates a new book',
+            args: {
+                bookInput: { type: GQLBookInp }
+            },
+            resolve: (_, args) => addBook(args.bookInput)
         }
     })
 });
