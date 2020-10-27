@@ -13,13 +13,3 @@ export interface IUserAuth {
     token: string;
     tokenExpiration: int;
 }
-
-export interface IUserInp {
-    userID: string;
-    firstName: string;
-    middleName: string | null;
-    lastName: string;
-    email: string;
-    password: string;
-    type: string;
-}
