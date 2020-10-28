@@ -26,7 +26,8 @@ export const GQLUser = new GraphQLObjectType({
         lastName: { type: GraphQLNonNull(GraphQLString) },
         email: { type: GraphQLNonNull(GraphQLString) },
         password: { type: GraphQLString },
-        type: { type: GraphQLNonNull(GraphQLString) }
+        type: { type: GraphQLNonNull(GraphQLString) },
+        points: { type: GraphQLNonNull(GraphQLInt) }
     }
 });
 

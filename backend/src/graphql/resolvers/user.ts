@@ -44,7 +44,8 @@ export async function user(userID: string): Promise<IUser | null> {
         lastName: user.lastName,
         email: user.email,
         password: '',
-        type: user.type
+        type: user.type,
+        points: user.points
     };
 }
 
@@ -57,7 +58,8 @@ export async function users(): Promise<IUser[]> {
         lastName: user.lastName,
         email: user.email,
         password: '',
-        type: user.type
+        type: user.type,
+        points: user.points
     }));
 }
 
@@ -66,7 +68,11 @@ export async function addUser(input: IUser): Promise<IUser> {
     if (existingUser) throw new Error('User already exists');
 
     const hashedPass = await bcrypt.hash(input.password, 12);
-    const user: IUserDoc = new User({ ...input, password: hashedPass });
+    const user: IUserDoc = new User({
+        ...input,
+        password: hashedPass,
+        points: 0
+    });
     let doc: IUserDoc = await user.save();
     return { ...doc._doc, password: '' };
 }
