@@ -48,7 +48,7 @@ export default function App() {
         >
           <main id="main-content">
             <Switch>
-              {/* {userState.token && <Redirect from="/" to="/browse" exact />}
+              {userState.token && <Redirect from="/" to="/browse" exact />}
               {userState.token && <Redirect from="/auth" to="/browse" exact />}
               {!userState.token && <Route path="/auth" component={AuthPage} />}
               {userState.token && (
@@ -63,18 +63,18 @@ export default function App() {
                   render={() => <TemplatePage pageName="history" />}
                 />
               )}
-              {userState.token && (
+              {/* {userState.token && (
                 <Route
                   path="/dashboard"
                   render={() => <TemplatePage pageName="dashboard" />}
                 />
-              )}
-              {!userState.token && <Redirect to="/auth" exact />} */}
-              <Redirect from="/" to="/history" exact />
+              )} */}
+              {!userState.token && <Redirect to="/auth" exact />}
+              {/* <Redirect from="/" to="/history" exact />
               <Route
                 path="/history"
                 render={() => <TemplatePage pageName="history" />}
-              />
+              /> */}
             </Switch>
           </main>
         </AuthContext.Provider>

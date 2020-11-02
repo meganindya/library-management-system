@@ -3,6 +3,9 @@
 #history-content {
   padding-top: 5rem;
   font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   > h2 {
     font-size: 1.25rem;
@@ -10,6 +13,14 @@
     line-height: 1.5;
     letter-spacing: 0.25px;
     text-align: center;
+  }
+
+  .rolling {
+    width: 20rem;
+    height: 7rem;
+    text-align: center;
+    background: url('/images/loading.gif') no-repeat;
+    background-size: contain;
   }
 
   #history-table {

@@ -1,3 +1,4 @@
+import { faDivide } from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react';
 
 import AuthContext from '../../context/auth-context';
@@ -7,6 +8,7 @@ import './HistoryContent.scss';
 export default function HistoryContent() {
   const authContext = useContext(AuthContext);
   const [userHistory, setUserHistory] = useState([]);
+  const [dataFetched, setDataFetched] = useState(false);
 
   useEffect(() => {
     const nameRequestBody = {
@@ -33,6 +35,7 @@ export default function HistoryContent() {
       }
     })
       .then((response) => {
+        setDataFetched(true);
         if (response.status !== 200 && response.status !== 201) {
           throw new Error('failed!');
         }
@@ -56,42 +59,45 @@ export default function HistoryContent() {
   return (
     <div id="history-content" className="container">
       <h2>History of transactions</h2>
-      <div id="history-table">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Book ID</th>
-              <th>Borrow Date</th>
-              <th>Return Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {userHistory.map((historyItem: any, index) => (
-              <tr key={`history-item-${index}`}>
-                <td>{historyItem.transID}</td>
-                <td>{historyItem.bookID}</td>
-                <td>{parseDate(historyItem.borrowDate)}</td>
-                <td>
-                  {historyItem.returnDate === ''
-                    ? '-'
-                    : parseDate(historyItem.returnDate)}
-                </td>
-                <td
-                  style={
-                    historyItem.returnDate === ''
-                      ? { color: 'red' }
-                      : { color: 'green' }
-                  }
-                >
-                  {historyItem.returnDate === '' ? 'pending' : 'returned'}
-                </td>
+      {!dataFetched && <div className="rolling"></div>}
+      {dataFetched && (
+        <div id="history-table">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Book ID</th>
+                <th>Borrow Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {userHistory.map((historyItem: any, index) => (
+                <tr key={`history-item-${index}`}>
+                  <td>{historyItem.transID}</td>
+                  <td>{historyItem.bookID}</td>
+                  <td>{parseDate(historyItem.borrowDate)}</td>
+                  <td>
+                    {historyItem.returnDate === ''
+                      ? '-'
+                      : parseDate(historyItem.returnDate)}
+                  </td>
+                  <td
+                    style={
+                      historyItem.returnDate === ''
+                        ? { color: 'red' }
+                        : { color: 'green' }
+                    }
+                  >
+                    {historyItem.returnDate === '' ? 'pending' : 'returned'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

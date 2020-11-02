@@ -31,7 +31,9 @@ export default function SideBar(props: ISideBarProps) {
             <span>History</span>
           </Link>
         </li>
-        <li className={props.activeLinkName === 'dash' ? 'link-active' : ''}>
+        <li
+          className={props.activeLinkName === 'dashboard' ? 'link-active' : ''}
+        >
           <Link to="/dashboard">
             <FontAwesomeIcon icon={faColumns} />
             <span>Dashboard</span>
