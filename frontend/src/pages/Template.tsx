@@ -3,6 +3,7 @@ import React from 'react';
 import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
 import BrowseContent from '../components/page-components/BrowseContent';
+import HistoryContent from '../components/page-components/HistoryContent';
 
 import './Template.scss';
 
@@ -19,6 +20,7 @@ export default function TemplatePage(props: ITemplatePage) {
       <div id="page-body">
         <NavBar />
         {props.pageName === 'browse' && <BrowseContent />}
+        {props.pageName === 'history' && <HistoryContent />}
       </div>
     </React.Fragment>
   );

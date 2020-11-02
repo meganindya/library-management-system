@@ -2,6 +2,7 @@ import { IBook } from '../../@types/book';
 import Book, { IBookDoc } from '../../models/book';
 import Author from '../../models/author';
 import { IAuthor } from '../../@types/author';
+import { BookMutations } from '../fields/book';
 
 async function transformBook(book: IBookDoc) {
     let authors: IAuthor[] = [];
@@ -25,6 +26,17 @@ export async function book(bookID: string): Promise<IBook | null> {
 export async function books(): Promise<IBook[]> {
     const books = await Book.find({});
     return await Promise.all(books.map(async (book) => transformBook(book)));
+}
+
+export async function categories(): Promise<{ categoryName: string }[]> {
+    const books = await Book.find({});
+    let categories: string[] = [];
+    for (let book of books) {
+        if (categories.indexOf(book.category) === -1) {
+            categories.push(book.category);
+        }
+    }
+    return categories.map((category) => ({ categoryName: category }));
 }
 
 export async function addBook(input: IBook): Promise<IBook> {

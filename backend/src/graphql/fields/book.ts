@@ -4,8 +4,14 @@ import {
     GraphQLNonNull,
     GraphQLString
 } from 'graphql';
-import { GQLBook, GQLBookInp } from '../types/book';
-import { addBook, book, books, bookSearch } from '../resolvers/book';
+import { GQLBook, GQLBookInp, GQLCategory } from '../types/book';
+import {
+    addBook,
+    book,
+    books,
+    bookSearch,
+    categories
+} from '../resolvers/book';
 
 export const BookQueries: GraphQLFieldConfigMap<any, any> = {
     bookSearch: {
@@ -28,6 +34,11 @@ export const BookQueries: GraphQLFieldConfigMap<any, any> = {
         type: GraphQLList(GQLBook),
         description: 'A list of books',
         resolve: () => books()
+    },
+    categories: {
+        type: GraphQLList(GQLCategory),
+        description: 'A list of categories',
+        resolve: () => categories()
     }
 };
 
