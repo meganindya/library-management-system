@@ -33,3 +33,11 @@ export const GQLBookInp = new GraphQLInputObjectType({
         authors: { type: GraphQLList(GraphQLString) }
     }
 });
+
+export const GQLCategory = new GraphQLObjectType({
+    name: 'Category',
+    description: 'This represents a catetgory',
+    fields: {
+        categoryName: { type: GraphQLNonNull(GraphQLString) }
+    }
+});

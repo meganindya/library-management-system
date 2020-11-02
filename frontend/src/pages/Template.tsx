@@ -3,6 +3,8 @@ import React from 'react';
 import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
 import BrowseContent from '../components/page-components/BrowseContent';
+import HistoryContent from '../components/page-components/HistoryContent';
+import DashboardContent from '../components/page-components/DashboardContent';
 
 import './Template.scss';
 
@@ -19,6 +21,8 @@ export default function TemplatePage(props: ITemplatePage) {
       <div id="page-body">
         <NavBar />
         {props.pageName === 'browse' && <BrowseContent />}
+        {props.pageName === 'history' && <HistoryContent />}
+        {props.pageName === 'dashboard' && <DashboardContent />}
       </div>
     </React.Fragment>
   );
