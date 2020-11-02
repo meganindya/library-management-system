@@ -6,18 +6,19 @@ import {
     GraphQLObjectType,
     GraphQLString
 } from 'graphql';
+import { GQLAuthor } from './author';
 
 export const GQLBook = new GraphQLObjectType({
     name: 'Book',
     description: 'This represents a Book',
-    fields: {
+    fields: () => ({
         bookID: { type: GraphQLNonNull(GraphQLString) },
         title: { type: GraphQLNonNull(GraphQLString) },
         category: { type: GraphQLNonNull(GraphQLString) },
         abstract: { type: GraphQLString },
-        quantity: { type: GraphQLNonNull(GraphQLInt) }
-        // author: { type: GraphQLList(GraphQLString) }
-    }
+        quantity: { type: GraphQLNonNull(GraphQLInt) },
+        authors: { type: GraphQLList(GQLAuthor) }
+    })
 });
 
 export const GQLBookInp = new GraphQLInputObjectType({
@@ -28,7 +29,7 @@ export const GQLBookInp = new GraphQLInputObjectType({
         title: { type: GraphQLNonNull(GraphQLString) },
         category: { type: GraphQLNonNull(GraphQLString) },
         abstract: { type: GraphQLString },
-        quantity: { type: GraphQLNonNull(GraphQLInt) }
-        // author: { type: GraphQLList(GraphQLString) }
+        quantity: { type: GraphQLNonNull(GraphQLInt) },
+        authors: { type: GraphQLList(GraphQLString) }
     }
 });
