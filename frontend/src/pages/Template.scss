@@ -8,5 +8,24 @@
 }
 
 #page-body {
+  position: relative;
+  min-height: 100vh;
   margin-left: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  > * {
+    width: 100%;
+  }
+
+  #template-content {
+    margin-bottom: 16rem;
+    padding-bottom: 4rem;
+  }
+
+  #footer-wrap {
+    position: absolute;
+    bottom: 0rem;
+  }
 }
