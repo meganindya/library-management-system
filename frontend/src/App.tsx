@@ -63,6 +63,12 @@ export default function App() {
                   render={() => <TemplatePage pageName="history" />}
                 />
               )}
+              {userState.token && (
+                <Route
+                  path="/dashboard"
+                  render={() => <TemplatePage pageName="dashboard" />}
+                />
+              )}
               {!userState.token && <Redirect to="/auth" exact />}
               {/* <Redirect from="/" to="/browse" exact />
               <Route

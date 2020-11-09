@@ -46,8 +46,8 @@ export default function HistoryContent() {
           setUserHistory(
             responseData.data.transactions.sort(
               (a: any, b: any) =>
-                new Date(b.borrowDate).getMilliseconds() -
-                new Date(a.borrowDate).getMilliseconds()
+                new Date(b.borrowDate).valueOf() -
+                new Date(a.borrowDate).valueOf()
             )
           );
         }

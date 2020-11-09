@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import AuthContext from '../../context/auth-context';
 
@@ -8,6 +9,8 @@ export default function DashboardContent() {
   const authContext = useContext(AuthContext);
   const [userPending, setUserPending] = useState([]);
   const [userOutstanding, setUserOutstanding] = useState([]);
+
+  const browserHistory = useHistory();
 
   useEffect(() => {
     const nameRequestBody = {
@@ -42,24 +45,33 @@ export default function DashboardContent() {
       .then((responseData) => {
         if (responseData.data.transactions) {
           const history = responseData.data.transactions;
-          let pendingOnes: { transID: string; bookID: string }[] = [],
-            outstandingOnes: any[] = [];
+          // let pendingOnes: { transID: string; bookID: string }[] = [],
+          //   outstandingOnes: any[] = [];
+          let pendingList: any = [];
           history.forEach((historyItem: any) => {
-            if (historyItem.returnDate === '') {
-              let bDate = new Date(historyItem.borrowDate);
-              let rDate = new Date();
-              let diff = Math.round(
-                (rDate.getMilliseconds() - bDate.getMilliseconds()) /
-                  (1000 * 60 * 60 * 24)
-              );
-              console.log(diff);
-              if (diff > 30) {
-                outstandingOnes.push(historyItem);
-              } else {
-                pendingOnes.push(historyItem);
-              }
+            if (
+              historyItem.returnDate === '' ||
+              historyItem.returnDate === null
+            ) {
+              pendingList.push(historyItem);
+              // let bDate = new Date(historyItem.borrowDate).valueOf();
+              // let rDate = new Date().valueOf();
+              // let diff = Math.round((rDate - bDate) / (1000 * 60 * 60 * 24));
+              // console.log(diff);
+              // if (diff > 30) {
+              //   outstandingOnes.push(historyItem);
+              // } else {
+              //   pendingOnes.push(historyItem);
+              // }
             }
           });
+          setUserPending(
+            pendingList.sort(
+              (a: any, b: any) =>
+                new Date(b.borrowDate).valueOf() -
+                new Date(a.borrowDate).valueOf()
+            )
+          );
           // setUserPending(pendingOnes);
           // setUserOutstanding(outstandingOnes);
         }
@@ -69,9 +81,66 @@ export default function DashboardContent() {
       });
   }, []);
 
-  const parseDate = (isodate: string) => {
+  const returnBook = (transID: string) => {
+    const borrowReqBody = {
+      query: `
+          mutation returnBook($transID: String!) {
+            returnBook(transID: $transID) {
+              transID
+            }
+          }`,
+      variables: {
+        transID
+      }
+    };
+
+    fetch('http://localhost:8000/api', {
+      method: 'POST',
+      body: JSON.stringify(borrowReqBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((response) => {
+        if (response.status !== 200 && response.status !== 201) {
+          throw new Error('failed!');
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        if (
+          responseData.data.returnBook &&
+          responseData.data.returnBook.transID
+        ) {
+          browserHistory.push('/history');
+        } else {
+          throw new Error('return failed');
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+
+  const parseDate = (isodate: string, addToDate?: number) => {
     let date = new Date(isodate);
+    if (addToDate) date.setDate(date.getDate() + addToDate);
     return date.toUTCString();
+  };
+
+  const getRemainingDays = (borrowDate: string) => {
+    let rdate = new Date(parseDate(borrowDate, 30)).valueOf();
+    let cdate = new Date().valueOf();
+    return Math.round((rdate - cdate) / (1000 * 60 * 60 * 24));
+  };
+
+  const getRemainingString = (borrowDate: string) => {
+    const days = getRemainingDays(borrowDate);
+    if (days < 0) {
+      return `${Math.abs(days)} days overdue`;
+    } else {
+      return `${days} days remaining`;
+    }
   };
 
   return (
@@ -85,7 +154,7 @@ export default function DashboardContent() {
               <th>Book ID</th>
               <th>Borrow Date</th>
               <th>Deadline</th>
-              <th>Remaining</th>
+              <th>Return</th>
             </tr>
           </thead>
           <tbody>
@@ -94,8 +163,19 @@ export default function DashboardContent() {
                 <td>{historyItem.transID}</td>
                 <td>{historyItem.bookID}</td>
                 <td>{parseDate(historyItem.borrowDate)}</td>
-                <td>{parseDate(historyItem.borrowDate)}</td>
-                <td>{55}</td>
+                <td>{parseDate(historyItem.borrowDate, 30)}</td>
+                <td>
+                  <button
+                    className={
+                      getRemainingDays(historyItem.borrowDate) < 0
+                        ? 'return-btn-due'
+                        : 'return-btn-ok'
+                    }
+                    onClick={() => returnBook(historyItem.transID)}
+                  >
+                    {getRemainingString(historyItem.borrowDate)}
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
