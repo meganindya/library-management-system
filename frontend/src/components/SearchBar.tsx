@@ -18,13 +18,16 @@ export default function SearchBar(props: ISearchBarProps) {
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const searchQuery = searchEl.current?.value;
-    props.searchHandler(searchQuery === null ? '' : searchQuery?.trim());
+    props.searchHandler(false, searchQuery === null ? '' : searchQuery?.trim());
   };
 
   const toggleClear = () => {
     if (props.activeSearch) {
-      // const searchQuery = searchEl.current?.value;
-      // props.searchHandler(searchQuery === null ? '' : searchQuery?.trim());
+      const searchQuery = searchEl.current?.value;
+      props.searchHandler(
+        true,
+        searchQuery === null ? '' : searchQuery?.trim()
+      );
     }
     setHasText(
       searchEl.current !== null && searchEl.current.value.trim() !== ''
@@ -55,6 +58,7 @@ export default function SearchBar(props: ISearchBarProps) {
         ref={searchEl}
         autoComplete="off"
         defaultValue={props.initialValue}
+        minLength={3}
       />
       {hasText && (
         <button onClick={clearSearch}>
