@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Select from 'react-select';
+import { useHistory } from 'react-router-dom';
+
+import AuthContext from '../../context/auth-context';
 
 import SearchBar from '../SearchBar';
 
@@ -10,13 +13,15 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function BrowseListContent(props: {
   categories: string[];
-  userBookIDs: string[];
   searchQuery: {
     queryString: string;
     queryCategory: string;
   };
   resetUpperSearchQuery: Function;
 }) {
+  const history = useHistory();
+  const authContext = useContext(AuthContext);
+
   interface IQuery {
     queryString: string;
     queryCategory: string;
@@ -24,6 +29,56 @@ export default function BrowseListContent(props: {
   const [searchQuery, setSearchQuery] = useState<IQuery>(props.searchQuery);
 
   const [loading, setLoading] = useState(true);
+
+  const [userBookIDs, setUserBookIDs] = useState<string[]>([]);
+
+  useEffect(() => {
+    const userBooksReqBody = {
+      query: `
+        query transactions($userID: String!) {
+          transactions(userID: $userID) {
+            bookID
+            returnDate
+          }
+        }`,
+      variables: {
+        userID: authContext.userID
+      }
+    };
+
+    fetch('http://localhost:8000/api', {
+      method: 'POST',
+      body: JSON.stringify(userBooksReqBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((response) => {
+        if (response.status !== 200 && response.status !== 201) {
+          throw new Error('failed!');
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        if (responseData.data.transactions) {
+          console.log(responseData.data.transactions);
+          setUserBookIDs(
+            responseData.data.transactions
+              .filter(
+                (entry: { bookID: string; returnDate: string | null }) =>
+                  entry.returnDate === null || entry.returnDate === ''
+              )
+              .map(
+                (entry: { bookID: string; returnDate: string | null }) =>
+                  entry.bookID
+              )
+          );
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, []);
 
   interface ISearchItem {
     bookID: string;
@@ -54,8 +109,6 @@ export default function BrowseListContent(props: {
         queryString: searchQuery.queryString
       }
     };
-
-    console.log(searchQuery.queryString);
 
     fetch('http://localhost:8000/api', {
       method: 'POST',
@@ -97,6 +150,48 @@ export default function BrowseListContent(props: {
         console.error(e);
       });
   }, [searchQuery]);
+
+  const borrowBook = (bookID: string) => {
+    const borrowReqBody = {
+      query: `
+          mutation borrowBook($userID: String!, $bookID: String!) {
+            borrowBook(userID: $userID, bookID: $bookID) {
+              transID
+            }
+          }`,
+      variables: {
+        userID: authContext.userID || '11118001',
+        bookID: bookID
+      }
+    };
+
+    fetch('http://localhost:8000/api', {
+      method: 'POST',
+      body: JSON.stringify(borrowReqBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((response) => {
+        if (response.status !== 200 && response.status !== 201) {
+          throw new Error('failed!');
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        if (
+          responseData.data.borrowBook &&
+          responseData.data.borrowBook.transID
+        ) {
+          history.push('/history');
+        } else {
+          throw new Error('borrow failed');
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
 
   return (
     <React.Fragment>
@@ -180,9 +275,20 @@ export default function BrowseListContent(props: {
                   ) : (
                     <h4 style={{ color: 'coral' }}>Not in shelf</h4>
                   )}
-                  {props.userBookIDs.indexOf(searchItem.bookID) === -1 &&
+                  {userBookIDs.length >= 5 && (
+                    <button style={{ background: 'none', color: 'white' }}>
+                      .
+                    </button>
+                  )}
+                  {userBookIDs.length < 5 &&
+                    userBookIDs.indexOf(searchItem.bookID) === -1 &&
                     (searchItem.quantity > 0 ? (
-                      <button className="search-item-button-bor">
+                      <button
+                        className="search-item-button-bor"
+                        onClick={() => {
+                          borrowBook(searchItem.bookID);
+                        }}
+                      >
                         BORROW
                         <FontAwesomeIcon
                           icon={faArrowRight}
@@ -198,7 +304,7 @@ export default function BrowseListContent(props: {
                         />
                       </button>
                     ))}
-                  {props.userBookIDs.indexOf(searchItem.bookID) !== -1 && (
+                  {userBookIDs.indexOf(searchItem.bookID) !== -1 && (
                     <h4 className="search-item-borrowed">borrowed</h4>
                   )}
                 </div>

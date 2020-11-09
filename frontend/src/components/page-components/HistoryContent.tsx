@@ -43,7 +43,13 @@ export default function HistoryContent() {
       })
       .then((responseData) => {
         if (responseData.data.transactions) {
-          setUserHistory(responseData.data.transactions);
+          setUserHistory(
+            responseData.data.transactions.sort(
+              (a: any, b: any) =>
+                new Date(b.borrowDate).getMilliseconds() -
+                new Date(a.borrowDate).getMilliseconds()
+            )
+          );
         }
       })
       .catch((e) => {
@@ -79,18 +85,23 @@ export default function HistoryContent() {
                   <td>{historyItem.bookID}</td>
                   <td>{parseDate(historyItem.borrowDate)}</td>
                   <td>
-                    {historyItem.returnDate === ''
+                    {historyItem.returnDate === '' ||
+                    historyItem.returnDate === null
                       ? '-'
                       : parseDate(historyItem.returnDate)}
                   </td>
                   <td
                     style={
-                      historyItem.returnDate === ''
+                      historyItem.returnDate === '' ||
+                      historyItem.returnDate === null
                         ? { color: 'red' }
                         : { color: 'green' }
                     }
                   >
-                    {historyItem.returnDate === '' ? 'pending' : 'returned'}
+                    {historyItem.returnDate === '' ||
+                    historyItem.returnDate === null
+                      ? 'pending'
+                      : 'returned'}
                   </td>
                 </tr>
               ))}
