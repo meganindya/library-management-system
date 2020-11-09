@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+
+import AuthContext from '../../context/auth-context';
 
 import './BrowseContent.scss';
 import SearchBar from '../SearchBar';
@@ -8,10 +10,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function BrowseContent(this: any) {
+  const authContext = useContext(AuthContext);
+
   const [searched, setSearched] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentCategory, setCurrentCategory] = useState('Any category');
+
   const [categoryNames, setCategoryNames] = useState([]);
+  const [userBooks, setUserBooks] = useState<string[]>([]);
 
   useEffect(() => {
     const nameRequestBody = {
@@ -44,6 +50,47 @@ export default function BrowseContent(this: any) {
       .catch((e) => {
         console.error(e);
       });
+
+    const userBooksReq = {
+      query: `
+        query transactions($userID: String!) {
+          transactions(userID: $userID) {
+            bookID
+            returnDate
+          }
+        }`,
+      variables: {
+        userID: authContext.userID || '11118001'
+      }
+    };
+
+    fetch('http://localhost:8000/api', {
+      method: 'POST',
+      body: JSON.stringify(userBooksReq),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((response) => {
+        if (response.status !== 200 && response.status !== 201) {
+          throw new Error('failed!');
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        if (responseData.data.transactions) {
+          console.log(responseData.data.transactions);
+          setUserBooks(
+            responseData.data.transactions.filter(
+              (entry: { bookID: string; returnDate: string | null }) =>
+                entry.returnDate !== null && entry.returnDate !== ''
+            )
+          );
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   }, []);
 
   const categories = categoryNames.map(
@@ -60,9 +107,7 @@ export default function BrowseContent(this: any) {
 
   const searchQueryHandler = (queryString: string): void => {
     setSearched(true);
-    console.log(searchQuery, queryString);
     setSearchQuery(queryString);
-    console.log(searchQuery);
   };
 
   const browseGreetContent = (
@@ -101,11 +146,23 @@ export default function BrowseContent(this: any) {
     </div>
   );
 
+  interface ISearchItem {
+    bookID: string;
+    title: string;
+    category: string;
+    authors: { name: string }[];
+    abstract: string;
+    quantity: number;
+  }
+
+  const [searchItemsList, setSearchItemsList] = useState<ISearchItem[]>([]);
+
   useEffect(() => {
     const searchRequestBody = {
       query: `
         query bookSearch($queryString: String!) {
           bookSearch(queryString: $queryString) {
+            bookID
             title
             category
             authors {
@@ -116,7 +173,7 @@ export default function BrowseContent(this: any) {
           }
         }`,
       variables: {
-        queryString: 'India'
+        queryString: searchQuery
       }
     };
 
@@ -135,34 +192,29 @@ export default function BrowseContent(this: any) {
       })
       .then((responseData) => {
         if (responseData.data.bookSearch) {
-          setSearchItemsList(responseData.data.bookSearch);
+          setSearchItemsList(
+            responseData.data.bookSearch.map((searchItem: ISearchItem) => ({
+              bookID: searchItem.bookID,
+              title: searchItem.title,
+              category: searchItem.category,
+              authors: searchItem.authors.map((author) => author.name),
+              abstract:
+                searchItem.abstract.length > 256
+                  ? searchItem.abstract.substring(0, 256) + ' ...'
+                  : searchItem.abstract,
+              quantity: searchItem.quantity
+            }))
+            // .filter((item: ISearchItem) => {
+            //   if (currentCategory === 'Any category') return true;
+            //   else return item.category === currentCategory;
+            // })
+          );
         }
       })
       .catch((e) => {
         console.error(e);
       });
   }, [searchQuery, currentCategory]);
-
-  interface ISearchItem {
-    title: string;
-    category: string;
-    authors: { name: string }[];
-    abstract: string;
-    quantity: number;
-  }
-
-  const [searchItemsList, setSearchItemsList] = useState<ISearchItem[]>([]);
-
-  const searchItems = searchItemsList.map((searchItem) => ({
-    title: searchItem.title,
-    category: searchItem.category,
-    authors: searchItem.authors.map((author) => author.name),
-    abstract:
-      searchItem.abstract.length > 256
-        ? searchItem.abstract.substring(0, 256) + ' ...'
-        : searchItem.abstract,
-    quantity: searchItem.quantity
-  }));
 
   const browseSearchList = (
     <React.Fragment>
@@ -202,7 +254,7 @@ export default function BrowseContent(this: any) {
         </div>
       </div>
       <div id="search-list-items" className="container">
-        {searchItems.map((searchItem, index) => (
+        {searchItemsList.map((searchItem, index) => (
           <div className="search-item-block" key={index}>
             <div className="search-item-graphic"></div>
             <div className="search-item-content">
@@ -229,7 +281,8 @@ export default function BrowseContent(this: any) {
                   <h4 style={{ color: 'coral' }}>Not in stock</h4>
                 )}
 
-                {searchItem.quantity > 0 ? (
+                {userBooks.indexOf(searchItem.bookID) === -1 &&
+                searchItem.quantity > 0 ? (
                   <button className="search-item-button-bor">
                     BORROW
                     <FontAwesomeIcon

@@ -4,7 +4,7 @@ import './Footer.scss';
 
 export default function Footer() {
   return (
-    <footer className="container-fluid">
+    <footer id="template-footer" className="container-fluid">
       <div className="container">
         <h1>mylibrary.inc</h1>
         <h2>
