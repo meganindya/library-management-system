@@ -83,10 +83,15 @@ export default function BrowseContent() {
       .then((responseData) => {
         if (responseData.data.transactions) {
           setUserBookIDs(
-            responseData.data.transactions.filter(
-              (entry: { bookID: string; returnDate: string | null }) =>
-                entry.returnDate !== null && entry.returnDate !== ''
-            )
+            responseData.data.transactions
+              .filter(
+                (entry: { bookID: string; returnDate: string | null }) =>
+                  entry.returnDate !== null && entry.returnDate !== ''
+              )
+              .map(
+                (entry: { bookID: string; returnDate: string | null }) =>
+                  entry.bookID
+              )
           );
         }
       })

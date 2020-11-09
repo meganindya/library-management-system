@@ -113,7 +113,7 @@ export default function BrowseListContent(props: {
           </div>
           <div id="search-list-search-bar-wrap">
             <SearchBar
-              searchHandler={(activeSearch: boolean, queryString: string) => {
+              searchHandler={(queryString: string, activeSearch: boolean) => {
                 setLoading(!activeSearch);
                 setSearchQuery({
                   queryString: queryString,
@@ -181,22 +181,25 @@ export default function BrowseListContent(props: {
                     <h4 style={{ color: 'coral' }}>Not in shelf</h4>
                   )}
                   {props.userBookIDs.indexOf(searchItem.bookID) === -1 &&
-                  searchItem.quantity > 0 ? (
-                    <button className="search-item-button-bor">
-                      BORROW
-                      <FontAwesomeIcon
-                        icon={faArrowRight}
-                        className="input-field-icon"
-                      />
-                    </button>
-                  ) : (
-                    <button className="search-item-button-req">
-                      REQUEST
-                      <FontAwesomeIcon
-                        icon={faArrowRight}
-                        className="input-field-icon"
-                      />
-                    </button>
+                    (searchItem.quantity > 0 ? (
+                      <button className="search-item-button-bor">
+                        BORROW
+                        <FontAwesomeIcon
+                          icon={faArrowRight}
+                          className="input-field-icon"
+                        />
+                      </button>
+                    ) : (
+                      <button className="search-item-button-req">
+                        REQUEST
+                        <FontAwesomeIcon
+                          icon={faArrowRight}
+                          className="input-field-icon"
+                        />
+                      </button>
+                    ))}
+                  {props.userBookIDs.indexOf(searchItem.bookID) !== -1 && (
+                    <h4 className="search-item-borrowed">borrowed</h4>
                   )}
                 </div>
               </div>

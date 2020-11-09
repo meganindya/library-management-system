@@ -18,15 +18,15 @@ export default function SearchBar(props: ISearchBarProps) {
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const searchQuery = searchEl.current?.value;
-    props.searchHandler(false, searchQuery === null ? '' : searchQuery?.trim());
+    props.searchHandler(searchQuery === null ? '' : searchQuery?.trim(), false);
   };
 
   const toggleClear = () => {
     if (props.activeSearch) {
       const searchQuery = searchEl.current?.value;
       props.searchHandler(
-        true,
-        searchQuery === null ? '' : searchQuery?.trim()
+        searchQuery === null ? '' : searchQuery?.trim(),
+        true
       );
     }
     setHasText(
