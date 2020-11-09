@@ -4,16 +4,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import './SearchBar.scss';
 
-export default function SearchBar() {
+interface ISearchBarProps {
+  searchHandler: Function;
+  initialValue: string;
+  activeSearch: boolean;
+}
+
+export default function SearchBar(props: ISearchBarProps) {
   const searchEl: React.RefObject<HTMLInputElement> = React.createRef();
 
   const [hasText, setHasText] = useState(false);
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    const searchQuery = searchEl.current?.value;
+    props.searchHandler(searchQuery === null ? '' : searchQuery?.trim());
   };
 
   const toggleClear = () => {
+    if (props.activeSearch) {
+      // const searchQuery = searchEl.current?.value;
+      // props.searchHandler(searchQuery === null ? '' : searchQuery?.trim());
+    }
     setHasText(
       searchEl.current !== null && searchEl.current.value.trim() !== ''
         ? true
@@ -42,6 +54,7 @@ export default function SearchBar() {
         onChange={toggleClear}
         ref={searchEl}
         autoComplete="off"
+        defaultValue={props.initialValue}
       />
       {hasText && (
         <button onClick={clearSearch}>

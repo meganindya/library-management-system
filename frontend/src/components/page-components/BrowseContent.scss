@@ -2,6 +2,7 @@
 
 #browse-content {
   padding-top: 5rem;
+  padding-bottom: 7rem;
 
   #browse-greet-box {
     width: 100%;
@@ -42,7 +43,7 @@
         font-weight: 600;
       }
 
-      #search-bar-wrap {
+      #browse-search-bar-wrap {
         width: 100%;
         height: 200px;
         display: flex;
@@ -80,16 +81,16 @@
       grid-gap: 1.5rem;
       grid-auto-rows: minmax(100px, auto);
 
-      .browse-category-block a {
+      .browse-category-block {
         height: max-content;
         border-radius: 0.5rem;
         padding: 1.5rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        text-decoration: none;
         background: white;
         box-shadow: 0 0 1rem 0 $shadow;
+        cursor: pointer;
         transition: transform 0.25s ease, box-shadow 0.25s ease;
 
         &:hover {
@@ -113,6 +114,226 @@
           font-size: 1rem;
           text-align: center;
           color: black;
+        }
+      }
+    }
+  }
+}
+
+#search-list-search-container {
+  position: sticky;
+  top: 4rem;
+  z-index: 90;
+  width: 100%;
+  height: 10rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid $lightgray;
+  background: white;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    > * {
+      width: 100%;
+    }
+
+    #search-list-back-to-greet {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      display: grid;
+      align-items: center;
+      justify-content: center;
+      color: $darkgray;
+      cursor: pointer;
+      transition: all 0.25s ease;
+
+      &:hover {
+        background: $silver;
+      }
+    }
+
+    #search-list-search-bar-wrap {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      #search-category-dropdown {
+        margin-left: 1rem;
+        padding-left: 0.5rem;
+        outline: none;
+        border: 1px solid $lightgray;
+        border-radius: 0.5rem;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+#search-list-items {
+  padding-top: 5rem;
+  padding-bottom: 7rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 1.5rem;
+  grid-auto-rows: max-content;
+
+  .search-item-block {
+    height: 100%;
+    width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 1rem 0 $darkgray;
+    transition: all 0.5s ease;
+
+    &:hover {
+      transform: translateY(-0.25rem);
+    }
+
+    > * {
+      width: 100%;
+    }
+
+    .search-item-graphic {
+      height: 8rem;
+      border-radius: 0.5rem 0.5rem 0 0;
+      background: url('/images/book-open.jpeg') no-repeat;
+      background-size: cover;
+    }
+
+    .search-item-content {
+      height: calc(100% - 8rem);
+      padding: 1rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+
+      > * {
+        width: 100%;
+        margin: 0;
+      }
+
+      .search-item-content-text {
+        .search-item-title {
+          margin-bottom: 0.5rem;
+          font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+          font-size: 1.5rem;
+        }
+
+        .search-item-category {
+          margin-bottom: 0.75rem;
+          font-family: 'Raleway', sans-serif;
+          font-size: 0.9rem;
+          font-weight: 400;
+        }
+
+        .search-item-authors {
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          list-style: none;
+
+          li {
+            position: relative;
+            height: 1.8rem;
+
+            &::before {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 1.25rem;
+              height: 1.25rem;
+              border-radius: 50%;
+              content: ' ';
+              display: table;
+              background: url('/images/bust.png') $lightgray no-repeat;
+              background-size: 1rem;
+              background-position: center;
+            }
+
+            h4 {
+              margin: 0 0 0 1.75rem;
+              font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+              font-weight: 400;
+              font-size: 0.85rem;
+              line-height: 1.25rem;
+              color: $darkgray;
+            }
+          }
+        }
+
+        .search-item-abstract {
+          padding: 0.5rem 0;
+          border-top: 1px solid $lightgray;
+          font-family: 'PT Sans', sans-serif;
+          font-size: 0.95rem;
+          text-align: justify;
+          color: $darkgray;
+        }
+      }
+
+      .search-item-button-wrap {
+        padding: 1.25rem 0 0.25rem 0;
+        border-top: 1px solid $lightgray;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        h4 {
+          margin: 0;
+          font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+          font-weight: 400;
+          font-size: 0.85rem;
+
+          b {
+            font-size: 0.9rem;
+            color: $accentdark;
+          }
+        }
+
+        button {
+          padding: 0.75rem;
+          border: none;
+          border-radius: 0.25rem;
+          font-family: 'Nunito', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 600;
+          background: $silver;
+          cursor: pointer;
+          outline: none;
+          transition: all 0.25s ease;
+
+          &:hover {
+            color: white;
+
+            svg {
+              color: white;
+            }
+          }
+
+          svg {
+            margin-left: 1rem;
+            color: $footertext;
+          }
+        }
+
+        .search-item-button-bor {
+          &:hover {
+            background: $accentsecondary;
+          }
+        }
+
+        .search-item-button-req {
+          &:hover {
+            background: $darkgray;
+          }
         }
       }
     }

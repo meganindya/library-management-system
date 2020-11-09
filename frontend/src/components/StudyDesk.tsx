@@ -9,14 +9,14 @@ export default function StudyDesk() {
     >
       <defs>
         <linearGradient x1="50%" y1="108.09%" x2="50%" y2="5.05%" id="a">
-          <stop stop-color="#FFF" stop-opacity=".53" offset="0%"></stop>
-          <stop stop-color="#FFF" stop-opacity="0" offset="100%"></stop>
+          <stop stopColor="#FFF" stopOpacity=".53" offset="0%"></stop>
+          <stop stopColor="#FFF" stopOpacity="0" offset="100%"></stop>
         </linearGradient>
       </defs>
-      <g fill="none" fill-rule="evenodd">
+      <g fill="none" fillRule="evenodd">
         <rect
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".19"
           x=".94"
           y="911.81"
@@ -27,146 +27,146 @@ export default function StudyDesk() {
         <path
           d="M1029.39 333.19s-24-9-42.84-11l-11.66 34s44.93 3.26 66.84 14.66l-12.34-37.66zm-420.81 55.99v52.53s-2.75 35.83 22.6 32.16v31.76s-46.1 5.5-50.52-42.65v-73.8h27.92zm427.65 0v52.53s2.74 35.83-22.6 32.16v31.76s46.1 5.5 50.52-42.65v-73.8h-27.92zm-247.2 9.36h64.49v33.59h-64.49zm-171.36-65.35s24-9 42.84-11l11.66 34s-44.93 3.26-66.84 14.66l12.34-37.66z"
           fill="#031728"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1089.67 337a16.58 16.58 0 01-4.18 11.16 13.92 13.92 0 01-6.93 4.22v27.27c0 15.88-15.1 17.91-15.1 17.91s-6.45 1-23.39 0-16.2-18.72-16.2-18.72v-26.75c-5.91-1.91-10.24-8-10.24-15.13a16.55 16.55 0 014.18-11.15 13.55 13.55 0 0110.09-4.63h47.5c7.88 0 14.27 7.07 14.27 15.82z"
           fill="#1F273A"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1058.87 392c-3.1 0-7.37 0-13-.37-14.32-.86-13.7-15.83-13.7-15.83v-22.55c-5-1.61-8.65-6.73-8.65-12.78A14 14 0 011027 331a11.44 11.44 0 018.53-3.91h3.27a11.44 11.44 0 00-8.53 3.91 14 14 0 00-3.54 9.43c0 6 3.66 11.17 8.66 12.78v22.58s-.62 15 13.69 15.83c3.92.27 7.14.38 9.79.38z"
           opacity=".19"
           fill="#EBEDF2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1089.68 337a16.58 16.58 0 01-4.19 11.15 14 14 0 01-6.93 4.23v27.26c0 15.89-15.1 17.91-15.1 17.91s-4.26.68-14.93.38a45.34 45.34 0 005-.38s15.1-2 15.1-17.91v-27.29a14 14 0 006.93-4.23 16.57 16.57 0 004.18-11.15c0-8.72-6.39-15.78-14.27-15.78h9.92c7.9 0 14.29 7.06 14.29 15.81z"
           fill="#171E2D"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M555.36 337a16.63 16.63 0 004.18 11.16 13.92 13.92 0 006.93 4.22v27.27c0 15.88 15.11 17.91 15.11 17.91s6.44 1 23.38 0c16.94-1 16.2-18.72 16.2-18.72v-26.75c5.92-1.91 10.25-8 10.25-15.13a16.56 16.56 0 00-4.19-11.15 13.55 13.55 0 00-10.09-4.63h-47.5c-7.88 0-14.27 7.07-14.27 15.82z"
           fill="#1F273A"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M586.17 392c3.09 0 7.37 0 13-.37 14.32-.86 13.7-15.83 13.7-15.83v-22.55c5-1.61 8.66-6.73 8.66-12.78A14 14 0 00618 331a11.44 11.44 0 00-8.53-3.91h-3.26a11.44 11.44 0 018.52 3.91 14 14 0 013.54 9.43c0 6-3.66 11.17-8.66 12.78v22.58s.62 15-13.69 15.83c-3.92.27-7.11.38-9.75.38z"
           opacity=".19"
           fill="#EBEDF2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M555.36 337a16.57 16.57 0 004.18 11.15 14 14 0 006.93 4.23v27.26c0 15.89 15.1 17.91 15.1 17.91s4.26.68 14.94.38a45.76 45.76 0 01-5-.38s-15.1-2-15.1-17.91v-27.29a14 14 0 01-6.93-4.23 16.57 16.57 0 01-4.2-11.12c0-8.72 6.39-15.78 14.27-15.78h-9.92c-7.88-.03-14.27 7.03-14.27 15.78z"
           fill="#171E2D"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M983.25 368.27a123.43 123.43 0 01-18 18.62S941.12 412.51 843 410a818.98 818.98 0 00-41.27 0c-98.17 2.49-122.3-23.13-122.3-23.13-75.16-63.65-24.06-151.79-9.24-270.72 3.52-28.34 13.28-49.76 26.25-65.93C740.64-4.89 822.31 1 822.31 1s136.62-9.79 152.18 115.21c13.42 107.7 56.61 190.17 8.76 252.06z"
           fill="#FFAD01"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M983.25 368.27c-197.61-66.77-264.35-222.9-286.86-318C740.64-4.89 822.31 1 822.31 1s136.62-9.79 152.18 115.21c13.42 107.7 56.61 190.17 8.76 252.06z"
           opacity=".26"
           fill="#DDDAD7"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M974.24 539l-142.7 6.27c-6.76.3-13.53.3-20.31 0L669.32 539c-24.87 0-45-22.29-45-49.78v-7.33c0-27.49 20.15-49.77 45-49.77l145.32-5.26c4.5-.16 9-.16 13.5 0l146.1 5.26c24.87 0 45 22.28 45 49.77v7.33c.02 27.51-20.13 49.78-45 49.78z"
           fill="#BC7B08"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1019.26 481.91v7.33a55.23 55.23 0 01-1 10.7H625.34a55.23 55.23 0 01-1-10.7v-7.33c0-19.15 9.78-35.78 24.13-44.09a41.42 41.42 0 0020.89 5.67l141.91 6.26c6.77.3 13.54.3 20.31 0l142.71-6.26a41.48 41.48 0 0020.89-5.67c14.29 8.31 24.08 24.94 24.08 44.09z"
           fill="#FFAD01"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           fill="#8F95A1"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M801.04 539.43h43.16v127.44h-43.16z"
         ></path>
         <path
           d="M844.2 539.43v74.23c-5.1 7.65-12.82 16.28-22.93 19.41-9.6 3-16.09 1-20.23-1.76v-91.88h43.16z"
           fill="#6A7382"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           fill="#45465A"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M801.04 539.43h43.16v10.89h-43.16z"
         ></path>
         <path
           fill="#F2F2F2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".34"
           d="M829.54 539.43h4.89v127.44h-4.89zm7.43 0h3.05v127.44h-3.05zm-32.98 0h3.05v127.44h-3.05z"
         ></path>
         <path
           fill="#8F95A1"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M795.34 664.84h54.77v55.58h-54.77z"
         ></path>
         <path
           fill="#1F273A"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M791.78 720.42h61.38v65.66h-61.38z"
         ></path>
         <path
           fill="#F2F2F2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".34"
           d="M823.34 664.84h6.2v55.58h-6.2zm13.59 55.58h6.2v65.66h-6.2zm8.96 0h2.23v65.66h-2.23zM834.43 664.84h3.87v55.58h-3.87zm-35.34 0h3.87v55.58h-3.87zm-5.69 55.58h3.87v64.91h-3.87z"
         ></path>
         <path
           fill="#116178"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M822.31 782.11v.06h-.61zm-.68 27.44h.68v.09l-.68-.09z"
         ></path>
         <path
           d="M1010.39 875.54l-14 3.9c-6.34 1.76-12.75-2.6-14.88-10.12a15.45 15.45 0 00-5.29-8.14c-77.59-59.17-231.6-59.16-309.16 0a15.39 15.39 0 00-5.28 8.13c-2.13 7.52-8.54 11.87-14.88 10.11l-14-3.9c-10.28-2.85-13.52-18.93-5.41-27.18 12-12.24 35.63-25.28 63.35-38 35.94-16.38 81.42-23.47 108.67-26.44a204.85 204.85 0 0144.35 0c27.25 3 72.73 10.06 108.64 26.43 27.71 12.72 51.31 25.76 63.34 38 8.07 8.28 4.83 24.36-5.45 27.21z"
           fill="#1F273A"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1020.31 861.86a16.4 16.4 0 00-4.5-10.14c-12-12.25-35.64-25.29-63.34-38-35.93-16.38-81.4-23.47-108.66-26.44a204.13 204.13 0 00-44.34 0c-27.24 3-72.73 10.05-108.67 26.44-27.72 12.71-51.31 25.75-63.35 38a16.38 16.38 0 00-4.45 10.14 17.06 17.06 0 014.49-13.5c12-12.24 35.63-25.27 63.35-38 35.94-16.38 81.43-23.47 108.67-26.44a205.4 205.4 0 0144.34 0c27.26 3 72.73 10.07 108.66 26.44 27.7 12.73 51.3 25.76 63.34 38a17.09 17.09 0 014.46 13.5z"
           fill="#F2F2F2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".34"
         ></path>
         <path
           d="M1010.4 874.79l-14 3.9c-6.34 1.75-12.76-2.59-14.89-10.12a15.44 15.44 0 00-5.29-8.15c-77.58-59.16-231.6-59.14-309.15 0a15.57 15.57 0 00-5.28 8.13c-2.13 7.52-8.54 11.88-14.88 10.11l-14-3.9c-7.24-2-11-10.57-9.75-18.33.89 5.73 4.35 10.86 9.75 12.36l14 3.88c6.34 1.77 12.75-2.59 14.88-10.1a15.49 15.49 0 015.28-8.13c77.55-59.16 231.57-59.16 309.15 0a15.39 15.39 0 015.29 8.13c2.13 7.53 8.55 11.89 14.89 10.12l14-3.88c5.38-1.5 8.84-6.63 9.73-12.36 1.24 7.77-2.51 16.32-9.73 18.34z"
           fill="#031728"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M820.94 809.5h.69-.69z"
           fill="#116178"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M989.83 536a41.39 41.39 0 01-15.53 3l-142.76 6.3c-6.77.3-13.54.3-20.32 0l-142-6.26a41.48 41.48 0 01-15.54-3 41.11 41.11 0 0115.54-3l145.38-5.26c4.5-.16 9-.16 13.5 0l146.17 5.26a41 41 0 0115.56 2.96z"
           fill="#FFAD01"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <circle
           fill="#031728"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           cx="643.15"
           cy="866.1"
           r="24.07"
         ></circle>
         <circle
           fill="#252D40"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           cx="645.65"
           cy="868.6"
           r="21.57"
         ></circle>
         <circle
           fill="#303B4F"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           cx="645.65"
           cy="868.6"
           r="15.57"
@@ -174,30 +174,30 @@ export default function StudyDesk() {
         <path
           d="M654.36 859a12.25 12.25 0 00-8.18-3.15 12.62 12.62 0 00-12.45 12.79 13 13 0 003 8.36 13 13 0 01-4.25-9.65 12.62 12.62 0 0112.44-12.79 12.28 12.28 0 019.44 4.44z"
           fill="#F5F6F7"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M661.22 868.6a15.58 15.58 0 01-27.59 9.92 15.58 15.58 0 0022-21.85 15.54 15.54 0 015.59 11.93z"
           fill="#1A2535"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <circle
           fill="#031728"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           cx="1002.06"
           cy="866.1"
           r="24.07"
         ></circle>
         <circle
           fill="#252D40"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           cx="999.56"
           cy="868.6"
           r="21.57"
         ></circle>
         <circle
           fill="#303B4F"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           cx="999.56"
           cy="868.6"
           r="15.57"
@@ -205,43 +205,43 @@ export default function StudyDesk() {
         <path
           d="M990.84 859a12.28 12.28 0 018.19-3.15c6.97.1 12.54 5.82 12.45 12.79a13 13 0 01-3 8.36 13 13 0 004.25-9.65c.1-6.97-5.47-12.7-12.44-12.79a12.31 12.31 0 00-9.45 4.44z"
           fill="#F5F6F7"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M984 868.6a15.58 15.58 0 0027.59 9.92 15.58 15.58 0 01-22-21.85A15.56 15.56 0 00984 868.6z"
           fill="#1A2535"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".08"
           d="M685.08 412.6v.11l-.01-.11z"
         ></path>
         <path
           fill="url(#a)"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M1034.79 20.83l-60.24 165.22H671.81L612.55 20.83z"
         ></path>
         <path
           fill="#E8E8E8"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M966.22 312.49l-288 1.18-9.55-190.26h310.01z"
         ></path>
         <path
           fill="#FFF"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M687.11 313.64l-8.89.04-9.55-190.27h8.9z"
         ></path>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".08"
           d="M978.67 123.41l-12.45 189.07-288 1.2v-.12h-.02l-.06-1.36 260.08-13.28 11.56-175.51z"
         ></path>
         <circle
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".05"
           cx="823.68"
           cy="218.54"
@@ -249,22 +249,22 @@ export default function StudyDesk() {
         ></circle>
         <path
           fill="#824E37"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M1273.14 371.3l56.04 559.92h28.09l-59.51-559.92zm-264.55 0l-56.04 559.92h-28.08l59.5-559.92z"
         ></path>
         <path
           fill="#824E37"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M993.07 486.69h299.56v38.35H993.07zM632.21 371.3l56.04 559.92h28.09l-59.5-559.92zm-264.55 0l-56.04 559.92h-28.08l59.5-559.92z"
         ></path>
         <path
           fill="#824E37"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M352.15 486.69h299.56v38.35H352.15z"
         ></path>
         <rect
           fill="#D38552"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           x="303.16"
           y="303.32"
           width="1041.03"
@@ -273,122 +273,117 @@ export default function StudyDesk() {
         ></rect>
         <path
           fill="#030005"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M329.7 338h999.86v18.88H329.7z"
         ></path>
         <path
           d="M329.32 356.88h999.86v20.28a8.56 8.56 0 01-8.56 8.56H337.87a8.56 8.56 0 01-8.56-8.56v-20.28h.01z"
           fill="#D38552"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1344.18 311.68v18c0 4.61-3 8.88-10.51 8.35h-220.52c5.81 0 10.51-3.74 10.51-8.35v-18c0-4.62-4.7-8.35-10.51-8.35h220.52c7.43-.44 10.51 3.73 10.51 8.35zm-15 45.2v14.94c0 7.67-6.17 14.21-17.5 13.89h-220.5c9.65 0 17.48-6.22 17.48-13.89v-14.94h220.52z"
           opacity=".24"
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M668.67 123.41s26.65 50.94 61.27 65.08c34.62 14.14 131.14 40 151.87 54.92 37.41 26.93 47.52 62.8 47.52 62.8H677.84l-9.17-182.8z"
           opacity=".25"
           fill="#FFF"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M261.93 525.86s-103.29 64.64-79.84 173c0-.01 100.11-60.86 79.84-173z"
           fill="#1F589A"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M171 581.45c-48.1-120.57 40.2-199.88 40.2-199.88s50.7 107.27-40.2 199.88z"
           fill="#152E59"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M150.72 807.62c-81.31-156.3 50.73-252.24 50.73-252.24S286 694.89 150.72 807.62z"
           fill="#152E59"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M150.73 807.62c-.43-.83-.86-1.66-1.26-2.49C270.72 701.29 208.61 576 198.53 557.65c1.88-1.52 2.93-2.28 2.93-2.28S286 694.88 150.73 807.62z"
           fill="#1D5394"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M144 691.47V385.61s106.36 142.78 0 305.86z"
           fill="#3485F4"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M144 385.61v305.86c-106.32-163.08 0-305.86 0-305.86z"
           fill="#1D5394"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M140.41 753.59L53.86 553.2s110.07 63.46 86.55 200.39z"
           fill="#3485F4"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M53.86 553.2l86.55 200.39C24.58 676.84 53.86 553.2 53.86 553.2z"
           fill="#1D5394"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           fill="#4E86C5"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M87.69 780.1h146.48v36.62H87.69zm136.53 36.62l-.45 4.61-9.96 99.62H109.58l-12.45-99.62-.57-4.61z"
         ></path>
         <path
           fill="#F2F5F7"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".22"
           d="M194.74 780.1h11.27v36.62h-11.27zm6 36.62l-.23 4.61-5.27 99.62h-9.84l5.27-99.62.23-4.61z"
         ></path>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".22"
           d="M224.54 816.72l-.45 5.63H122.37l-.57-5.63z"
         ></path>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".28"
           d="M87.69 780.1h25.35v36.62H87.69zm47.1 140.85h-25.43L96.9 821.33l-.57-4.61h25.44l.56 4.61z"
         ></path>
         <path
           fill="#FE168D"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M1119.97 240.2h172.9v23.27h-172.9z"
         ></path>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".19"
           d="M1119.97 260.94h172.9v2.54h-172.9z"
         ></path>
         <path
           fill="#FFAD01"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M1110 263.48h172.9v23.27H1110z"
         ></path>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".19"
           d="M1110 283.43h172.9v3.32H1110z"
         ></path>
         <path
           fill="#281F6F"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M1124.96 286.75h172.9v16.62h-172.9z"
         ></path>
-        <text
-          fill="#FFF"
-          opacity=".75"
-          font-family="Helvetica"
-          font-size="12.16"
-        >
+        <text fill="#FFF" opacity=".75" fontFamily="Helvetica" fontSize="12.16">
           <tspan x="1137.83" y="278.68">
             RU
           </tspan>
@@ -397,14 +392,14 @@ export default function StudyDesk() {
           transform="translate(1154 244)"
           opacity=".96"
           fill="#FFF"
-          font-family="Helvetica"
-          font-size="12.16"
+          fontFamily="Helvetica"
+          fontSize="12.16"
         >
           <tspan x=".64" y="11.41">
             C++
           </tspan>
         </text>
-        <g opacity=".75" fill="#FFF" font-family="Helvetica" font-size="10.22">
+        <g opacity=".75" fill="#FFF" fontFamily="Helvetica" fontSize="10.22">
           <text transform="translate(1154.82 287.1)">
             <tspan x="0" y="10">
               p
@@ -423,99 +418,99 @@ export default function StudyDesk() {
         </g>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".19"
           d="M1134.93 290.08h1.66v13.3h-1.66zm146.3 0h1.66v13.3h-1.66zm-9.97-23.28h3.32v19.95h-3.32zm11.63-23.27h3.32v19.95h-3.32zm-6.65 0h3.32v19.95h-3.32zm-144.63 0h3.32v19.95h-3.32zm-6.65 0h3.32v19.95h-3.32zm142.97 23.27h1.66v19.95h-1.66zm-146.3 0h3.32v19.95h-3.32zm-3.32 0h1.66v19.95h-1.66z"
         ></path>
         <path
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           opacity=".19"
           d="M1124.96 300h172.9v3.32h-172.9z"
         ></path>
         <path
           d="M1158.83 178.5c0 12.57 4.51 20.68 10.08 20.68v-45.5s-10.08 12.25-10.08 24.82z"
           fill="#C2FFC2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1168.91 153.68v45.5c5.56 0 10.07-8.11 10.07-20.68s-10.07-24.82-10.07-24.82z"
           fill="#80A880"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1178.2 178c-8.88 8.89-11.43 17.82-7.5 21.75l32.18-32.18s-15.79 1.56-24.68 10.43z"
           fill="#C2FFC2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1202.88 167.58l-32.18 32.18c3.93 3.93 12.86 1.38 21.75-7.51s10.43-24.67 10.43-24.67z"
           fill="#80A880"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1159.61 178c8.88 8.89 11.44 17.82 7.5 21.75l-32.18-32.18s15.79 1.56 24.68 10.43z"
           fill="#C2FFC2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1134.93 167.58l32.18 32.18c-3.93 3.93-12.86 1.38-21.75-7.51s-10.43-24.67-10.43-24.67z"
           fill="#80A880"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1168.91 196.58v39.24h18.32A2.77 2.77 0 001190 233v-36.42h-21.09z"
           fill="#8FB4C9"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M1168.91 196.58h-21.1V233a2.77 2.77 0 002.77 2.78h18.33v-39.2z"
           fill="#A4CDE7"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           fill="#528AA8"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M1168.91 235.82h16.38v4.39h-16.38z"
         ></path>
         <path
           fill="#79A3BA"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M1152.52 235.82h16.38v4.39h-16.38z"
         ></path>
         <path
           d="M550.46 272v11.4c0 4.37-2.93 10.88-10.89 10.88h-9.09l.66-4.87h8.43c5.64 0 6-5 6-6.05V272c0-1-.37-6.05-6-6.05h-8.43v-4.87h8.43c7.96.01 10.87 6.52 10.89 10.92z"
           fill="#152E59"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M550.46 272v11.4c0 4.37-2.93 10.88-10.89 10.88h-.65c8 0 10.87-6.51 10.89-10.88V272c0-4.37-2.93-10.88-10.89-10.88h.65c7.96-.03 10.87 6.48 10.89 10.88z"
           opacity=".21"
           fill="#F2F2F2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M547.49 272v11.35a6.32 6.32 0 01-6.55 6.05h-1.37c5.64 0 6-5 6-6.05V272c0-1-.37-6.05-6-6.05h1.37a6.32 6.32 0 016.55 6.05z"
           opacity=".37"
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           fill="#152E59"
-          fill-rule="nonzero"
+          fillRule="nonzero"
           d="M530.4 303.32h-36.55l-3.03-52.57h43.04z"
         ></path>
         <path
           d="M500.64 303.32h-2.6l-3.02-52.57h2.6zm2.6 0h-.98l-3.02-52.57h.98z"
           opacity=".21"
           fill="#F2F2F2"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
         <path
           d="M533.87 250.75l-3.48 52.57h-3.9l3.48-52.57z"
           opacity=".31"
           fill="#000"
-          fill-rule="nonzero"
+          fillRule="nonzero"
         ></path>
       </g>
     </svg>
