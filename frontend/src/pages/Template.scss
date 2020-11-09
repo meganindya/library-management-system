@@ -19,9 +19,16 @@
     width: 100%;
   }
 
+  #navbar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 4rem;
+  }
+
   #template-content {
+    position: relative;
     margin-bottom: 16rem;
-    padding-bottom: 4rem;
   }
 
   #footer-wrap {
