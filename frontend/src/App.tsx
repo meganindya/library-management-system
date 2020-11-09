@@ -13,8 +13,8 @@ interface IAppState {
 
 export default function App() {
   const [userState, setUserState] = useState<IAppState>({
-    userID: null || '11118001',
-    token: null || 'hjsfbghdsfndsmnf'
+    userID: null, // || '11118001',
+    token: null // || 'hjsfbghdsfndsmnf'
   });
 
   const login = (

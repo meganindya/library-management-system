@@ -160,7 +160,7 @@ export default function BrowseListContent(props: {
             }
           }`,
       variables: {
-        userID: authContext.userID || '11118001',
+        userID: authContext.userID, //|| '11118001',
         bookID: bookID
       }
     };

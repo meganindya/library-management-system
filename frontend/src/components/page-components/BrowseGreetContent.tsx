@@ -35,23 +35,26 @@ export default function BrowseGreetContent(props: {
       </div>
       <div id="browse-category">
         <h2>Or, select by category</h2>
-        <div id="browse-category-blocks">
-          {props.categories.map((category, index) => (
-            <div
-              className="browse-category-block"
-              key={`category-block-${index}`}
-              onClick={() =>
-                props.setSearchQuery({
-                  queryString: '',
-                  queryCategory: category
-                })
-              }
-            >
-              <div>{<CategorySprite />}</div>
-              <h3>{category}</h3>
-            </div>
-          ))}
-        </div>
+        {props.categories.length === 0 && <div className="rolling"></div>}
+        {props.categories.length !== 0 && (
+          <div id="browse-category-blocks">
+            {props.categories.map((category, index) => (
+              <div
+                className="browse-category-block"
+                key={`category-block-${index}`}
+                onClick={() =>
+                  props.setSearchQuery({
+                    queryString: '',
+                    queryCategory: category
+                  })
+                }
+              >
+                <div>{<CategorySprite />}</div>
+                <h3>{category}</h3>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
