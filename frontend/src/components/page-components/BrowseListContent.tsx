@@ -6,7 +6,7 @@ import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 
 import SearchBar from '../SearchBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faClock } from '@fortawesome/free-solid-svg-icons';
 
 import AuthContext from '../../context/auth-context';
 
@@ -42,7 +42,8 @@ export default function BrowseListContent(props: {
     queryCategory: string;
   }>(props.searchQuery);
   const [loading, setLoading] = useState(true);
-  const [userBookIDs, setUserBookIDs] = useState<string[]>([]);
+  const [prevBorrowedIDs, setPrevBorrowedIDs] = useState<string[]>([]);
+  const [borrowedIDs, setBorrowedIDs] = useState<string[]>([]);
   const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
 
   const browserHistory = useHistory();
@@ -62,7 +63,13 @@ export default function BrowseListContent(props: {
 
       if (!response) return;
 
-      setUserBookIDs(
+      setPrevBorrowedIDs(
+        response.data.transactions
+          .filter((entry: { bookID: string; returnDate: string | null }) => entry.returnDate)
+          .map((entry: Partial<{ bookID: string }>) => entry.bookID)
+      );
+
+      setBorrowedIDs(
         response.data.transactions
           .filter((entry: { bookID: string; returnDate: string | null }) => !entry.returnDate)
           .map((entry: Partial<{ bookID: string }>) => entry.bookID)
@@ -138,7 +145,7 @@ export default function BrowseListContent(props: {
                 onClick={() => props.resetGlobalSearchQuery()}
               />
             </div>
-            {userBookIDs.length == borrowLimit && (
+            {borrowedIDs.length >= borrowLimit && (
               <div id="borrow-limit-disclaimer">
                 <span>You have reached borrow limit</span>
               </div>
@@ -190,6 +197,7 @@ export default function BrowseListContent(props: {
               <div className="search-item-graphic"></div>
               <div className="search-item-content">
                 <div className="search-item-content-text">
+                  <h4 className="search-item-id">Book ID: {searchItem.bookID}</h4>
                   <h1 className="search-item-title">{searchItem.title}</h1>
                   <h4 className="search-item-category">{searchItem.category}</h4>
                   <ul className="search-item-authors">
@@ -211,11 +219,16 @@ export default function BrowseListContent(props: {
                   ) : (
                     <h4 style={{ color: 'coral' }}>Not in shelf</h4>
                   )}
-                  {userBookIDs.length >= 5 && (
+                  {borrowedIDs.length >= borrowLimit && (
                     <button style={{ background: 'none', color: 'white' }}>.</button>
                   )}
-                  {userBookIDs.length < 5 &&
-                    userBookIDs.indexOf(searchItem.bookID) === -1 &&
+                  {prevBorrowedIDs.indexOf(searchItem.bookID) !== -1 && (
+                    <div className="borrowed-prev">
+                      <FontAwesomeIcon icon={faClock} className="input-field-icon" />
+                    </div>
+                  )}
+                  {borrowedIDs.length < borrowLimit &&
+                    borrowedIDs.indexOf(searchItem.bookID) === -1 &&
                     (searchItem.quantity > 0 ? (
                       <button
                         className="search-item-button-bor"
@@ -230,7 +243,7 @@ export default function BrowseListContent(props: {
                         <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
                       </button>
                     ))}
-                  {userBookIDs.indexOf(searchItem.bookID) !== -1 && (
+                  {borrowedIDs.indexOf(searchItem.bookID) !== -1 && (
                     <h4 className="search-item-borrowed">borrowed</h4>
                   )}
                 </div>
