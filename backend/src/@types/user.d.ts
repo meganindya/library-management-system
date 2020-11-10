@@ -11,6 +11,7 @@ export interface IUser {
 
 export interface IUserAuth {
     userID: string;
+    type: string;
     token: string;
     tokenExpiration: int;
 }

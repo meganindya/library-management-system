@@ -1,7 +1,11 @@
 @import '../../css-utils/colors';
 
 #dashboard-content {
-  padding-top: 5rem;
+  margin-top: 5rem;
+  margin-bottom: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
 
   > h2 {
@@ -16,185 +20,91 @@
     }
   }
 
+  table {
+    height: 100px;
+  }
+
   #pending-table {
-    width: 100%;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 1rem 0 $shadow;
-
-    * {
-      text-align: center;
-    }
-
     table {
-      border-spacing: 0;
-      font-size: 0.9rem;
-      margin: 0;
-
-      thead {
-        background: $darkback;
-        color: white;
-
-        tr th:first-of-type {
-          border-radius: 0.5rem 0 0 0;
+      tr {
+        th:nth-of-type(1),
+        td:nth-of-type(1) {
+          width: 15%;
         }
 
-        tr th:last-of-type {
-          border-radius: 0 0.5rem 0 0;
-        }
-      }
-
-      thead {
-        tr th {
-          padding: 0.75rem;
-        }
-      }
-
-      tbody {
-        tr td {
-          padding: 0.75rem 1rem;
+        th:nth-of-type(2),
+        td:nth-of-type(2) {
+          width: 15%;
         }
 
-        tr:first-of-type td {
-          padding-top: 1rem;
+        th:nth-of-type(3),
+        td:nth-of-type(3) {
+          width: 27.5%;
         }
 
-        tr:last-of-type td {
-          padding-bottom: 1.25rem;
+        th:nth-of-type(4),
+        td:nth-of-type(4) {
+          width: 27.5%;
         }
 
-        tr:nth-of-type(even) {
-          background: $silver;
+        th:nth-of-type(5),
+        td:nth-of-type(5) {
+          width: 12.5%;
         }
-      }
 
-      tr th:nth-of-type(1),
-      tr td:nth-of-type(1) {
-        width: 12.5%;
-      }
+        button {
+          padding: 0.25rem;
+          font-weight: 600;
+          color: white;
+          outline: none;
+          border: 1px solid $darkgray;
+          border-radius: 0.25rem;
+          cursor: pointer;
+          transition: all 0.5s ease;
 
-      tr th:nth-of-type(2),
-      tr td:nth-of-type(2) {
-        width: 12.5%;
-      }
+          &:hover {
+            box-shadow: 0 0 0.5rem 0 $accent;
+          }
 
-      tr th:nth-of-type(3),
-      tr td:nth-of-type(3) {
-        width: 30%;
-      }
+          &.return-btn-ok {
+            background: $accent;
+          }
 
-      tr th:nth-of-type(4),
-      tr td:nth-of-type(4) {
-        width: 30%;
-      }
-
-      tr th:nth-of-type(5),
-      tr td:nth-of-type(5) {
-        width: 12.5%;
-      }
-
-      button {
-        padding: 0.25rem;
-        font-weight: 600;
-        color: white;
-        outline: none;
-        border: 1px solid $darkgray;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        transition: all 0.5s ease;
-
-        &:hover {
-          box-shadow: 0 0 0.5rem 0 $accent;
+          &.return-btn-due {
+            background: coral;
+          }
         }
-      }
-
-      .return-btn-ok {
-        background: $accent;
-      }
-
-      .return-btn-due {
-        background: coral;
       }
     }
   }
 
   #outstanding-table {
-    width: 100%;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 1rem 0 $shadow;
-
-    * {
-      text-align: center;
-    }
-
     table {
-      border-spacing: 0;
-      font-size: 0.9rem;
-      margin: 0;
-
-      &:last-of-type {
-        margin-bottom: 6rem;
-      }
-
-      thead {
-        background: $darkback;
-        color: white;
-
-        tr th:first-of-type {
-          border-radius: 0.5rem 0 0 0;
+      tr {
+        th:nth-of-type(1),
+        td:nth-of-type(1) {
+          width: 15%;
         }
 
-        tr th:last-of-type {
-          border-radius: 0 0.5rem 0 0;
-        }
-      }
-
-      thead {
-        tr th {
-          padding: 0.75rem;
-        }
-      }
-
-      tbody {
-        tr td {
-          padding: 0.75rem 1rem;
+        th:nth-of-type(2),
+        td:nth-of-type(2) {
+          width: 15%;
         }
 
-        tr:first-of-type td {
-          padding-top: 1rem;
+        th:nth-of-type(3),
+        td:nth-of-type(3) {
+          width: 27.5%;
         }
 
-        tr:last-of-type td {
-          padding-bottom: 1.25rem;
+        th:nth-of-type(4),
+        td:nth-of-type(4) {
+          width: 27.5%;
         }
 
-        tr:nth-of-type(even) {
-          background: $silver;
+        th:nth-of-type(5),
+        td:nth-of-type(5) {
+          width: 12.5%;
         }
-      }
-
-      tr th:nth-of-type(1),
-      tr td:nth-of-type(1) {
-        width: 12.5%;
-      }
-
-      tr th:nth-of-type(2),
-      tr td:nth-of-type(2) {
-        width: 12.5%;
-      }
-
-      tr th:nth-of-type(3),
-      tr td:nth-of-type(3) {
-        width: 30%;
-      }
-
-      tr th:nth-of-type(4),
-      tr td:nth-of-type(4) {
-        width: 30%;
-      }
-
-      tr th:nth-of-type(5),
-      tr td:nth-of-type(5) {
-        width: 12.5%;
       }
     }
   }

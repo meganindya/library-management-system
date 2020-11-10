@@ -8,6 +8,13 @@ import './HistoryContent.scss';
 
 export default function HistoryContent() {
   const authContext = useContext(AuthContext);
+  const [allowedDays, setAllowedDays] = useState(-1);
+  useEffect(() => {
+    if (authContext.type) {
+      setAllowedDays(authContext.type === 'Student' ? 30 : 180);
+    }
+  }, [authContext.type]);
+
   const [dataFetched, setDataFetched] = useState(false);
   const [userHistory, setUserHistory] = useState([]);
 
@@ -39,12 +46,31 @@ export default function HistoryContent() {
 
   const parseDate = (isodate: string) => new Date(isodate).toUTCString();
 
+  const getTransactionStatusStyle = (
+    borrowDateISO: string,
+    returnDateISO: string | null
+  ): string => {
+    const borrowDateMills = new Date(borrowDateISO).valueOf();
+    let dueDate = new Date(borrowDateISO);
+    dueDate.setDate(dueDate.getDate() + allowedDays);
+    const dueDateMills = dueDate.valueOf();
+    const returnDateMills = returnDateISO ? new Date(returnDateISO).valueOf() : null;
+
+    if (returnDateMills) {
+      return (returnDateMills - borrowDateMills) / (1000 * 60 * 60 * 24) > allowedDays
+        ? 'status-returned-overdue'
+        : 'status-returned';
+    } else {
+      return new Date().valueOf() - dueDateMills > 0 ? 'status-pending-overdue' : 'status-pending';
+    }
+  };
+
   return (
     <div id="history-content" className="container">
       <h2>History of transactions</h2>
       {!dataFetched && <div className="rolling"></div>}
       {dataFetched && (
-        <div id="history-table">
+        <div id="history-table" className="transaction-table">
           <table>
             <thead>
               <tr>
@@ -56,14 +82,19 @@ export default function HistoryContent() {
               </tr>
             </thead>
             <tbody>
-              {userHistory.map((historyItem: any, index) => (
+              {userHistory.map((transaction: any, index) => (
                 <tr key={`history-item-${index}`}>
-                  <td>{historyItem.transID}</td>
-                  <td>{historyItem.bookID}</td>
-                  <td>{parseDate(historyItem.borrowDate)}</td>
-                  <td>{historyItem.returnDate ? parseDate(historyItem.returnDate) : '-'}</td>
-                  <td style={historyItem.returnDate ? { color: 'green' } : { color: 'red' }}>
-                    {historyItem.returnDate ? 'returned' : 'pending'}
+                  <td>{transaction.transID}</td>
+                  <td>{transaction.bookID}</td>
+                  <td>{parseDate(transaction.borrowDate)}</td>
+                  <td>{transaction.returnDate ? parseDate(transaction.returnDate) : '-'}</td>
+                  <td
+                    className={getTransactionStatusStyle(
+                      transaction.borrowDate,
+                      transaction.returnDate
+                    )}
+                  >
+                    {transaction.returnDate ? 'returned' : 'pending'}
                   </td>
                 </tr>
               ))}

@@ -9,42 +9,19 @@ import './DashboardContent.scss';
 
 export default function DashboardContent() {
   const authContext = useContext(AuthContext);
+  const [allowedDays, setAllowedDays] = useState(-1);
+  useEffect(() => {
+    if (authContext.type) {
+      setAllowedDays(authContext.type === 'Student' ? 30 : 180);
+    }
+  }, [authContext.type]);
+
   const [dataFetched, setDataFetched] = useState(false);
+  const [transactions, setTransactions] = useState([]);
   const [userPending, setUserPending] = useState([]);
   const [userOutstanding, setUserOutstanding] = useState([]);
 
   const browserHistory = useHistory();
-
-  const parseDate = (isodate: string, addToDate?: number) => {
-    let date = new Date(isodate);
-    if (addToDate) date.setDate(date.getDate() + addToDate);
-    return date.toUTCString();
-  };
-
-  const getDiff = (borrowDate: string, returnDate: string): number => {
-    return Math.round(
-      (new Date(returnDate).valueOf() - new Date(borrowDate).valueOf()) / (1000 * 60 * 60 * 24)
-    );
-  };
-
-  const getRemainingDays = (borrowDate: string): number => {
-    return Math.round(
-      (new Date(parseDate(borrowDate, 30)).valueOf() - new Date().valueOf()) / (1000 * 60 * 60 * 24)
-    );
-  };
-
-  const getRemainingString = (borrowDate: string): string => {
-    const remainingDays = getRemainingDays(borrowDate);
-    return remainingDays < 0
-      ? `${Math.abs(remainingDays)} days overdue`
-      : `${remainingDays} days remaining`;
-  };
-
-  const getOutstanding = (borrowDate: string, returnDate: string) => {
-    return !returnDate
-      ? Math.abs(getRemainingDays(borrowDate))
-      : getDiff(borrowDate, returnDate) - 30;
-  };
 
   useEffect(() => {
     (async () => {
@@ -65,27 +42,63 @@ export default function DashboardContent() {
 
       setDataFetched(true);
 
-      setUserPending(
-        response.data.transactions
-          .filter((transaction: any) => !transaction.returnDate)
-          .sort(
-            (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
-          )
-      );
-
-      setUserOutstanding(
-        response.data.transactions
-          .filter(
-            (transaction: any) =>
-              (!transaction.returnDate && getRemainingDays(transaction.borrowDate)) ||
-              getDiff(transaction.borrowDate, transaction.returnDate) > 30
-          )
-          .sort(
-            (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
-          )
-      );
+      setTransactions(response.data.transactions);
     })();
   }, []);
+
+  const parseDate = (isodate: string, addToDate?: number) => {
+    let date = new Date(isodate);
+    if (addToDate) date.setDate(date.getDate() + addToDate);
+    return date.toUTCString();
+  };
+
+  const getDiff = (borrowDate: string, returnDate: string): number => {
+    return Math.round(
+      (new Date(returnDate).valueOf() - new Date(borrowDate).valueOf()) / (1000 * 60 * 60 * 24)
+    );
+  };
+
+  const getRemainingDays = (borrowDate: string): number => {
+    return Math.round(
+      (new Date(parseDate(borrowDate, allowedDays)).valueOf() - new Date().valueOf()) /
+        (1000 * 60 * 60 * 24)
+    );
+  };
+
+  const getRemainingString = (borrowDate: string): string => {
+    const remainingDays = getRemainingDays(borrowDate);
+    return remainingDays < 0
+      ? `${Math.abs(remainingDays)} days overdue`
+      : `${remainingDays} days remaining`;
+  };
+
+  const getOutstanding = (borrowDate: string, returnDate: string) => {
+    return !returnDate
+      ? Math.abs(getRemainingDays(borrowDate))
+      : getDiff(borrowDate, returnDate) - allowedDays;
+  };
+
+  useEffect(() => {
+    setUserPending(
+      transactions
+        .filter((transaction: any) => !transaction.returnDate)
+        .sort(
+          (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
+        )
+    );
+
+    setUserOutstanding(
+      transactions
+        .filter((transaction: any) =>
+          transaction.returnDate
+            ? getDiff(transaction.borrowDate, transaction.returnDate) > allowedDays
+            : getRemainingDays(transaction.borrowDate) < 0
+        )
+        .sort(
+          (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
+        )
+    );
+  }, [transactions]);
 
   const returnHandler = async (transID: string) => {
     const response = await fetchGraphQLResponse(
@@ -108,7 +121,7 @@ export default function DashboardContent() {
       <h2>Pending returns</h2>
       {!dataFetched && <div className="rolling"></div>}
       {dataFetched && (
-        <div id="pending-table">
+        <div id="pending-table" className="transaction-table">
           <table>
             <thead>
               <tr>
@@ -125,7 +138,7 @@ export default function DashboardContent() {
                   <td>{transaction.transID}</td>
                   <td>{transaction.bookID}</td>
                   <td>{parseDate(transaction.borrowDate)}</td>
-                  <td>{parseDate(transaction.borrowDate, 30)}</td>
+                  <td>{parseDate(transaction.borrowDate, allowedDays)}</td>
                   <td>
                     <button
                       className={
@@ -147,7 +160,7 @@ export default function DashboardContent() {
       <h2>Outstanding transactions</h2>
       {!dataFetched && <div className="rolling"></div>}
       {dataFetched && (
-        <div id="outstanding-table">
+        <div id="outstanding-table" className="transaction-table">
           <table>
             <thead>
               <tr>

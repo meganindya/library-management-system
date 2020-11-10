@@ -38,6 +38,75 @@
       background: url('/images/loading.gif') no-repeat;
       background-size: contain;
     }
+
+    .transaction-table {
+      width: 100%;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 1rem 0 $shadow;
+
+      * {
+        text-align: center;
+      }
+
+      table {
+        border-spacing: 0;
+        font-size: 0.9rem;
+        margin: 0;
+
+        thead {
+          background: $darkback;
+          color: white;
+
+          tr th {
+            padding: 0.75rem;
+
+            &:first-of-type {
+              border-radius: 0.5rem 0 0 0;
+            }
+
+            &:last-of-type {
+              border-radius: 0 0.5rem 0 0;
+            }
+          }
+        }
+
+        tbody {
+          tr {
+            td {
+              padding: 0.75rem 1rem;
+
+              &.status-returned {
+                color: green;
+              }
+
+              &.status-returned-overdue {
+                color: darkred;
+              }
+
+              &.status-pending {
+                color: $accent;
+              }
+
+              &.status-pending-overdue {
+                color: red;
+              }
+            }
+
+            &:first-of-type td {
+              padding-top: 1rem;
+            }
+
+            &:last-of-type td {
+              padding-bottom: 1.25rem;
+            }
+
+            &:nth-of-type(even) {
+              background: $silver;
+            }
+          }
+        }
+      }
+    }
   }
 
   #footer-wrap {

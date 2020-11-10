@@ -11,6 +11,7 @@ export const GQLUserAuth = new GraphQLObjectType({
     description: 'This represents a User',
     fields: {
         userID: { type: GraphQLNonNull(GraphQLString) },
+        type: { type: GraphQLNonNull(GraphQLString) },
         token: { type: GraphQLNonNull(GraphQLString) },
         tokenExpiration: { type: GraphQLNonNull(GraphQLInt) }
     }

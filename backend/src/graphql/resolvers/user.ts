@@ -4,10 +4,7 @@ import jwt from 'jsonwebtoken';
 import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
 
-export async function login(
-    userID: string,
-    password: string
-): Promise<IUserAuth> {
+export async function login(userID: string, password: string): Promise<IUserAuth> {
     const user = await User.findOne({ userID });
 
     if (!user) {
@@ -29,7 +26,7 @@ export async function login(
             expiresIn: '1h'
         }
     );
-    return { userID: user.userID, token: token, tokenExpiration: 1 };
+    return { userID: user.userID, type: user.type, token: token, tokenExpiration: 1 };
 }
 
 export async function user(userID: string): Promise<IUser | null> {

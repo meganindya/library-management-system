@@ -9,24 +9,29 @@ import AuthContext, { IAuthContext } from './context/auth-context';
 export default function App() {
   const [userState, setUserState] = useState<{
     userID: string | null;
+    type: string | null;
     token: string | null;
     tokenExpiration: number;
   }>({
-    // userID: null,
-    // token: null,
-    // tokenExpiration: 0
-    userID: '11118001',
-    token: 'abcdefghijklmnopqrstuvwxyz',
-    tokenExpiration: 1
+    userID: null,
+    token: null,
+    type: null,
+    tokenExpiration: 0
+    // userID: '11118001',
+    // token: 'abcdefghijklmnopqrstuvwxyz',
+    // type: 'Student',
+    // tokenExpiration: 1
   });
 
   const authContextDefaultVals: IAuthContext = {
     userID: userState.userID,
+    type: userState.type,
     token: userState.token,
     tokenExpiration: userState.tokenExpiration,
-    login: (userID: string, token: string, tokenExpiration: number): void => {
+    login: (userID: string, type: string, token: string, tokenExpiration: number): void => {
       setUserState({
         userID,
+        type,
         token,
         tokenExpiration
       });
@@ -34,6 +39,7 @@ export default function App() {
     logout: () => {
       setUserState({
         userID: null,
+        type: null,
         token: null,
         tokenExpiration: 0
       });

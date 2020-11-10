@@ -20,7 +20,7 @@ export default function AuthModal() {
   const userEl = React.createRef<HTMLInputElement>();
   const passEl = React.createRef<HTMLInputElement>();
 
-  const submitHandler = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const user = userEl.current?.value;
     const pass = passEl.current?.value;
@@ -31,6 +31,7 @@ export default function AuthModal() {
       `query login($userID: String!, $password: String!) {
         login(userID: $userID, password: $password) {
           userID
+          type
           token
           tokenExpiration
         }
@@ -57,6 +58,7 @@ export default function AuthModal() {
       });
       authContext.login(
         response.data.login.userID,
+        response.data.login.type,
         response.data.login.token,
         response.data.login.tokenExpiration
       );

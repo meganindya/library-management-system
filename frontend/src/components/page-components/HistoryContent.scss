@@ -1,11 +1,12 @@
 @import '../../css-utils/colors';
 
 #history-content {
-  padding-top: 5rem;
-  font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+  margin-top: 5rem;
+  margin-bottom: 6rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
 
   > h2 {
     font-size: 1.25rem;
@@ -16,79 +17,32 @@
   }
 
   #history-table {
-    width: 100%;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 1rem 0 $shadow;
-
-    * {
-      text-align: center;
-    }
-
     table {
-      border-spacing: 0;
-      font-size: 0.9rem;
-      margin: 0;
-
-      thead {
-        background: $darkback;
-        color: white;
-
-        tr th:first-of-type {
-          border-radius: 0.5rem 0 0 0;
+      tr {
+        th:nth-of-type(1),
+        td:nth-of-type(1) {
+          width: 15%;
         }
 
-        tr th:last-of-type {
-          border-radius: 0 0.5rem 0 0;
-        }
-      }
-
-      thead {
-        tr th {
-          padding: 0.75rem;
-        }
-      }
-
-      tbody {
-        tr td {
-          padding: 0.75rem 1rem;
+        th:nth-of-type(2),
+        td:nth-of-type(2) {
+          width: 15%;
         }
 
-        tr:first-of-type td {
-          padding-top: 1rem;
+        th:nth-of-type(3),
+        td:nth-of-type(3) {
+          width: 27.5%;
         }
 
-        tr:last-of-type td {
-          padding-bottom: 1.25rem;
+        th:nth-of-type(4),
+        td:nth-of-type(4) {
+          width: 27.5%;
         }
 
-        tr:nth-of-type(even) {
-          background: $silver;
+        th:nth-of-type(5),
+        td:nth-of-type(5) {
+          width: 12.5%;
         }
-      }
-
-      tr th:nth-of-type(1),
-      tr td:nth-of-type(1) {
-        width: 15%;
-      }
-
-      tr th:nth-of-type(2),
-      tr td:nth-of-type(2) {
-        width: 15%;
-      }
-
-      tr th:nth-of-type(3),
-      tr td:nth-of-type(3) {
-        width: 27.5%;
-      }
-
-      tr th:nth-of-type(4),
-      tr td:nth-of-type(4) {
-        width: 27.5%;
-      }
-
-      tr th:nth-of-type(5),
-      tr td:nth-of-type(5) {
-        width: 12.5%;
       }
     }
   }
