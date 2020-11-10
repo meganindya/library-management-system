@@ -69,7 +69,7 @@ export default function HistoryContent() {
     <div id="history-content" className="container">
       <h2>History of transactions</h2>
       {!dataFetched && <div className="rolling"></div>}
-      {dataFetched && (
+      {dataFetched && userHistory.length > 0 && (
         <div id="history-table" className="transaction-table">
           <table>
             <thead>
@@ -101,6 +101,9 @@ export default function HistoryContent() {
             </tbody>
           </table>
         </div>
+      )}
+      {dataFetched && userHistory.length === 0 && (
+        <div className="no-transaction">No Transaction History</div>
       )}
     </div>
   );

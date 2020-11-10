@@ -120,7 +120,7 @@ export default function DashboardContent() {
     <div id="dashboard-content" className="container">
       <h2>Pending returns</h2>
       {!dataFetched && <div className="rolling"></div>}
-      {dataFetched && (
+      {dataFetched && userPending.length > 0 && (
         <div id="pending-table" className="transaction-table">
           <table>
             <thead>
@@ -157,9 +157,12 @@ export default function DashboardContent() {
           </table>
         </div>
       )}
+      {dataFetched && userPending.length === 0 && (
+        <div className="no-transaction">No Pending Transactions</div>
+      )}
       <h2>Outstanding transactions</h2>
       {!dataFetched && <div className="rolling"></div>}
-      {dataFetched && (
+      {dataFetched && userOutstanding.length > 0 && (
         <div id="outstanding-table" className="transaction-table">
           <table>
             <thead>
@@ -185,6 +188,9 @@ export default function DashboardContent() {
           </table>
           {/* <div id="pay-outstanding">{totalOutstanding}</div> */}
         </div>
+      )}
+      {dataFetched && userOutstanding.length === 0 && (
+        <div className="no-transaction">No Outstanding Transactions</div>
       )}
     </div>
   );

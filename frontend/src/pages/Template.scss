@@ -49,6 +49,7 @@
       }
 
       table {
+        width: inherit;
         border-spacing: 0;
         font-size: 0.9rem;
         margin: 0;
@@ -106,6 +107,18 @@
           }
         }
       }
+    }
+
+    .no-transaction {
+      width: 100%;
+      margin-top: 1rem;
+      padding: 1.5rem;
+      box-sizing: border-box;
+      border: 1px solid $lightgray;
+      border-radius: 0.5rem;
+      font-family: 'Nunito Sans', sans-serif;
+      text-align: center;
+      color: $darkgray;
     }
   }
 
