@@ -65,6 +65,19 @@ export default function HistoryContent() {
     }
   };
 
+  const getRemainingDays = (borrowDate: string): number | null => {
+    const parseDate = (isodate: string, addToDate?: number) => {
+      let date = new Date(isodate);
+      if (addToDate) date.setDate(date.getDate() + addToDate);
+      return date.toUTCString();
+    };
+    const days = Math.round(
+      (new Date(parseDate(borrowDate, allowedDays)).valueOf() - new Date().valueOf()) /
+        (1000 * 60 * 60 * 24)
+    );
+    return days <= 5 && days >= 0 ? days : null;
+  };
+
   return (
     <div id="history-content" className="container">
       <h2>History of transactions</h2>
@@ -94,6 +107,11 @@ export default function HistoryContent() {
                       transaction.returnDate
                     )}
                   >
+                    {getRemainingDays(transaction.borrowDate) && (
+                      <div className="history-days-warning">
+                        {getRemainingDays(transaction.borrowDate)}
+                      </div>
+                    )}
                     {transaction.returnDate ? 'returned' : 'pending'}
                   </td>
                 </tr>

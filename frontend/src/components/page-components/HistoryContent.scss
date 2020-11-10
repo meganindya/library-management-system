@@ -41,7 +41,41 @@
 
         th:nth-of-type(5),
         td:nth-of-type(5) {
+          position: relative;
           width: 12.5%;
+
+          .history-days-warning {
+            position: absolute;
+            top: 0.25rem;
+            left: 0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            font-family: 'PT Sans', sans-serif;
+            font-size: 0.75rem;
+            line-height: 1.25rem;
+            color: white;
+            background: darkred;
+
+            &:hover {
+              border-radius: 0 0.625rem 0.625rem 0;
+
+              &::after {
+                position: absolute;
+                top: 0;
+                right: 1.25rem;
+                content: 'days to deadline';
+                display: table;
+                width: 5.5rem;
+                height: 1rem;
+                padding-left: 0.5rem;
+                border-radius: 0.625rem 0 0 0.625rem;
+                line-height: 1.25rem;
+                color: white;
+                background: darkred;
+              }
+            }
+          }
         }
       }
     }
