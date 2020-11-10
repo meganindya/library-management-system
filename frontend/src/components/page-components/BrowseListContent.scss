@@ -66,6 +66,71 @@
   }
 }
 
+.search-item-id {
+  margin: 0;
+  font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-align: right;
+  color: $darkgray;
+}
+
+.search-item-title {
+  margin: 0.5rem 0;
+  font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+  font-size: 1.5rem;
+}
+
+.search-item-category {
+  margin-bottom: 0.75rem;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.search-item-authors {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+
+  li {
+    position: relative;
+    height: 1.8rem;
+
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 50%;
+      content: ' ';
+      display: table;
+      background: url('/images/bust.png') $lightgray no-repeat;
+      background-size: 1rem;
+      background-position: center;
+    }
+
+    h4 {
+      margin: 0 0 0 1.75rem;
+      font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 0.85rem;
+      line-height: 1.25rem;
+      color: $darkgray;
+    }
+  }
+}
+
+.search-item-abstract {
+  padding: 0.5rem 0;
+  font-family: 'PT Sans', sans-serif;
+  font-size: 0.95rem;
+  text-align: justify;
+  color: $darkgray;
+}
+
 #search-list-items {
   padding-top: 5rem;
   padding-bottom: 7rem;
@@ -114,186 +179,191 @@
         margin: 0;
       }
 
-      .search-item-content-text {
-        .search-item-id {
-          margin: 0;
-          font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
-          font-size: 0.8rem;
-          font-weight: 400;
-          text-align: right;
-          color: $darkgray;
-        }
+      .search-item-abstract {
+        margin-top: 0;
+        padding: 0.5rem 0;
+        border-radius: 0.25rem;
+        font-family: 'PT Sans', sans-serif;
+        font-size: 0.9rem;
+        text-align: center;
+        color: $darkgray;
+        background: $silver;
+        cursor: pointer;
+        transition: all 0.25s ease;
 
-        .search-item-title {
-          margin: 0.5rem 0;
-          font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
-          font-size: 1.5rem;
+        &:hover {
+          color: white;
+          background: $accent;
         }
+      }
+    }
 
-        .search-item-category {
-          margin-bottom: 0.75rem;
-          font-family: 'Raleway', sans-serif;
+    .search-item-button-wrap {
+      padding: 1.25rem 0 0.25rem 0;
+      border-top: 1px solid $lightgray;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      h4 {
+        margin: 0;
+        font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+        font-weight: 400;
+        font-size: 0.85rem;
+
+        b {
           font-size: 0.9rem;
-          font-weight: 400;
-        }
-
-        .search-item-authors {
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          list-style: none;
-
-          li {
-            position: relative;
-            height: 1.8rem;
-
-            &::before {
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 1.25rem;
-              height: 1.25rem;
-              border-radius: 50%;
-              content: ' ';
-              display: table;
-              background: url('/images/bust.png') $lightgray no-repeat;
-              background-size: 1rem;
-              background-position: center;
-            }
-
-            h4 {
-              margin: 0 0 0 1.75rem;
-              font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
-              font-weight: 400;
-              font-size: 0.85rem;
-              line-height: 1.25rem;
-              color: $darkgray;
-            }
-          }
-        }
-
-        .search-item-abstract {
-          padding: 0.5rem 0;
-          border-top: 1px solid $lightgray;
-          font-family: 'PT Sans', sans-serif;
-          font-size: 0.95rem;
-          text-align: justify;
-          color: $darkgray;
+          color: $accentdark;
         }
       }
 
-      .search-item-button-wrap {
-        padding: 1.25rem 0 0.25rem 0;
-        border-top: 1px solid $lightgray;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
+      .borrowed-prev {
+        position: relative;
+        margin-left: 2rem;
+        color: $lightgray;
 
-        h4 {
-          margin: 0;
-          font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
-          font-weight: 400;
-          font-size: 0.85rem;
-
-          b {
-            font-size: 0.9rem;
-            color: $accentdark;
-          }
-        }
-
-        .borrowed-prev {
-          position: relative;
-          margin-left: 2rem;
-          color: $lightgray;
-
-          &:hover {
-            &::before {
-              position: absolute;
-              top: -2rem;
-              left: 50%;
-              transform: translateX(-50%);
-              content: 'previously borrowed';
-              display: table;
-              padding: 0.25rem 0.375rem 0.325rem 0.375rem;
-              border-radius: 0.25rem;
-              width: max-content;
-              height: 0.5rem;
-              font-family: 'Nunito', sans-serif;
-              font-size: 0.75rem;
-              text-align: center;
-              color: white;
-              background: $darkgray;
-            }
-
-            &::after {
-              position: absolute;
-              top: -1rem;
-              left: 50%;
-              transform: translateX(-50%);
-              content: ' i ';
-              display: table;
-              padding: 0.25rem 0.375rem 0.325rem 0.375rem;
-              width: max-content;
-              height: 0.25rem;
-              font-family: 'Nunito', sans-serif;
-              font-size: 0.25rem;
-              text-align: center;
-              color: $darkgray;
-              background: $darkgray;
-              clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-            }
-          }
-        }
-
-        button {
-          padding: 0.75rem;
-          border: none;
-          border-radius: 0.25rem;
-          font-family: 'Nunito', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 600;
-          background: $silver;
-          cursor: pointer;
-          outline: none;
-          transition: all 0.25s ease;
-
-          &:hover {
+        &:hover {
+          &::before {
+            position: absolute;
+            top: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            content: 'previously borrowed';
+            display: table;
+            padding: 0.25rem 0.375rem 0.325rem 0.375rem;
+            border-radius: 0.25rem;
+            width: max-content;
+            height: 0.5rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.75rem;
+            text-align: center;
             color: white;
-
-            svg {
-              color: white;
-            }
-          }
-
-          svg {
-            margin-left: 1rem;
-            color: $footertext;
-          }
-        }
-
-        .search-item-button-bor {
-          &:hover {
-            background: $accentsecondary;
-          }
-        }
-
-        .search-item-button-req {
-          &:hover {
             background: $darkgray;
           }
+
+          &::after {
+            position: absolute;
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            content: ' i ';
+            display: table;
+            padding: 0.25rem 0.375rem 0.325rem 0.375rem;
+            width: max-content;
+            height: 0.25rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.25rem;
+            text-align: center;
+            color: $darkgray;
+            background: $darkgray;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+          }
+        }
+      }
+
+      button {
+        padding: 0.75rem;
+        border: none;
+        border-radius: 0.25rem;
+        font-family: 'Nunito', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: $silver;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.25s ease;
+
+        &:hover {
+          color: white;
+
+          svg {
+            color: white;
+          }
         }
 
-        .search-item-borrowed {
-          padding: 0.75rem;
-          border: none;
-          border-radius: 0.25rem;
-          font-family: 'Nunito', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 600;
+        svg {
+          margin-left: 1rem;
           color: $footertext;
         }
       }
+
+      .search-item-button-bor {
+        &:hover {
+          background: $accentsecondary;
+        }
+      }
+
+      .search-item-button-req {
+        &:hover {
+          background: $darkgray;
+        }
+      }
+
+      .search-item-borrowed {
+        padding: 0.75rem;
+        border: none;
+        border-radius: 0.25rem;
+        font-family: 'Nunito', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $footertext;
+      }
+    }
+  }
+}
+
+#book-details-modal {
+  position: absolute;
+  top: -4rem;
+  left: -5rem;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+
+  #book-details-modal-body {
+    position: relative;
+    top: 50vh;
+    transform: translateY(-50%);
+    height: max-content;
+    width: 25rem;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    background: white;
+
+    #details-modal-close {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+
+      &:hover {
+        background: $lightgray;
+      }
+    }
+
+    .search-item-id {
+      line-height: 2.5rem;
+    }
+
+    .search-item-title {
+      margin: 1rem 0;
+    }
+
+    .search-item-abstract {
+      max-height: 50vh;
+      overflow: auto;
+      padding-right: 0.25rem;
     }
   }
 }

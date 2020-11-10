@@ -45,6 +45,7 @@ export default function BrowseListContent(props: {
   const [prevBorrowedIDs, setPrevBorrowedIDs] = useState<string[]>([]);
   const [borrowedIDs, setBorrowedIDs] = useState<string[]>([]);
   const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
+  const [viewingBookDetails, setViewingBookDetails] = useState<IBook | null>(null);
 
   const browserHistory = useHistory();
 
@@ -103,9 +104,7 @@ export default function BrowseListContent(props: {
         response.data.bookSearch
           .map((book: IBook) => ({
             ...book,
-            authors: book.authors.map((author) => author.name),
-            abstract:
-              book.abstract.length > 256 ? book.abstract.substring(0, 256) + ' ...' : book.abstract
+            authors: book.authors.map((author) => author.name)
           }))
           .filter((book: IBook) => {
             if (searchQuery.queryCategory === 'Any category') return true;
@@ -196,7 +195,7 @@ export default function BrowseListContent(props: {
             <div className="search-item-block" key={index}>
               <div className="search-item-graphic"></div>
               <div className="search-item-content">
-                <div className="search-item-content-text">
+                <div>
                   <h4 className="search-item-id">Book ID: {searchItem.bookID}</h4>
                   <h1 className="search-item-title">{searchItem.title}</h1>
                   <h4 className="search-item-category">{searchItem.category}</h4>
@@ -207,49 +206,77 @@ export default function BrowseListContent(props: {
                       </li>
                     ))}
                   </ul>
-                  <p className="search-item-abstract">{searchItem.abstract}</p>
                 </div>
-                <div className="search-item-button-wrap">
-                  {searchItem.quantity > 0 ? (
-                    <h4>
-                      <React.Fragment>
-                        In shelf:&nbsp;<b>{searchItem.quantity}</b>
-                      </React.Fragment>
-                    </h4>
-                  ) : (
-                    <h4 style={{ color: 'coral' }}>Not in shelf</h4>
-                  )}
-                  {borrowedIDs.length >= borrowLimit && (
-                    <button style={{ background: 'none', color: 'white' }}>.</button>
-                  )}
-                  {prevBorrowedIDs.indexOf(searchItem.bookID) !== -1 && (
-                    <div className="borrowed-prev">
-                      <FontAwesomeIcon icon={faClock} className="input-field-icon" />
-                    </div>
-                  )}
-                  {borrowedIDs.length < borrowLimit &&
-                    borrowedIDs.indexOf(searchItem.bookID) === -1 &&
-                    (searchItem.quantity > 0 ? (
-                      <button
-                        className="search-item-button-bor"
-                        onClick={() => borrowHandler(searchItem.bookID)}
-                      >
-                        BORROW
-                        <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
-                      </button>
+                <div>
+                  <h4
+                    className="search-item-abstract"
+                    onClick={() => setViewingBookDetails(searchItem)}
+                  >
+                    see details
+                  </h4>
+                  <div className="search-item-button-wrap">
+                    {searchItem.quantity > 0 ? (
+                      <h4>
+                        <React.Fragment>
+                          In shelf:&nbsp;<b>{searchItem.quantity}</b>
+                        </React.Fragment>
+                      </h4>
                     ) : (
-                      <button className="search-item-button-req">
-                        REQUEST
-                        <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
-                      </button>
-                    ))}
-                  {borrowedIDs.indexOf(searchItem.bookID) !== -1 && (
-                    <h4 className="search-item-borrowed">borrowed</h4>
-                  )}
+                      <h4 style={{ color: 'coral' }}>Not in shelf</h4>
+                    )}
+                    {borrowedIDs.length >= borrowLimit && (
+                      <button style={{ background: 'none', color: 'white' }}>.</button>
+                    )}
+                    {prevBorrowedIDs.indexOf(searchItem.bookID) !== -1 && (
+                      <div className="borrowed-prev">
+                        <FontAwesomeIcon icon={faClock} className="input-field-icon" />
+                      </div>
+                    )}
+                    {borrowedIDs.length < borrowLimit &&
+                      borrowedIDs.indexOf(searchItem.bookID) === -1 &&
+                      (searchItem.quantity > 0 ? (
+                        <button
+                          className="search-item-button-bor"
+                          onClick={() => borrowHandler(searchItem.bookID)}
+                        >
+                          BORROW
+                          <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                        </button>
+                      ) : (
+                        <button className="search-item-button-req">
+                          REQUEST
+                          <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                        </button>
+                      ))}
+                    {borrowedIDs.indexOf(searchItem.bookID) !== -1 && (
+                      <h4 className="search-item-borrowed">borrowed</h4>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {viewingBookDetails && (document.body.style.overflow = 'hidden')}
+      {viewingBookDetails && (
+        <div id="book-details-modal">
+          <div id="book-details-modal-body" style={{ marginTop: window.scrollY }}>
+            <div id="details-modal-close" onClick={() => setViewingBookDetails(null)}>
+              &times;
+            </div>
+            <h4 className="search-item-id">Book ID: {viewingBookDetails?.bookID}</h4>
+            <h1 className="search-item-title">{viewingBookDetails?.title}</h1>
+            <h4 className="search-item-category">{viewingBookDetails?.category}</h4>
+            <ul className="search-item-authors">
+              {viewingBookDetails?.authors.map((author, index) => (
+                <li key={`"${index}"`}>
+                  <h4>{author}</h4>
+                </li>
+              ))}
+            </ul>
+            <p className="search-item-abstract">{viewingBookDetails?.abstract}</p>
+          </div>
         </div>
       )}
     </React.Fragment>
