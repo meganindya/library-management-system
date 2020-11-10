@@ -39,6 +39,16 @@
       background-size: contain;
     }
 
+    .rolling-2 {
+      width: 15rem;
+      height: 15rem;
+      margin: 0 auto;
+      text-align: center;
+      background: url('/images/loading-2.gif') no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
     .transaction-table {
       width: 100%;
       border-radius: 0.5rem;

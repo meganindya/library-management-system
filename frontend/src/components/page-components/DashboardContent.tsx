@@ -17,9 +17,49 @@ export default function DashboardContent() {
   }, [authContext.type]);
 
   const [dataFetched, setDataFetched] = useState(false);
+  const [userDetails, setUserDetails] = useState<{
+    userID: string;
+    name: string;
+    email: string;
+    type: string;
+    points: number;
+  } | null>(null);
   const [transactions, setTransactions] = useState([]);
   const [userPending, setUserPending] = useState([]);
   const [userOutstanding, setUserOutstanding] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query user($userID: String!) {
+        user(userID: $userID) {
+          userID
+          firstName
+          middleName
+          lastName
+          email
+          type
+          points
+        }
+      }`,
+        { userID: authContext.userID },
+        'User Details Fetch Failed'
+      );
+
+      if (!response) return;
+
+      console.log(response.data.user);
+
+      const { userID, firstName, middleName, lastName, email, type, points } = response.data.user;
+      const name = (
+        (firstName.trim() + ' ' + middleName.trim()).trim() +
+        ' ' +
+        lastName.trim()
+      ).trim();
+
+      setUserDetails({ userID, name, email, type, points });
+    })();
+  }, []);
 
   const browserHistory = useHistory();
 
@@ -118,6 +158,17 @@ export default function DashboardContent() {
 
   return (
     <div id="dashboard-content" className="container">
+      {!userDetails && <div className="rolling-2"></div>}
+      {userDetails && (
+        <div id="user-details">
+          <div id="user-details-type">{userDetails.type === 'Student' ? 'Student' : 'Faculty'}</div>
+          <div id="user-details-name">{userDetails.name}</div>
+          <div id="user-details-email">{userDetails.email}</div>
+          <div id="user-details-points">
+            <span>{userDetails.points}</span> points
+          </div>
+        </div>
+      )}
       <h2>Pending returns</h2>
       {!dataFetched && <div className="rolling"></div>}
       {dataFetched && userPending.length > 0 && (
