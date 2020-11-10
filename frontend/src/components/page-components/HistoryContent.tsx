@@ -110,7 +110,7 @@ export default function HistoryContent() {
               {userHistory.map((transaction: any, index) => (
                 <tr key={`history-item-${index}`}>
                   <td>{transaction.transID}</td>
-                  <td className="history-book-detail-btn">
+                  <td className="transaction-book-detail-btn">
                     <span onClick={() => setViewingBookID(transaction.bookID)}>
                       {transaction.bookID}
                     </span>

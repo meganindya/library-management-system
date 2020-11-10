@@ -51,7 +51,13 @@ export default function BookDetailsModal(props: {
   return (
     <div id="book-details-modal">
       <div id="book-details-modal-body" style={{ marginTop: window.scrollY }}>
-        <div id="details-modal-close" onClick={() => props.setBook(null)}>
+        <div
+          id="details-modal-close"
+          onClick={() => {
+            document.body.style.overflow = 'auto';
+            props.setBook(null);
+          }}
+        >
           &times;
         </div>
         {!viewingBook && <div className="rolling-2"></div>}

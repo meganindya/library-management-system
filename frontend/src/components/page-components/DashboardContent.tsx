@@ -3,6 +3,8 @@ import { useHistory } from 'react-router-dom';
 
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 
+import BookDetailsModal from '../BookDetailsModal';
+
 import AuthContext from '../../context/auth-context';
 
 import './DashboardContent.scss';
@@ -27,6 +29,7 @@ export default function DashboardContent() {
   const [transactions, setTransactions] = useState([]);
   const [userPending, setUserPending] = useState([]);
   const [userOutstanding, setUserOutstanding] = useState([]);
+  const [viewingBookID, setViewingBookID] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -187,7 +190,11 @@ export default function DashboardContent() {
               {userPending.map((transaction: any, index) => (
                 <tr key={`pending-item-${index}`}>
                   <td>{transaction.transID}</td>
-                  <td>{transaction.bookID}</td>
+                  <td className="transaction-book-detail-btn">
+                    <span onClick={() => setViewingBookID(transaction.bookID)}>
+                      {transaction.bookID}
+                    </span>
+                  </td>
                   <td>{parseDate(transaction.borrowDate)}</td>
                   <td>{parseDate(transaction.borrowDate, allowedDays)}</td>
                   <td>
@@ -229,7 +236,11 @@ export default function DashboardContent() {
               {userOutstanding.map((transaction: any, index) => (
                 <tr key={`outstanding-item-${index}`}>
                   <td>{transaction.transID}</td>
-                  <td>{transaction.bookID}</td>
+                  <td className="transaction-book-detail-btn">
+                    <span onClick={() => setViewingBookID(transaction.bookID)}>
+                      {transaction.bookID}
+                    </span>
+                  </td>
                   <td>{parseDate(transaction.borrowDate)}</td>
                   <td>{!transaction.returnDate ? '-' : parseDate(transaction.returnDate)}</td>
                   <td>{getOutstanding(transaction.borrowDate, transaction.returnDate)}</td>
@@ -242,6 +253,9 @@ export default function DashboardContent() {
       )}
       {dataFetched && userOutstanding.length === 0 && (
         <div className="no-transaction">No Outstanding Transactions</div>
+      )}
+      {viewingBookID && (document.body.style.overflow = 'hidden') && (
+        <BookDetailsModal book={null} bookID={viewingBookID} setBook={setViewingBookID} />
       )}
     </div>
   );
