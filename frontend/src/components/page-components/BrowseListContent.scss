@@ -201,6 +201,9 @@
         padding: 0.75rem;
         border: none;
         border-radius: 0.25rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         font-family: 'Nunito', sans-serif;
         font-size: 0.8rem;
         font-weight: 600;
@@ -226,6 +229,11 @@
       .search-item-button-bor {
         &:hover {
           background: $accentsecondary;
+        }
+
+        &.search-item-button-rolling {
+          color: white;
+          background: $footertext;
         }
       }
 

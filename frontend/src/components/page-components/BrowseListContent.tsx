@@ -47,6 +47,8 @@ export default function BrowseListContent(props: {
   const [borrowedIDs, setBorrowedIDs] = useState<string[]>([]);
   const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
   const [viewingBookDetails, setViewingBookDetails] = useState<IBook | null>(null);
+  const [borrowing, setBorrowing] = useState<string | null>(null);
+  const [requesting, setRequesting] = useState<string | null>(null);
 
   const browserHistory = useHistory();
 
@@ -131,6 +133,8 @@ export default function BrowseListContent(props: {
 
     browserHistory.push('/history');
   };
+
+  const requestHandler = async (bookID: string) => {};
 
   return (
     <React.Fragment>
@@ -236,16 +240,39 @@ export default function BrowseListContent(props: {
                       borrowedIDs.indexOf(searchItem.bookID) === -1 &&
                       (searchItem.quantity > 0 ? (
                         <button
-                          className="search-item-button-bor"
-                          onClick={() => borrowHandler(searchItem.bookID)}
+                          className={`search-item-button-bor ${
+                            searchItem.bookID === borrowing ? 'search-item-button-rolling' : ''
+                          }`}
+                          onClick={() => {
+                            setBorrowing(searchItem.bookID);
+                            borrowHandler(searchItem.bookID);
+                          }}
                         >
-                          BORROW
-                          <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                          {searchItem.bookID === borrowing && <div className="rolling-3"></div>}
+                          {searchItem.bookID !== borrowing && (
+                            <React.Fragment>
+                              BORROW
+                              <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                            </React.Fragment>
+                          )}
                         </button>
                       ) : (
-                        <button className="search-item-button-req">
-                          REQUEST
-                          <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                        <button
+                          className={`search-item-button-req ${
+                            searchItem.bookID === requesting ? 'search-item-button-rolling' : ''
+                          }`}
+                          onClick={() => {
+                            setRequesting(searchItem.bookID);
+                            requestHandler(searchItem.bookID);
+                          }}
+                        >
+                          {searchItem.bookID === requesting && <div className="rolling-3"></div>}
+                          {searchItem.bookID !== requesting && (
+                            <React.Fragment>
+                              REQUEST
+                              <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                            </React.Fragment>
+                          )}
                         </button>
                       ))}
                     {borrowedIDs.indexOf(searchItem.bookID) !== -1 && (

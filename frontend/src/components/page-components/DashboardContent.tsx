@@ -30,6 +30,7 @@ export default function DashboardContent() {
   const [userPending, setUserPending] = useState([]);
   const [userOutstanding, setUserOutstanding] = useState([]);
   const [viewingBookID, setViewingBookID] = useState<string | null>(null);
+  const [returning, setReturning] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -204,9 +205,14 @@ export default function DashboardContent() {
                           ? 'return-btn-due'
                           : 'return-btn-ok'
                       }
-                      onClick={() => returnHandler(transaction.transID)}
+                      onClick={() => {
+                        setReturning(transaction.transID);
+                        returnHandler(transaction.transID);
+                      }}
                     >
-                      {getRemainingString(transaction.borrowDate)}
+                      {transaction.transID === returning && <div className="rolling-3"></div>}
+                      {transaction.transID !== returning &&
+                        getRemainingString(transaction.borrowDate)}
                     </button>
                   </td>
                 </tr>

@@ -49,6 +49,16 @@
       background-position: center;
     }
 
+    .rolling-3 {
+      width: 3rem;
+      height: 1rem;
+      margin: 0 auto;
+      text-align: center;
+      background: url('/images/loading-3.gif') no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
     .search-item-id {
       margin: 0;
       font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
