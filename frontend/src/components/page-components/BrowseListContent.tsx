@@ -30,8 +30,12 @@ export default function BrowseListContent(props: {
   resetGlobalSearchQuery: Function;
 }) {
   const authContext = useContext(AuthContext);
-
-  const browserHistory = useHistory();
+  const [borrowLimit, setBorrowLimit] = useState(-1);
+  useEffect(() => {
+    if (authContext.type) {
+      setBorrowLimit(authContext.type === 'Student' ? 5 : 8);
+    }
+  }, [authContext.type]);
 
   const [searchQuery, setSearchQuery] = useState<{
     queryString: string;
@@ -40,6 +44,8 @@ export default function BrowseListContent(props: {
   const [loading, setLoading] = useState(true);
   const [userBookIDs, setUserBookIDs] = useState<string[]>([]);
   const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
+
+  const browserHistory = useHistory();
 
   useEffect(() => {
     (async () => {
@@ -132,6 +138,11 @@ export default function BrowseListContent(props: {
                 onClick={() => props.resetGlobalSearchQuery()}
               />
             </div>
+            {userBookIDs.length == borrowLimit && (
+              <div id="borrow-limit-disclaimer">
+                <span>You have reached borrow limit</span>
+              </div>
+            )}
           </div>
           <div id="search-list-search-bar-wrap">
             <SearchBar
