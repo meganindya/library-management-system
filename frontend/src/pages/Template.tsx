@@ -9,11 +9,7 @@ import DashboardContent from '../components/page-components/DashboardContent';
 
 import './Template.scss';
 
-interface ITemplatePage {
-  pageName: string;
-}
-
-export default function TemplatePage(props: ITemplatePage) {
+export default function TemplatePage(props: { pageName: string }) {
   return (
     <React.Fragment>
       <div id="sidebar-wrap">

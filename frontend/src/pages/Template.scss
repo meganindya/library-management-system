@@ -29,19 +29,19 @@
   #template-content {
     position: relative;
     margin-bottom: 16rem;
+
+    .rolling {
+      width: 20rem;
+      height: 7rem;
+      margin: 0 auto;
+      text-align: center;
+      background: url('/images/loading.gif') no-repeat;
+      background-size: contain;
+    }
   }
 
   #footer-wrap {
     position: absolute;
     bottom: 0rem;
   }
-}
-
-.rolling {
-  width: 20rem;
-  height: 7rem;
-  margin: 0 auto;
-  text-align: center;
-  background: url('/images/loading.gif') no-repeat;
-  background-size: contain;
 }

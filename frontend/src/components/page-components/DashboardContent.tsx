@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { fetchGraphQLResponse } from '../../utils/HttpUtils';
+
 import AuthContext from '../../context/auth-context';
 
 import './DashboardContent.scss';
@@ -19,156 +21,86 @@ export default function DashboardContent() {
     return date.toUTCString();
   };
 
-  const getRemainingDays = (borrowDate: string) => {
-    let rdate = new Date(parseDate(borrowDate, 30)).valueOf();
-    let cdate = new Date().valueOf();
-    return Math.round((rdate - cdate) / (1000 * 60 * 60 * 24));
+  const getDiff = (borrowDate: string, returnDate: string): number => {
+    return Math.round(
+      (new Date(returnDate).valueOf() - new Date(borrowDate).valueOf()) / (1000 * 60 * 60 * 24)
+    );
   };
 
-  const getDiff = (borrowDate: string, returnDate: string) => {
-    let bdate = new Date(borrowDate).valueOf();
-    let rdate = new Date(returnDate).valueOf();
-    return Math.round((rdate - bdate) / (1000 * 60 * 60 * 24));
+  const getRemainingDays = (borrowDate: string): number => {
+    return Math.round(
+      (new Date(parseDate(borrowDate, 30)).valueOf() - new Date().valueOf()) / (1000 * 60 * 60 * 24)
+    );
   };
 
-  const getRemainingString = (borrowDate: string) => {
-    const days = getRemainingDays(borrowDate);
-    if (days < 0) {
-      return `${Math.abs(days)} days overdue`;
-    } else {
-      return `${days} days remaining`;
-    }
+  const getRemainingString = (borrowDate: string): string => {
+    const remainingDays = getRemainingDays(borrowDate);
+    return remainingDays < 0
+      ? `${Math.abs(remainingDays)} days overdue`
+      : `${remainingDays} days remaining`;
+  };
+
+  const getOutstanding = (borrowDate: string, returnDate: string) => {
+    return !returnDate
+      ? Math.abs(getRemainingDays(borrowDate))
+      : getDiff(borrowDate, returnDate) - 30;
   };
 
   useEffect(() => {
-    const nameRequestBody = {
-      query: `
-        query transactions($userID: String!) {
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query transactions($userID: String!) {
           transactions(userID: $userID) {
             transID
             bookID
             borrowDate
             returnDate
           }
-        }
-      `,
-      variables: {
-        userID: authContext.userID // || '11118001'
-      }
-    };
+        }`,
+        { userID: authContext.userID },
+        'Transactions Fetch Failed'
+      );
 
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(nameRequestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        setDataFetched(true);
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (responseData.data.transactions) {
-          const history = responseData.data.transactions;
-          let pendingList: any = [],
-            outstandingList: any = [];
-          history.forEach((historyItem: any) => {
-            if (
-              historyItem.returnDate === '' ||
-              historyItem.returnDate === null
-            ) {
-              pendingList.push(historyItem);
-            }
-          });
-          setUserPending(
-            pendingList.sort(
-              (a: any, b: any) =>
-                new Date(b.borrowDate).valueOf() -
-                new Date(a.borrowDate).valueOf()
-            )
-          );
-          history.forEach((historyItem: any) => {
-            if (
-              historyItem.returnDate === '' ||
-              historyItem.returnDate === null
-            ) {
-              if (getRemainingDays(historyItem.borrowDate) < 0) {
-                outstandingList.push(historyItem);
-              }
-            } else {
-              if (
-                getDiff(historyItem.borrowDate, historyItem.returnDate) > 30
-              ) {
-                outstandingList.push(historyItem);
-              }
-            }
-          });
-          setUserOutstanding(
-            outstandingList.sort(
-              (a: any, b: any) =>
-                new Date(b.borrowDate).valueOf() -
-                new Date(a.borrowDate).valueOf()
-            )
-          );
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+      if (!response) return;
+
+      setDataFetched(true);
+
+      setUserPending(
+        response.data.transactions
+          .filter((transaction: any) => !transaction.returnDate)
+          .sort(
+            (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
+          )
+      );
+
+      setUserOutstanding(
+        response.data.transactions
+          .filter(
+            (transaction: any) =>
+              (!transaction.returnDate && getRemainingDays(transaction.borrowDate)) ||
+              getDiff(transaction.borrowDate, transaction.returnDate) > 30
+          )
+          .sort(
+            (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
+          )
+      );
+    })();
   }, []);
 
-  const returnBook = (transID: string) => {
-    const borrowReqBody = {
-      query: `
-          mutation returnBook($transID: String!) {
-            returnBook(transID: $transID) {
-              transID
-            }
-          }`,
-      variables: {
-        transID
-      }
-    };
-
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(borrowReqBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
+  const returnHandler = async (transID: string) => {
+    const response = await fetchGraphQLResponse(
+      `mutation returnBook($transID: String!) {
+        returnBook(transID: $transID) {
+          transID
         }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (
-          responseData.data.returnBook &&
-          responseData.data.returnBook.transID
-        ) {
-          browserHistory.push('/history');
-        } else {
-          throw new Error('return failed');
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  };
+      }`,
+      { transID },
+      'Return Failed'
+    );
 
-  const calculateOutstanding = (historyItem: any) => {
-    let currOutstanding =
-      historyItem.returnDate === '' || historyItem.returnDate === null
-        ? Math.abs(getRemainingDays(historyItem.borrowDate))
-        : getDiff(historyItem.borrowDate, historyItem.returnDate) - 30;
+    if (!response) return;
 
-    return currOutstanding;
+    browserHistory.push('/history');
   };
 
   return (
@@ -188,22 +120,22 @@ export default function DashboardContent() {
               </tr>
             </thead>
             <tbody>
-              {userPending.map((historyItem: any, index) => (
+              {userPending.map((transaction: any, index) => (
                 <tr key={`pending-item-${index}`}>
-                  <td>{historyItem.transID}</td>
-                  <td>{historyItem.bookID}</td>
-                  <td>{parseDate(historyItem.borrowDate)}</td>
-                  <td>{parseDate(historyItem.borrowDate, 30)}</td>
+                  <td>{transaction.transID}</td>
+                  <td>{transaction.bookID}</td>
+                  <td>{parseDate(transaction.borrowDate)}</td>
+                  <td>{parseDate(transaction.borrowDate, 30)}</td>
                   <td>
                     <button
                       className={
-                        getRemainingDays(historyItem.borrowDate) < 0
+                        getRemainingDays(transaction.borrowDate) < 0
                           ? 'return-btn-due'
                           : 'return-btn-ok'
                       }
-                      onClick={() => returnBook(historyItem.transID)}
+                      onClick={() => returnHandler(transaction.transID)}
                     >
-                      {getRemainingString(historyItem.borrowDate)}
+                      {getRemainingString(transaction.borrowDate)}
                     </button>
                   </td>
                 </tr>
@@ -227,18 +159,13 @@ export default function DashboardContent() {
               </tr>
             </thead>
             <tbody>
-              {userOutstanding.map((historyItem: any, index) => (
+              {userOutstanding.map((transaction: any, index) => (
                 <tr key={`outstanding-item-${index}`}>
-                  <td>{historyItem.transID}</td>
-                  <td>{historyItem.bookID}</td>
-                  <td>{parseDate(historyItem.borrowDate)}</td>
-                  <td>
-                    {historyItem.returnDate === '' ||
-                    historyItem.returnDate === null
-                      ? '-'
-                      : parseDate(historyItem.returnDate)}
-                  </td>
-                  <td>{calculateOutstanding(historyItem)}</td>
+                  <td>{transaction.transID}</td>
+                  <td>{transaction.bookID}</td>
+                  <td>{parseDate(transaction.borrowDate)}</td>
+                  <td>{!transaction.returnDate ? '-' : parseDate(transaction.returnDate)}</td>
+                  <td>{getOutstanding(transaction.borrowDate, transaction.returnDate)}</td>
                 </tr>
               ))}
             </tbody>

@@ -2,46 +2,35 @@ import React, { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+
 import './SearchBar.scss';
 
-interface ISearchBarProps {
+export default function SearchBar(props: {
   searchHandler: Function;
   initialValue: string;
   activeSearch: boolean;
-}
-
-export default function SearchBar(props: ISearchBarProps) {
-  const searchEl: React.RefObject<HTMLInputElement> = React.createRef();
-
+}) {
   const [hasText, setHasText] = useState(false);
+
+  const searchEl = React.createRef<HTMLInputElement>();
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    const searchQuery = searchEl.current?.value;
-    props.searchHandler(searchQuery === null ? '' : searchQuery?.trim(), false);
+    props.searchHandler(searchEl.current?.value.trim() || '', false);
   };
 
   const toggleClear = () => {
     if (props.activeSearch) {
-      const searchQuery = searchEl.current?.value;
-      props.searchHandler(
-        searchQuery === null ? '' : searchQuery?.trim(),
-        true
-      );
+      props.searchHandler(searchEl.current?.value.trim() || '', true);
     }
-    setHasText(
-      searchEl.current !== null && searchEl.current.value.trim() !== ''
-        ? true
-        : false
-    );
+    setHasText(searchEl.current !== null && searchEl.current.value.trim() !== '' ? true : false);
   };
 
   const clearSearch = () => {
     if (searchEl.current) {
       searchEl.current.value = '';
       setHasText(false);
-      const inputField = document.getElementById('search-field');
-      if (inputField) inputField.focus();
+      document.getElementById('search-field')?.focus();
     }
   };
 

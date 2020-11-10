@@ -4,77 +4,65 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import AuthPage from './pages/Auth';
 import TemplatePage from './pages/Template';
 
-import AuthContext from './context/auth-context';
-
-interface IAppState {
-  userID: string | null;
-  token: string | null;
-}
+import AuthContext, { IAuthContext } from './context/auth-context';
 
 export default function App() {
-  const [userState, setUserState] = useState<IAppState>({
-    userID: null, // || '11118001',
-    token: null // || 'hjsfbghdsfndsmnf'
+  const [userState, setUserState] = useState<{
+    userID: string | null;
+    token: string | null;
+    tokenExpiration: number;
+  }>({
+    // userID: null,
+    // token: null,
+    // tokenExpiration: 0
+    userID: '11118001',
+    token: 'abcdefghijklmnopqrstuvwxyz',
+    tokenExpiration: 1
   });
 
-  const login = (
-    userID: string,
-    token: string,
-    tokenExpiration: number
-  ): void => {
-    setUserState({
-      userID,
-      token
-    });
-  };
-
-  const logout = () => {
-    setUserState({
-      userID: null,
-      token: null
-    });
+  const authContextDefaultVals: IAuthContext = {
+    userID: userState.userID,
+    token: userState.token,
+    tokenExpiration: userState.tokenExpiration,
+    login: (userID: string, token: string, tokenExpiration: number): void => {
+      setUserState({
+        userID,
+        token,
+        tokenExpiration
+      });
+    },
+    logout: () => {
+      setUserState({
+        userID: null,
+        token: null,
+        tokenExpiration: 0
+      });
+    }
   };
 
   return (
     <BrowserRouter>
       <React.Fragment>
-        <AuthContext.Provider
-          value={{
-            userID: userState.userID,
-            token: userState.token,
-            login: login,
-            logout: logout
-          }}
-        >
-          <main id="main-content">
+        <AuthContext.Provider value={authContextDefaultVals}>
+          <main>
             <Switch>
-              {userState.token && <Redirect from="/" to="/browse" exact />}
-              {userState.token && <Redirect from="/auth" to="/browse" exact />}
-              {!userState.token && <Route path="/auth" component={AuthPage} />}
-              {userState.token && (
-                <Route
-                  path="/browse"
-                  render={() => <TemplatePage pageName="browse" />}
-                />
+              {!userState.token && (
+                <React.Fragment>
+                  <Redirect to="/auth" exact />
+                  <Route path="/auth" component={AuthPage}></Route>
+                </React.Fragment>
               )}
               {userState.token && (
-                <Route
-                  path="/history"
-                  render={() => <TemplatePage pageName="history" />}
-                />
+                <React.Fragment>
+                  <Redirect from="/" to="/browse" exact />
+                  <Redirect from="/auth" to="/browse" exact />
+                  <Route path="/browse" render={() => <TemplatePage pageName="browse" />} />
+                  <Route path="/history" render={() => <TemplatePage pageName="history" />} />
+                  <Route path="/dashboard" render={() => <TemplatePage pageName="dashboard" />} />
+                </React.Fragment>
               )}
-              {userState.token && (
-                <Route
-                  path="/dashboard"
-                  render={() => <TemplatePage pageName="dashboard" />}
-                />
-              )}
-              {!userState.token && <Redirect to="/auth" exact />}
               {/* <Redirect from="/" to="/browse" exact />
-              <Route
-                path="/browse"
-                render={() => <TemplatePage pageName="browse" />}
-              /> */}
+              <Route path="/browse" render={() => <TemplatePage pageName="browse" />} /> */}
             </Switch>
           </main>
         </AuthContext.Provider>

@@ -2,11 +2,7 @@ import React from 'react';
 
 export default function StudyDesk() {
   return (
-    <svg
-      width="370px"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1596 932"
-    >
+    <svg width="370px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1596 932">
       <defs>
         <linearGradient x1="50%" y1="108.09%" x2="50%" y2="5.05%" id="a">
           <stop stopColor="#FFF" stopOpacity=".53" offset="0%"></stop>
@@ -82,37 +78,21 @@ export default function StudyDesk() {
           fill="#FFAD01"
           fillRule="nonzero"
         ></path>
-        <path
-          fill="#8F95A1"
-          fillRule="nonzero"
-          d="M801.04 539.43h43.16v127.44h-43.16z"
-        ></path>
+        <path fill="#8F95A1" fillRule="nonzero" d="M801.04 539.43h43.16v127.44h-43.16z"></path>
         <path
           d="M844.2 539.43v74.23c-5.1 7.65-12.82 16.28-22.93 19.41-9.6 3-16.09 1-20.23-1.76v-91.88h43.16z"
           fill="#6A7382"
           fillRule="nonzero"
         ></path>
-        <path
-          fill="#45465A"
-          fillRule="nonzero"
-          d="M801.04 539.43h43.16v10.89h-43.16z"
-        ></path>
+        <path fill="#45465A" fillRule="nonzero" d="M801.04 539.43h43.16v10.89h-43.16z"></path>
         <path
           fill="#F2F2F2"
           fillRule="nonzero"
           opacity=".34"
           d="M829.54 539.43h4.89v127.44h-4.89zm7.43 0h3.05v127.44h-3.05zm-32.98 0h3.05v127.44h-3.05z"
         ></path>
-        <path
-          fill="#8F95A1"
-          fillRule="nonzero"
-          d="M795.34 664.84h54.77v55.58h-54.77z"
-        ></path>
-        <path
-          fill="#1F273A"
-          fillRule="nonzero"
-          d="M791.78 720.42h61.38v65.66h-61.38z"
-        ></path>
+        <path fill="#8F95A1" fillRule="nonzero" d="M795.34 664.84h54.77v55.58h-54.77z"></path>
+        <path fill="#1F273A" fillRule="nonzero" d="M791.78 720.42h61.38v65.66h-61.38z"></path>
         <path
           fill="#F2F2F2"
           fillRule="nonzero"
@@ -140,37 +120,15 @@ export default function StudyDesk() {
           fill="#031728"
           fillRule="nonzero"
         ></path>
-        <path
-          d="M820.94 809.5h.69-.69z"
-          fill="#116178"
-          fillRule="nonzero"
-        ></path>
+        <path d="M820.94 809.5h.69-.69z" fill="#116178" fillRule="nonzero"></path>
         <path
           d="M989.83 536a41.39 41.39 0 01-15.53 3l-142.76 6.3c-6.77.3-13.54.3-20.32 0l-142-6.26a41.48 41.48 0 01-15.54-3 41.11 41.11 0 0115.54-3l145.38-5.26c4.5-.16 9-.16 13.5 0l146.17 5.26a41 41 0 0115.56 2.96z"
           fill="#FFAD01"
           fillRule="nonzero"
         ></path>
-        <circle
-          fill="#031728"
-          fillRule="nonzero"
-          cx="643.15"
-          cy="866.1"
-          r="24.07"
-        ></circle>
-        <circle
-          fill="#252D40"
-          fillRule="nonzero"
-          cx="645.65"
-          cy="868.6"
-          r="21.57"
-        ></circle>
-        <circle
-          fill="#303B4F"
-          fillRule="nonzero"
-          cx="645.65"
-          cy="868.6"
-          r="15.57"
-        ></circle>
+        <circle fill="#031728" fillRule="nonzero" cx="643.15" cy="866.1" r="24.07"></circle>
+        <circle fill="#252D40" fillRule="nonzero" cx="645.65" cy="868.6" r="21.57"></circle>
+        <circle fill="#303B4F" fillRule="nonzero" cx="645.65" cy="868.6" r="15.57"></circle>
         <path
           d="M654.36 859a12.25 12.25 0 00-8.18-3.15 12.62 12.62 0 00-12.45 12.79 13 13 0 003 8.36 13 13 0 01-4.25-9.65 12.62 12.62 0 0112.44-12.79 12.28 12.28 0 019.44 4.44z"
           fill="#F5F6F7"
@@ -181,27 +139,9 @@ export default function StudyDesk() {
           fill="#1A2535"
           fillRule="nonzero"
         ></path>
-        <circle
-          fill="#031728"
-          fillRule="nonzero"
-          cx="1002.06"
-          cy="866.1"
-          r="24.07"
-        ></circle>
-        <circle
-          fill="#252D40"
-          fillRule="nonzero"
-          cx="999.56"
-          cy="868.6"
-          r="21.57"
-        ></circle>
-        <circle
-          fill="#303B4F"
-          fillRule="nonzero"
-          cx="999.56"
-          cy="868.6"
-          r="15.57"
-        ></circle>
+        <circle fill="#031728" fillRule="nonzero" cx="1002.06" cy="866.1" r="24.07"></circle>
+        <circle fill="#252D40" fillRule="nonzero" cx="999.56" cy="868.6" r="21.57"></circle>
+        <circle fill="#303B4F" fillRule="nonzero" cx="999.56" cy="868.6" r="15.57"></circle>
         <path
           d="M990.84 859a12.28 12.28 0 018.19-3.15c6.97.1 12.54 5.82 12.45 12.79a13 13 0 01-3 8.36 13 13 0 004.25-9.65c.1-6.97-5.47-12.7-12.44-12.79a12.31 12.31 0 00-9.45 4.44z"
           fill="#F5F6F7"
@@ -212,12 +152,7 @@ export default function StudyDesk() {
           fill="#1A2535"
           fillRule="nonzero"
         ></path>
-        <path
-          fill="#000"
-          fillRule="nonzero"
-          opacity=".08"
-          d="M685.08 412.6v.11l-.01-.11z"
-        ></path>
+        <path fill="#000" fillRule="nonzero" opacity=".08" d="M685.08 412.6v.11l-.01-.11z"></path>
         <path
           fill="url(#a)"
           fillRule="nonzero"
@@ -228,11 +163,7 @@ export default function StudyDesk() {
           fillRule="nonzero"
           d="M966.22 312.49l-288 1.18-9.55-190.26h310.01z"
         ></path>
-        <path
-          fill="#FFF"
-          fillRule="nonzero"
-          d="M687.11 313.64l-8.89.04-9.55-190.27h8.9z"
-        ></path>
+        <path fill="#FFF" fillRule="nonzero" d="M687.11 313.64l-8.89.04-9.55-190.27h8.9z"></path>
         <path
           fill="#000"
           fillRule="nonzero"
@@ -257,11 +188,7 @@ export default function StudyDesk() {
           fillRule="nonzero"
           d="M993.07 486.69h299.56v38.35H993.07zM632.21 371.3l56.04 559.92h28.09l-59.5-559.92zm-264.55 0l-56.04 559.92h-28.08l59.5-559.92z"
         ></path>
-        <path
-          fill="#824E37"
-          fillRule="nonzero"
-          d="M352.15 486.69h299.56v38.35H352.15z"
-        ></path>
+        <path fill="#824E37" fillRule="nonzero" d="M352.15 486.69h299.56v38.35H352.15z"></path>
         <rect
           fill="#D38552"
           fillRule="nonzero"
@@ -271,11 +198,7 @@ export default function StudyDesk() {
           height="34.68"
           rx="5.14"
         ></rect>
-        <path
-          fill="#030005"
-          fillRule="nonzero"
-          d="M329.7 338h999.86v18.88H329.7z"
-        ></path>
+        <path fill="#030005" fillRule="nonzero" d="M329.7 338h999.86v18.88H329.7z"></path>
         <path
           d="M329.32 356.88h999.86v20.28a8.56 8.56 0 01-8.56 8.56H337.87a8.56 8.56 0 01-8.56-8.56v-20.28h.01z"
           fill="#D38552"
@@ -356,33 +279,16 @@ export default function StudyDesk() {
           opacity=".28"
           d="M87.69 780.1h25.35v36.62H87.69zm47.1 140.85h-25.43L96.9 821.33l-.57-4.61h25.44l.56 4.61z"
         ></path>
-        <path
-          fill="#FE168D"
-          fillRule="nonzero"
-          d="M1119.97 240.2h172.9v23.27h-172.9z"
-        ></path>
+        <path fill="#FE168D" fillRule="nonzero" d="M1119.97 240.2h172.9v23.27h-172.9z"></path>
         <path
           fill="#000"
           fillRule="nonzero"
           opacity=".19"
           d="M1119.97 260.94h172.9v2.54h-172.9z"
         ></path>
-        <path
-          fill="#FFAD01"
-          fillRule="nonzero"
-          d="M1110 263.48h172.9v23.27H1110z"
-        ></path>
-        <path
-          fill="#000"
-          fillRule="nonzero"
-          opacity=".19"
-          d="M1110 283.43h172.9v3.32H1110z"
-        ></path>
-        <path
-          fill="#281F6F"
-          fillRule="nonzero"
-          d="M1124.96 286.75h172.9v16.62h-172.9z"
-        ></path>
+        <path fill="#FFAD01" fillRule="nonzero" d="M1110 263.48h172.9v23.27H1110z"></path>
+        <path fill="#000" fillRule="nonzero" opacity=".19" d="M1110 283.43h172.9v3.32H1110z"></path>
+        <path fill="#281F6F" fillRule="nonzero" d="M1124.96 286.75h172.9v16.62h-172.9z"></path>
         <text fill="#FFF" opacity=".75" fontFamily="Helvetica" fontSize="12.16">
           <tspan x="1137.83" y="278.68">
             RU
@@ -468,16 +374,8 @@ export default function StudyDesk() {
           fill="#A4CDE7"
           fillRule="nonzero"
         ></path>
-        <path
-          fill="#528AA8"
-          fillRule="nonzero"
-          d="M1168.91 235.82h16.38v4.39h-16.38z"
-        ></path>
-        <path
-          fill="#79A3BA"
-          fillRule="nonzero"
-          d="M1152.52 235.82h16.38v4.39h-16.38z"
-        ></path>
+        <path fill="#528AA8" fillRule="nonzero" d="M1168.91 235.82h16.38v4.39h-16.38z"></path>
+        <path fill="#79A3BA" fillRule="nonzero" d="M1152.52 235.82h16.38v4.39h-16.38z"></path>
         <path
           d="M550.46 272v11.4c0 4.37-2.93 10.88-10.89 10.88h-9.09l.66-4.87h8.43c5.64 0 6-5 6-6.05V272c0-1-.37-6.05-6-6.05h-8.43v-4.87h8.43c7.96.01 10.87 6.52 10.89 10.92z"
           fill="#152E59"
@@ -495,11 +393,7 @@ export default function StudyDesk() {
           fill="#000"
           fillRule="nonzero"
         ></path>
-        <path
-          fill="#152E59"
-          fillRule="nonzero"
-          d="M530.4 303.32h-36.55l-3.03-52.57h43.04z"
-        ></path>
+        <path fill="#152E59" fillRule="nonzero" d="M530.4 303.32h-36.55l-3.03-52.57h43.04z"></path>
         <path
           d="M500.64 303.32h-2.6l-3.02-52.57h2.6zm2.6 0h-.98l-3.02-52.57h.98z"
           opacity=".21"

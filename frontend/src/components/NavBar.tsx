@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import AuthContext from '../context/auth-context';
+import { fetchGraphQLResponse } from '../utils/HttpUtils';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+
+import AuthContext from '../context/auth-context';
+
 import './NavBar.scss';
 
 export default function NavBar() {
@@ -11,42 +14,21 @@ export default function NavBar() {
   const [name, setName] = useState('');
 
   useEffect(() => {
-    const nameRequestBody = {
-      query: `
-        query user($userID: String!) {
-          user(userID: $userID) {
-            firstName
-          }
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query user($userID: String!) {
+        user(userID: $userID) {
+          firstName
         }
-      `,
-      variables: {
-        userID: authContext.userID
-      }
-    };
+      }`,
+        { userID: authContext.userID },
+        'Username Fetch Failed'
+      );
 
-    let firstName: string | null = null;
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(nameRequestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (responseData.data.user.firstName) {
-          firstName = responseData.data.user.firstName;
-          !firstName ? setName('') : setName(firstName);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+      if (!response) return;
+
+      setName(response.data.user.firstName || '');
+    })();
   }, []);
 
   return (

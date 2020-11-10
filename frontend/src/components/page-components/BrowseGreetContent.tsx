@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import SearchBar from '../SearchBar';
-import StudyDesk from '../StudyDesk';
-import CategorySprite from '../CategorySprite';
+import { CategorySprite, StudyDesk } from '../Artworks';
 
 import './BrowseGreetContent.scss';
 
@@ -42,12 +41,7 @@ export default function BrowseGreetContent(props: {
               <div
                 className="browse-category-block"
                 key={`category-block-${index}`}
-                onClick={() =>
-                  props.setSearchQuery({
-                    queryString: '',
-                    queryCategory: category
-                  })
-                }
+                onClick={() => props.setSearchQuery({ queryString: '', queryCategory: category })}
               >
                 <div>{<CategorySprite />}</div>
                 <h3>{category}</h3>

@@ -17,8 +17,7 @@ export default function AuthPage() {
             <h2>
               Connects – people to people, people to place, people to learning.
               <br />
-              Cutting libraries in a recession is like cutting hospitals in a
-              plague.
+              Cutting libraries in a recession is like cutting hospitals in a plague.
             </h2>
           </div>
           <div id="auth-modal-wrap">
@@ -27,7 +26,7 @@ export default function AuthPage() {
         </div>
       </div>
       <footer id="auth-footer" className="container">
-        <span>meganindya&nbsp;&copy;&nbsp;2020</span>
+        <span>Copyright &copy;2020 meganindya</span>
       </footer>
     </div>
   );

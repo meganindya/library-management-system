@@ -1,15 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react';
-import Select from 'react-select';
 import { useHistory } from 'react-router-dom';
+import Select from 'react-select';
+
+import { fetchGraphQLResponse } from '../../utils/HttpUtils';
+
+import SearchBar from '../SearchBar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 import AuthContext from '../../context/auth-context';
 
-import SearchBar from '../SearchBar';
-
 import './BrowseListContent.scss';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+interface IBook {
+  bookID: string;
+  title: string;
+  category: string;
+  authors: { name: string }[];
+  abstract: string;
+  quantity: number;
+}
 
 export default function BrowseListContent(props: {
   categories: string[];
@@ -17,82 +27,47 @@ export default function BrowseListContent(props: {
     queryString: string;
     queryCategory: string;
   };
-  resetUpperSearchQuery: Function;
+  resetGlobalSearchQuery: Function;
 }) {
-  const history = useHistory();
   const authContext = useContext(AuthContext);
 
-  interface IQuery {
+  const browserHistory = useHistory();
+
+  const [searchQuery, setSearchQuery] = useState<{
     queryString: string;
     queryCategory: string;
-  }
-  const [searchQuery, setSearchQuery] = useState<IQuery>(props.searchQuery);
-
+  }>(props.searchQuery);
   const [loading, setLoading] = useState(true);
-
   const [userBookIDs, setUserBookIDs] = useState<string[]>([]);
+  const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
 
   useEffect(() => {
-    const userBooksReqBody = {
-      query: `
-        query transactions($userID: String!) {
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query transactions($userID: String!) {
           transactions(userID: $userID) {
             bookID
             returnDate
           }
         }`,
-      variables: {
-        userID: authContext.userID
-      }
-    };
+        { userID: authContext.userID },
+        'Borrowed Books Fetch Failed'
+      );
 
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(userBooksReqBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (responseData.data.transactions) {
-          console.log(responseData.data.transactions);
-          setUserBookIDs(
-            responseData.data.transactions
-              .filter(
-                (entry: { bookID: string; returnDate: string | null }) =>
-                  entry.returnDate === null || entry.returnDate === ''
-              )
-              .map(
-                (entry: { bookID: string; returnDate: string | null }) =>
-                  entry.bookID
-              )
-          );
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+      if (!response) return;
+
+      setUserBookIDs(
+        response.data.transactions
+          .filter((entry: { bookID: string; returnDate: string | null }) => !entry.returnDate)
+          .map((entry: Partial<{ bookID: string }>) => entry.bookID)
+      );
+    })();
   }, []);
 
-  interface ISearchItem {
-    bookID: string;
-    title: string;
-    category: string;
-    authors: { name: string }[];
-    abstract: string;
-    quantity: number;
-  }
-  const [searchItemsList, setSearchItemsList] = useState<ISearchItem[]>([]);
-
   useEffect(() => {
-    const searchRequestBody = {
-      query: `
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `
           query bookSearch($queryString: String!) {
             bookSearch(queryString: $queryString) {
               bookID
@@ -105,92 +80,44 @@ export default function BrowseListContent(props: {
               quantity
             }
           }`,
-      variables: {
-        queryString: searchQuery.queryString
-      }
-    };
+        { queryString: searchQuery.queryString },
+        'Book Search Failed'
+      );
 
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(searchRequestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (responseData.data.bookSearch) {
-          setSearchItemsList(
-            responseData.data.bookSearch
-              .map((searchItem: ISearchItem) => ({
-                bookID: searchItem.bookID,
-                title: searchItem.title,
-                category: searchItem.category,
-                authors: searchItem.authors.map((author) => author.name),
-                abstract:
-                  searchItem.abstract.length > 256
-                    ? searchItem.abstract.substring(0, 256) + ' ...'
-                    : searchItem.abstract,
-                quantity: searchItem.quantity
-              }))
-              .filter((item: ISearchItem) => {
-                if (searchQuery.queryCategory === 'Any category') return true;
-                else return item.category === searchQuery.queryCategory;
-              })
-          );
-          setLoading(false);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+      if (!response) return;
+
+      setSearchItemsList(
+        response.data.bookSearch
+          .map((book: IBook) => ({
+            ...book,
+            authors: book.authors.map((author) => author.name),
+            abstract:
+              book.abstract.length > 256 ? book.abstract.substring(0, 256) + ' ...' : book.abstract
+          }))
+          .filter((book: IBook) => {
+            if (searchQuery.queryCategory === 'Any category') return true;
+            else return book.category === searchQuery.queryCategory;
+          })
+      );
+      setLoading(false);
+    })();
   }, [searchQuery]);
 
-  const borrowBook = (bookID: string) => {
-    const borrowReqBody = {
-      query: `
+  const borrowHandler = async (bookID: string) => {
+    const response = await fetchGraphQLResponse(
+      `
           mutation borrowBook($userID: String!, $bookID: String!) {
             borrowBook(userID: $userID, bookID: $bookID) {
               transID
             }
           }`,
-      variables: {
-        userID: authContext.userID, //|| '11118001',
-        bookID: bookID
-      }
-    };
+      { userID: authContext.userID, bookID: bookID },
+      ''
+    );
 
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(borrowReqBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (
-          responseData.data.borrowBook &&
-          responseData.data.borrowBook.transID
-        ) {
-          history.push('/history');
-        } else {
-          throw new Error('borrow failed');
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    if (!response) return;
+
+    browserHistory.push('/history');
   };
 
   return (
@@ -202,7 +129,7 @@ export default function BrowseListContent(props: {
               <FontAwesomeIcon
                 icon={faArrowLeft}
                 className="input-field-icon"
-                onClick={() => props.resetUpperSearchQuery()}
+                onClick={() => props.resetGlobalSearchQuery()}
               />
             </div>
           </div>
@@ -253,9 +180,7 @@ export default function BrowseListContent(props: {
               <div className="search-item-content">
                 <div className="search-item-content-text">
                   <h1 className="search-item-title">{searchItem.title}</h1>
-                  <h4 className="search-item-category">
-                    {searchItem.category}
-                  </h4>
+                  <h4 className="search-item-category">{searchItem.category}</h4>
                   <ul className="search-item-authors">
                     {searchItem.authors.map((author, index) => (
                       <li key={`"${index}"`}>
@@ -276,32 +201,22 @@ export default function BrowseListContent(props: {
                     <h4 style={{ color: 'coral' }}>Not in shelf</h4>
                   )}
                   {userBookIDs.length >= 5 && (
-                    <button style={{ background: 'none', color: 'white' }}>
-                      .
-                    </button>
+                    <button style={{ background: 'none', color: 'white' }}>.</button>
                   )}
                   {userBookIDs.length < 5 &&
                     userBookIDs.indexOf(searchItem.bookID) === -1 &&
                     (searchItem.quantity > 0 ? (
                       <button
                         className="search-item-button-bor"
-                        onClick={() => {
-                          borrowBook(searchItem.bookID);
-                        }}
+                        onClick={() => borrowHandler(searchItem.bookID)}
                       >
                         BORROW
-                        <FontAwesomeIcon
-                          icon={faArrowRight}
-                          className="input-field-icon"
-                        />
+                        <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
                       </button>
                     ) : (
                       <button className="search-item-button-req">
                         REQUEST
-                        <FontAwesomeIcon
-                          icon={faArrowRight}
-                          className="input-field-icon"
-                        />
+                        <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
                       </button>
                     ))}
                   {userBookIDs.indexOf(searchItem.bookID) !== -1 && (

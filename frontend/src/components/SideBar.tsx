@@ -1,19 +1,12 @@
 import React from 'react';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faBookReader,
-  faCashRegister,
-  faColumns
-} from '@fortawesome/free-solid-svg-icons';
-import './SideBar.scss';
 import { Link } from 'react-router-dom';
 
-interface ISideBarProps {
-  activeLinkName: string;
-}
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBookReader, faCashRegister, faColumns } from '@fortawesome/free-solid-svg-icons';
 
-export default function SideBar(props: ISideBarProps) {
+import './SideBar.scss';
+
+export default function SideBar(props: { activeLinkName: string }) {
   return (
     <div id="sidebar">
       <div id="sidebar-overlay"></div>
@@ -31,9 +24,7 @@ export default function SideBar(props: ISideBarProps) {
             <span>History</span>
           </Link>
         </li>
-        <li
-          className={props.activeLinkName === 'dashboard' ? 'link-active' : ''}
-        >
+        <li className={props.activeLinkName === 'dashboard' ? 'link-active' : ''}>
           <Link to="/dashboard">
             <FontAwesomeIcon icon={faColumns} />
             <span>Dashboard</span>

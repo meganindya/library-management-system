@@ -1,5 +1,6 @@
-import { faDivide } from '@fortawesome/free-solid-svg-icons';
 import React, { useContext, useEffect, useState } from 'react';
+
+import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 
 import AuthContext from '../../context/auth-context';
 
@@ -7,60 +8,36 @@ import './HistoryContent.scss';
 
 export default function HistoryContent() {
   const authContext = useContext(AuthContext);
-  const [userHistory, setUserHistory] = useState([]);
   const [dataFetched, setDataFetched] = useState(false);
+  const [userHistory, setUserHistory] = useState([]);
 
   useEffect(() => {
-    const nameRequestBody = {
-      query: `
-        query transactions($userID: String!) {
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query transactions($userID: String!) {
           transactions(userID: $userID) {
             transID
             bookID
             borrowDate
             returnDate
           }
-        }
-      `,
-      variables: {
-        userID: authContext.userID // || '11118001'
-      }
-    };
+        }`,
+        { userID: authContext.userID },
+        'Transactions Fetch Failed'
+      );
 
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(nameRequestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        setDataFetched(true);
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (responseData.data.transactions) {
-          setUserHistory(
-            responseData.data.transactions.sort(
-              (a: any, b: any) =>
-                new Date(b.borrowDate).valueOf() -
-                new Date(a.borrowDate).valueOf()
-            )
-          );
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+      if (!response) return;
+
+      setDataFetched(true);
+      setUserHistory(
+        response.data.transactions.sort(
+          (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
+        )
+      );
+    })();
   }, []);
 
-  const parseDate = (isodate: string) => {
-    let date = new Date(isodate);
-    return date.toUTCString();
-  };
+  const parseDate = (isodate: string) => new Date(isodate).toUTCString();
 
   return (
     <div id="history-content" className="container">
@@ -84,24 +61,9 @@ export default function HistoryContent() {
                   <td>{historyItem.transID}</td>
                   <td>{historyItem.bookID}</td>
                   <td>{parseDate(historyItem.borrowDate)}</td>
-                  <td>
-                    {historyItem.returnDate === '' ||
-                    historyItem.returnDate === null
-                      ? '-'
-                      : parseDate(historyItem.returnDate)}
-                  </td>
-                  <td
-                    style={
-                      historyItem.returnDate === '' ||
-                      historyItem.returnDate === null
-                        ? { color: 'red' }
-                        : { color: 'green' }
-                    }
-                  >
-                    {historyItem.returnDate === '' ||
-                    historyItem.returnDate === null
-                      ? 'pending'
-                      : 'returned'}
+                  <td>{historyItem.returnDate ? parseDate(historyItem.returnDate) : '-'}</td>
+                  <td style={historyItem.returnDate ? { color: 'green' } : { color: 'red' }}>
+                    {historyItem.returnDate ? 'returned' : 'pending'}
                   </td>
                 </tr>
               ))}

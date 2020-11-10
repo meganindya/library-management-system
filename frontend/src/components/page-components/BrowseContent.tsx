@@ -1,69 +1,42 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import AuthContext from '../../context/auth-context';
+import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 
 import BrowseGreetContent from './BrowseGreetContent';
 import BrowseListContent from './BrowseListContent';
 
 export default function BrowseContent() {
-  const authContext = useContext(AuthContext);
-
   const [categories, setCategories] = useState<string[]>([]);
-
-  interface IQuery {
+  const [searchQuery, setSearchQuery] = useState<{
     queryString: string;
     queryCategory: string;
-  }
-  const [searchQuery, setSearchQuery] = useState<IQuery | null>(null);
+  } | null>(null);
 
   useEffect(() => {
-    const catReqBody = {
-      query: `
-        query {
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query {
           categories {
             categoryName
           }
-        }`
-    };
+        }`,
+        {},
+        'Categories Fetch Failed'
+      );
 
-    fetch('http://localhost:8000/api', {
-      method: 'POST',
-      body: JSON.stringify(catReqBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        if (response.status !== 200 && response.status !== 201) {
-          throw new Error('failed!');
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        if (responseData.data.categories) {
-          setCategories(
-            responseData.data.categories.map(
-              (categoryItem: { categoryName: string }) =>
-                categoryItem.categoryName
-            )
-          );
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+      if (!response) return;
+
+      setCategories(response.data.categories.map((category: any) => category.categoryName));
+    })();
   }, []);
 
   return searchQuery ? (
     <BrowseListContent
       categories={categories}
       searchQuery={searchQuery}
-      resetUpperSearchQuery={() => setSearchQuery(null)}
+      resetGlobalSearchQuery={() => setSearchQuery(null)}
     />
   ) : (
-    <BrowseGreetContent
-      categories={categories}
-      setSearchQuery={setSearchQuery}
-    />
+    <BrowseGreetContent categories={categories} setSearchQuery={setSearchQuery} />
   );
 }
