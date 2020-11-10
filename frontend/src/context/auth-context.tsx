@@ -13,7 +13,7 @@ export default React.createContext<IAuthContext>({
   userID: null,
   type: null,
   token: null,
-  tokenExpiration: 0,
+  tokenExpiration: 99,
   login: () => {},
   logout: () => {}
 });

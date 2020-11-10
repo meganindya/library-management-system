@@ -16,11 +16,11 @@ export default function App() {
     userID: null,
     token: null,
     type: null,
-    tokenExpiration: 0
+    tokenExpiration: 99
     // userID: '11118001',
     // token: 'abcdefghijklmnopqrstuvwxyz',
     // type: 'Student',
-    // tokenExpiration: 1
+    // tokenExpiration: 99
   });
 
   const authContextDefaultVals: IAuthContext = {
@@ -41,7 +41,7 @@ export default function App() {
         userID: null,
         type: null,
         token: null,
-        tokenExpiration: 0
+        tokenExpiration: 99
       });
     }
   };
