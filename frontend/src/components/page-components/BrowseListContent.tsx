@@ -4,6 +4,7 @@ import Select from 'react-select';
 
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 
+import BookDetailsModal from '../BookDetailsModal';
 import SearchBar from '../SearchBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faClock } from '@fortawesome/free-solid-svg-icons';
@@ -208,12 +209,12 @@ export default function BrowseListContent(props: {
                   </ul>
                 </div>
                 <div>
-                  <h4
+                  <p
                     className="search-item-abstract"
                     onClick={() => setViewingBookDetails(searchItem)}
                   >
                     see details
-                  </h4>
+                  </p>
                   <div className="search-item-button-wrap">
                     {searchItem.quantity > 0 ? (
                       <h4>
@@ -260,24 +261,7 @@ export default function BrowseListContent(props: {
       )}
       {viewingBookDetails && (document.body.style.overflow = 'hidden')}
       {viewingBookDetails && (
-        <div id="book-details-modal">
-          <div id="book-details-modal-body" style={{ marginTop: window.scrollY }}>
-            <div id="details-modal-close" onClick={() => setViewingBookDetails(null)}>
-              &times;
-            </div>
-            <h4 className="search-item-id">Book ID: {viewingBookDetails?.bookID}</h4>
-            <h1 className="search-item-title">{viewingBookDetails?.title}</h1>
-            <h4 className="search-item-category">{viewingBookDetails?.category}</h4>
-            <ul className="search-item-authors">
-              {viewingBookDetails?.authors.map((author, index) => (
-                <li key={`"${index}"`}>
-                  <h4>{author}</h4>
-                </li>
-              ))}
-            </ul>
-            <p className="search-item-abstract">{viewingBookDetails?.abstract}</p>
-          </div>
-        </div>
+        <BookDetailsModal book={viewingBookDetails} setBook={setViewingBookDetails} />
       )}
     </React.Fragment>
   );

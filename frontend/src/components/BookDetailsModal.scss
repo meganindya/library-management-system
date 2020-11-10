@@ -1,0 +1,58 @@
+@import '../css-utils/colors';
+
+#book-details-modal {
+  position: absolute;
+  top: -4rem;
+  left: -5rem;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+
+  #book-details-modal-body {
+    position: relative;
+    top: 50vh;
+    transform: translateY(-50%);
+    height: max-content;
+    width: 25rem;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    background: white;
+
+    #details-modal-close {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+
+      &:hover {
+        background: $lightgray;
+      }
+    }
+
+    .search-item-id {
+      line-height: 2.5rem;
+    }
+
+    .search-item-title {
+      margin: 1rem 0;
+    }
+
+    .search-item-abstract {
+      max-height: 50vh;
+      overflow: auto;
+      padding-right: 0.25rem;
+      text-align: justify;
+      color: $darkgray;
+    }
+  }
+}

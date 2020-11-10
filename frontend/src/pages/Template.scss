@@ -49,6 +49,69 @@
       background-position: center;
     }
 
+    .search-item-id {
+      margin: 0;
+      font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      text-align: right;
+      color: $darkgray;
+    }
+
+    .search-item-title {
+      margin: 0.5rem 0;
+      font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+      font-size: 1.5rem;
+    }
+
+    .search-item-category {
+      margin-bottom: 0.75rem;
+      font-family: 'Raleway', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .search-item-authors {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+
+      li {
+        position: relative;
+        height: 1.8rem;
+
+        &::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 1.25rem;
+          height: 1.25rem;
+          border-radius: 50%;
+          content: ' ';
+          display: table;
+          background: url('/images/bust.png') $lightgray no-repeat;
+          background-size: 1rem;
+          background-position: center;
+        }
+
+        h4 {
+          margin: 0 0 0 1.75rem;
+          font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+          font-weight: 400;
+          font-size: 0.85rem;
+          line-height: 1.25rem;
+          color: $darkgray;
+        }
+      }
+    }
+
+    .search-item-abstract {
+      padding: 0.5rem 0;
+      font-family: 'PT Sans', sans-serif;
+      font-size: 0.95rem;
+    }
+
     .transaction-table {
       width: 100%;
       border-radius: 0.5rem;
