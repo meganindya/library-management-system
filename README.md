@@ -35,5 +35,7 @@ The project is built using the _MERN_ stack. `TypeScript` instead of conventiona
 - Navigate to each of `frontend` and `backend` directories and run (in terminal) `npm ci`
 - Thereafter, in `frontend` directory and run `npm start`
 - Thereafter, in `backend` directory and run `npm run dev`
+- Launch web app from `localhost:3000`
+- (optional) Launch GraphiQL app from `localhost:8000/api`
 
 **Note:** `Project doesn't adapt to varying screen sizes; designed and tested on a monitor having resolution 2560 x 1080 with 100% display scaling, checked to appear fine on 1920 x 1080 at 125% scaling. For other configurations, front-end design may look out of place.`
