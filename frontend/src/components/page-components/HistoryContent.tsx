@@ -2,9 +2,20 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 
+import BookDetailsModal from '../BookDetailsModal';
+
 import AuthContext from '../../context/auth-context';
 
 import './HistoryContent.scss';
+
+interface IBook {
+  bookID: string;
+  title: string;
+  category: string;
+  authors: { name: string }[];
+  abstract: string;
+  quantity: number;
+}
 
 export default function HistoryContent() {
   const authContext = useContext(AuthContext);
@@ -17,6 +28,7 @@ export default function HistoryContent() {
 
   const [dataFetched, setDataFetched] = useState(false);
   const [userHistory, setUserHistory] = useState([]);
+  const [viewingBookID, setViewingBookID] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -98,7 +110,11 @@ export default function HistoryContent() {
               {userHistory.map((transaction: any, index) => (
                 <tr key={`history-item-${index}`}>
                   <td>{transaction.transID}</td>
-                  <td>{transaction.bookID}</td>
+                  <td className="history-book-detail-btn">
+                    <span onClick={() => setViewingBookID(transaction.bookID)}>
+                      {transaction.bookID}
+                    </span>
+                  </td>
                   <td>{parseDate(transaction.borrowDate)}</td>
                   <td>{transaction.returnDate ? parseDate(transaction.returnDate) : '-'}</td>
                   <td
@@ -122,6 +138,9 @@ export default function HistoryContent() {
       )}
       {dataFetched && userHistory.length === 0 && (
         <div className="no-transaction">No Transaction History</div>
+      )}
+      {viewingBookID && (document.body.style.overflow = 'hidden') && (
+        <BookDetailsModal book={null} bookID={viewingBookID} setBook={setViewingBookID} />
       )}
     </div>
   );

@@ -82,8 +82,7 @@ export default function BrowseListContent(props: {
   useEffect(() => {
     (async () => {
       const response = await fetchGraphQLResponse(
-        `
-          query bookSearch($queryString: String!) {
+        `query bookSearch($queryString: String!) {
             bookSearch(queryString: $queryString) {
               bookID
               title
@@ -259,9 +258,8 @@ export default function BrowseListContent(props: {
           ))}
         </div>
       )}
-      {viewingBookDetails && (document.body.style.overflow = 'hidden')}
-      {viewingBookDetails && (
-        <BookDetailsModal book={viewingBookDetails} setBook={setViewingBookDetails} />
+      {viewingBookDetails && (document.body.style.overflow = 'hidden') && (
+        <BookDetailsModal book={viewingBookDetails} bookID={null} setBook={setViewingBookDetails} />
       )}
     </React.Fragment>
   );

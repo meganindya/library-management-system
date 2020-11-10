@@ -164,6 +164,22 @@
               &.status-pending-overdue {
                 color: red;
               }
+
+              &.history-book-detail-btn {
+                span {
+                  padding: 0.25rem 0.5rem;
+                  border: 1px solid $darkgray;
+                  border-radius: 0.25rem;
+                  background: $lightgray;
+                  cursor: pointer;
+                  transition: all 0.25s ease;
+
+                  &:hover {
+                    color: white;
+                    background: $accent;
+                  }
+                }
+              }
             }
 
             &:first-of-type td {
