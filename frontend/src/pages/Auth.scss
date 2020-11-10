@@ -6,6 +6,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: flex-end;
 
   #auth-back-shape {
@@ -34,8 +35,8 @@
     z-index: 2;
     top: 50%;
     transform: translateY(-50%);
-    width: 100vw;
-    padding: 4rem 0;
+    padding: 5rem 10rem;
+    border-radius: 0.5rem;
     display: grid;
     align-items: center;
     justify-content: center;
