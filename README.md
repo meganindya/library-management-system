@@ -2,18 +2,38 @@
 
 ## Project Statement
 
-There are two types of users: **student** and **faculty**. They can browse books available. For
-students the maximum duration to hold a title is 30 days and for faculty it is 180 days. 5 and 8 are
-the upper limits of holding number of books for student and faculty, respectively. Same title cannot
-be issued to a user. Holding a title more than the speculated duration will be charged ₹ 1/- per
-day. A mail will be sent as a warning two days before the due date of each title held.
+There are two types of users: **student** and **faculty**. They can browse books available. For students the maximum duration to hold a title is 30 days and for faculty it is 180 days. 5 and 8 are the upper limits of holding number of books for student and faculty respectively. Same title cannot be issued to a user. Holding a title more than the speculated duration will be charged ₹ 1/- per day. A mail will be sent as a warning two days before the due date of each title held.
+
+## Tech Stack
+
+### So far (project in progress)
+
+The project is built using the _MERN_ stack. `TypeScript` instead of conventional `JavaScript` is used throught.
+
+#### Front end
+
+- React JS
+- SASS
+
+#### Back end
+
+- Node JS
+- Express
+- GraphQL (Node JS)
+- Mongo DB (Atlas - AWS)
+- Mongoose
+
+### Further intended
+
+- RabbitMQ
+- PostgreSQL (GCP)
 
 ## How to Run
 
 - Install Node JS
 - Clone Repository
-- Navigate to each of `frontend` and `backend` directories and run (in terminal): `npm ci`
-- Thereafter, in `frontend` directory and run: `npm start`
-- Thereafter, in `backend` directory and run: `npm run dev`
+- Navigate to each of `frontend` and `backend` directories and run (in terminal) `npm ci`
+- Thereafter, in `frontend` directory and run `npm start`
+- Thereafter, in `backend` directory and run `npm run dev`
 
 **Note:** `Project doesn't adapt to varying screen sizes; designed and tested on a monitor having resolution 2560 x 1080 with 100% display scaling, checked to appear fine on 1920 x 1080 at 125% scaling. For other configurations, front-end design may look out of place.`
