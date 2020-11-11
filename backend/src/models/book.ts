@@ -3,8 +3,9 @@ import { IBook } from '../@types/book';
 
 const { Schema } = mongoose;
 
-export interface IBookDoc extends IBook, mongoose.Document {
-    _doc: IBook | PromiseLike<IBook>;
+export interface IBookDoc extends Omit<IBook, 'authors'>, mongoose.Document {
+    authors: string[];
+    _doc: IBook;
 }
 
 const bookSchema = new Schema({
@@ -13,7 +14,7 @@ const bookSchema = new Schema({
     category: { type: String, required: true },
     abstract: { type: String, required: false },
     quantity: { type: Number, required: true },
-    authors: { type: [Schema.Types.ObjectId], ref: 'Author', required: false }
+    authors: { type: [String], required: true }
 });
 
 export default mongoose.model<IBookDoc>('Book', bookSchema);

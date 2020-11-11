@@ -4,7 +4,7 @@ import { IUser } from '../@types/user';
 const { Schema } = mongoose;
 
 export interface IUserDoc extends IUser, mongoose.Document {
-    _doc: IUser | PromiseLike<IUser>;
+    _doc: IUser;
 }
 
 const userSchema = new Schema({

@@ -1,16 +1,36 @@
-import { IBook } from '../../@types/book';
+import { IBook, IBookInp } from '../../@types/book';
+import { IAuthor } from '../../@types/author';
 import Book, { IBookDoc } from '../../models/book';
 import Author from '../../models/author';
-import { IAuthor } from '../../@types/author';
-import { BookMutations } from '../fields/book';
 
-async function transformBook(book: IBookDoc) {
+// -- Utilities ------------------------------------------------------------------------------------
+
+async function getAuthorDocs(authorIDs: string[]): Promise<IAuthor[]> {
     let authors: IAuthor[] = [];
-    for (let authorID of book.authors) {
-        const author = await Author.findOne({ _id: authorID });
-        if (author) authors.push(author);
+    for (let authorID of authorIDs) {
+        if (typeof authorID !== 'string') continue;
+        const author = await Author.findOne({ authorID });
+        if (!author) continue;
+        let books: IBook[] = [];
+        for (let bookID of author.books) {
+            const bookDoc = await Book.findOne({ bookID });
+            if (bookDoc) books.push(await transformBook(bookDoc));
+        }
+        authors.push({ ...author._doc, books });
     }
-    return { ...book._doc, authors };
+    return authors;
+}
+
+async function transformBook(book: IBookDoc): Promise<IBook> {
+    return { ...book._doc, authors: async () => await getAuthorDocs(book.authors) };
+}
+
+// -- Query Resolvers ------------------------------------------------------------------------------
+
+export async function categories(): Promise<{ categoryName: string }[]> {
+    let categorySet = new Set<string>();
+    (await Book.find({})).forEach((book) => categorySet.add(book.category));
+    return [...categorySet].map((category) => ({ categoryName: category }));
 }
 
 export async function bookSearch(queryString: string): Promise<IBook[]> {
@@ -19,37 +39,51 @@ export async function bookSearch(queryString: string): Promise<IBook[]> {
 }
 
 export async function book(bookID: string): Promise<IBook | null> {
-    const book = await Book.findOne({ bookID: bookID });
-    return !book ? null : transformBook(book);
+    const bookDoc = await Book.findOne({ bookID });
+    return !bookDoc ? null : transformBook(bookDoc);
 }
 
 export async function books(): Promise<IBook[]> {
-    const books = await Book.find({});
-    return await Promise.all(books.map(async (book) => transformBook(book)));
+    const bookDocs = await Book.find({});
+    return await Promise.all(bookDocs.map(async (book) => transformBook(book)));
 }
 
-export async function categories(): Promise<{ categoryName: string }[]> {
-    const books = await Book.find({});
-    let categories: string[] = [];
-    for (let book of books) {
-        if (categories.indexOf(book.category) === -1) {
-            categories.push(book.category);
-        }
-    }
-    return categories.map((category) => ({ categoryName: category }));
-}
+// -- Mutation Resolvers ---------------------------------------------------------------------------
 
-export async function addBook(input: IBook): Promise<IBook> {
-    const existingBook = await Book.findOne({ bookID: input.bookID });
-    if (existingBook) throw new Error('Book already exists');
+export async function addBook(input: IBookInp): Promise<IBook> {
+    // book with bookID already exists
+    if (await Book.findOne({ bookID: input.bookID })) throw new Error('Book already exists');
+
     const book: IBookDoc = new Book({ ...input });
-    const doc: IBookDoc = await book.save();
+    const bookDoc: IBookDoc = await book.save();
+
+    // update books lists for corresponding authors
     for (let authorID of input.authors) {
-        const author = await Author.findOne({ _id: authorID });
+        if (typeof authorID !== 'string') continue;
+        const author = await Author.findOne({ authorID });
         if (!author) continue;
         let books = author.books;
-        books.push(doc._id);
+        books.push(bookDoc.bookID);
         await Author.updateOne({ _id: authorID }, { books });
     }
-    return { ...doc._doc };
+
+    return { ...bookDoc._doc };
+}
+
+// -- Temporary ------------------------------------------------------------------------------------
+
+export async function tempBookAction() {
+    const bookDocs = await Book.find({});
+    for (let i in bookDocs) {
+        const bookDoc = bookDocs[i];
+        const authorIDs: string[] = [];
+        for (let authorID of bookDoc.authors) {
+            if (typeof authorID !== 'string') continue;
+            authorIDs.push('A' + authorID.substring(1));
+        }
+        console.log(authorIDs);
+        await Book.updateOne({ bookID: bookDoc.bookID }, { $set: { authors: authorIDs } });
+    }
+    const bookDocsNew = await Book.find({});
+    return await Promise.all(bookDocsNew.map(async (book) => transformBook(book)));
 }

@@ -6,5 +6,9 @@ export interface IBook {
     category: string;
     abstract: string | null;
     quantity: int;
-    authors: IAuthor[] | string[];
+    authors: IAuthor[] | Function;
+}
+
+export interface IBookInp extends Omit<IBook, 'authors'> {
+    authors: string[];
 }

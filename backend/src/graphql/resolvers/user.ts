@@ -4,72 +4,32 @@ import jwt from 'jsonwebtoken';
 import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
 
+// -- Query Resolvers ------------------------------------------------------------------------------
+
 export async function login(userID: string, password: string): Promise<IUserAuth> {
     const user = await User.findOne({ userID });
-
-    if (!user) {
-        throw new Error('user does not exist');
-    }
-
-    const isPassEqual: boolean = await bcrypt.compare(password, user.password);
-    if (!isPassEqual) {
-        throw new Error('password is incorrect');
-    }
-
-    const token = jwt.sign(
-        {
-            userID: user.userID,
-            email: user.email
-        },
-        'privatekey',
-        {
-            expiresIn: '1h'
-        }
-    );
-    return { userID: user.userID, type: user.type, token: token, tokenExpiration: 1 };
+    if (!user) throw new Error('user does not exist');
+    // check password hash match
+    if (!(await bcrypt.compare(password, user.password))) throw new Error('password is incorrect');
+    // generate token
+    const token = jwt.sign({ userID, email: user.email }, 'privatekey', { expiresIn: '1h' });
+    return { userID, type: user.type, token, tokenExpiration: 1 };
 }
 
-export async function user(userID: string): Promise<IUser | null> {
+export async function user(userID: string): Promise<Partial<IUser> | null> {
+    // find user with userID: `userID`
     const user = await User.findOne({ userID: userID });
-    if (!user) {
-        return null;
-    }
-    return {
-        userID: user.userID,
-        firstName: user.firstName,
-        middleName: user.middleName,
-        lastName: user.lastName,
-        email: user.email,
-        password: '',
-        type: user.type,
-        points: user.points
-    };
+    return !user ? null : { ...user._doc, password: '' };
 }
 
-export async function users(): Promise<IUser[]> {
-    const users = await User.find({});
-    return users.map((user) => ({
-        userID: user.userID,
-        firstName: user.firstName,
-        middleName: user.middleName,
-        lastName: user.lastName,
-        email: user.email,
-        password: '',
-        type: user.type,
-        points: user.points
-    }));
-}
+// -- Mutation Resolvers ---------------------------------------------------------------------------
 
 export async function addUser(input: IUser): Promise<IUser> {
-    const existingUser = await User.findOne({ userID: input.userID });
-    if (existingUser) throw new Error('User already exists');
-
+    // check if userID exists
+    if (await User.findOne({ userID: input.userID })) throw new Error('user already exists');
+    // hash password with 12 rounds of salting
     const hashedPass = await bcrypt.hash(input.password, 12);
-    const user: IUserDoc = new User({
-        ...input,
-        password: hashedPass,
-        points: 0
-    });
-    let doc: IUserDoc = await user.save();
-    return { ...doc._doc, password: '' };
+    const user: IUserDoc = new User({ ...input, password: hashedPass, points: 0 });
+    let userDoc: IUserDoc = await user.save();
+    return { ...userDoc._doc, password: '' };
 }

@@ -4,7 +4,7 @@ import { ITransaction } from '../@types/transaction';
 const { Schema } = mongoose;
 
 export interface ITransactionDoc extends ITransaction, mongoose.Document {
-    _doc: ITransaction | PromiseLike<ITransaction>;
+    _doc: ITransaction;
 }
 
 const transactionSchema = new Schema({
@@ -23,7 +23,4 @@ const transactionSchema = new Schema({
     returnDate: { type: String, required: false }
 });
 
-export default mongoose.model<ITransactionDoc>(
-    'Transaction',
-    transactionSchema
-);
+export default mongoose.model<ITransactionDoc>('Transaction', transactionSchema);
