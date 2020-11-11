@@ -10,15 +10,7 @@ export interface ITransactionDoc extends ITransaction, mongoose.Document {
 const transactionSchema = new Schema({
     transID: { type: String, required: true },
     userID: { type: String, required: true },
-    userKey: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
     bookID: { type: String, required: true },
-    bookKey: {
-        type: Schema.Types.ObjectId,
-        ref: 'Book'
-    },
     borrowDate: { type: String, required: true },
     returnDate: { type: String, required: false }
 });

@@ -1,23 +1,18 @@
-import {
-    GraphQLFieldConfigMap,
-    GraphQLList,
-    GraphQLNonNull,
-    GraphQLScalarType,
-    GraphQLString
-} from 'graphql';
+import { GraphQLFieldConfigMap, GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { GQLTransaction } from '../types/transaction';
 import {
     borrowBook,
     outstanding,
     pending,
     returnBook,
-    transactions
+    transactions,
+    tempTransactionAction
 } from '../resolvers/transaction';
 
 export const TransactionQueries: GraphQLFieldConfigMap<any, any> = {
     transactions: {
         type: GraphQLList(GQLTransaction),
-        description: 'A list of transactions for a user',
+        description: 'A list of all transactions for a user',
         args: {
             userID: { type: GraphQLNonNull(GraphQLString) }
         },
@@ -25,7 +20,7 @@ export const TransactionQueries: GraphQLFieldConfigMap<any, any> = {
     },
     pending: {
         type: GraphQLList(GQLTransaction),
-        description: 'A list of pending transactions',
+        description: 'A list of pending transactions for a user',
         args: {
             userID: { type: GraphQLNonNull(GraphQLString) }
         },
@@ -33,7 +28,7 @@ export const TransactionQueries: GraphQLFieldConfigMap<any, any> = {
     },
     outstanding: {
         type: GraphQLList(GQLTransaction),
-        description: 'A list of outstanding transactions',
+        description: 'A list of outstanding transactions for a user',
         args: {
             userID: { type: GraphQLNonNull(GraphQLString) }
         },
@@ -44,7 +39,7 @@ export const TransactionQueries: GraphQLFieldConfigMap<any, any> = {
 export const TransactionMutations: GraphQLFieldConfigMap<any, any> = {
     borrowBook: {
         type: GQLTransaction,
-        description: 'This opens a transaction record',
+        description: 'Opens a transaction record',
         args: {
             userID: { type: GraphQLNonNull(GraphQLString) },
             bookID: { type: GraphQLNonNull(GraphQLString) }
@@ -53,10 +48,16 @@ export const TransactionMutations: GraphQLFieldConfigMap<any, any> = {
     },
     returnBook: {
         type: GQLTransaction,
-        description: 'This closes a transaction record',
+        description: 'Closes a transaction record',
         args: {
             transID: { type: GraphQLNonNull(GraphQLString) }
         },
         resolve: (_, args) => returnBook(args.transID)
+    },
+    // temporary
+    tempTransactionAction: {
+        type: GraphQLList(GQLTransaction),
+        description: 'Does some temporary transaction action',
+        resolve: tempTransactionAction
     }
 };
