@@ -11,14 +11,10 @@ import './DashboardContent.scss';
 
 export default function DashboardContent() {
   const authContext = useContext(AuthContext);
-  const [allowedDays, setAllowedDays] = useState(-1);
-  useEffect(() => {
-    if (authContext.type) {
-      setAllowedDays(authContext.type === 'Student' ? 30 : 180);
-    }
-  }, [authContext.type]);
+  const browserHistory = useHistory();
 
-  const [dataFetched, setDataFetched] = useState(false);
+  // -- Data Fetch Operations ----------------------------------------------------------------------
+
   const [userDetails, setUserDetails] = useState<{
     userID: string;
     name: string;
@@ -26,12 +22,7 @@ export default function DashboardContent() {
     type: string;
     points: number;
   } | null>(null);
-  const [transactions, setTransactions] = useState([]);
-  const [userPending, setUserPending] = useState([]);
-  const [userOutstanding, setUserOutstanding] = useState([]);
-  const [viewingBookID, setViewingBookID] = useState<string | null>(null);
-  const [returning, setReturning] = useState<string | null>(null);
-
+  // fetch user details on mount
   useEffect(() => {
     (async () => {
       const response = await fetchGraphQLResponse(
@@ -52,8 +43,6 @@ export default function DashboardContent() {
 
       if (!response) return;
 
-      console.log(response.data.user);
-
       const { userID, firstName, middleName, lastName, email, type, points } = response.data.user;
       const name = (
         (firstName.trim() + ' ' + middleName.trim()).trim() +
@@ -65,13 +54,14 @@ export default function DashboardContent() {
     })();
   }, []);
 
-  const browserHistory = useHistory();
-
+  const [pendingFetched, setPendingFetched] = useState(false);
+  const [userPending, setUserPending] = useState([]);
+  // fetch pending transactions on mount
   useEffect(() => {
     (async () => {
       const response = await fetchGraphQLResponse(
-        `query transactions($userID: String!) {
-          transactions(userID: $userID) {
+        `query pending($userID: String!) {
+          pending(userID: $userID) {
             transID
             bookID
             borrowDate
@@ -79,70 +69,90 @@ export default function DashboardContent() {
           }
         }`,
         { userID: authContext.userID },
-        'Transactions Fetch Failed'
+        'Pending Transactions Fetch Failed'
       );
 
       if (!response) return;
 
-      setDataFetched(true);
-
-      setTransactions(response.data.transactions);
+      if (response.errors) {
+        console.error(response.errors[0].message);
+      } else {
+        setUserPending(response.data.pending);
+        setPendingFetched(true);
+      }
     })();
   }, []);
 
-  const parseDate = (isodate: string, addToDate?: number) => {
-    let date = new Date(isodate);
-    if (addToDate) date.setDate(date.getDate() + addToDate);
-    return date.toUTCString();
-  };
-
-  const getDiff = (borrowDate: string, returnDate: string): number => {
-    return Math.round(
-      (new Date(returnDate).valueOf() - new Date(borrowDate).valueOf()) / (1000 * 60 * 60 * 24)
-    );
-  };
-
-  const getRemainingDays = (borrowDate: string): number => {
-    return Math.round(
-      (new Date(parseDate(borrowDate, allowedDays)).valueOf() - new Date().valueOf()) /
-        (1000 * 60 * 60 * 24)
-    );
-  };
-
-  const getRemainingString = (borrowDate: string): string => {
-    const remainingDays = getRemainingDays(borrowDate);
-    return remainingDays < 0
-      ? `${Math.abs(remainingDays)} days overdue`
-      : `${remainingDays} days remaining`;
-  };
-
-  const getOutstanding = (borrowDate: string, returnDate: string) => {
-    return !returnDate
-      ? Math.abs(getRemainingDays(borrowDate))
-      : getDiff(borrowDate, returnDate) - allowedDays;
-  };
-
+  const [outstandingFetched, setOutstandingFetched] = useState(false);
+  const [userOutstanding, setUserOutstanding] = useState([]);
+  // fetch outstanding transactions on mount
   useEffect(() => {
-    setUserPending(
-      transactions
-        .filter((transaction: any) => !transaction.returnDate)
-        .sort(
-          (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
-        )
-    );
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query outstanding($userID: String!) {
+          outstanding(userID: $userID) {
+            transID
+            bookID
+            borrowDate
+            returnDate
+          }
+        }`,
+        { userID: authContext.userID },
+        'Outstanding Transactions Fetch Failed'
+      );
 
-    setUserOutstanding(
-      transactions
-        .filter((transaction: any) =>
-          transaction.returnDate
-            ? getDiff(transaction.borrowDate, transaction.returnDate) > allowedDays
-            : getRemainingDays(transaction.borrowDate) < 0
-        )
-        .sort(
-          (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
-        )
-    );
-  }, [transactions]);
+      if (!response) return;
+
+      if (response.errors) {
+        console.error(response.errors[0].message);
+      } else {
+        setUserOutstanding(response.data.outstanding);
+        setOutstandingFetched(true);
+      }
+    })();
+  }, []);
+
+  // -----------------------------------------------------------------------------------------------
+
+  const [allowedDays, setAllowedDays] = useState(999);
+  useEffect(() => {
+    if (authContext.type) {
+      setAllowedDays(authContext.type === 'Student' ? 30 : 180);
+    }
+  }, [authContext.type]);
+
+  const [viewingBookID, setViewingBookID] = useState<string | null>(null);
+  const [returning, setReturning] = useState<string | null>(null);
+
+  // -- Date Operations ----------------------------------------------------------------------------
+
+  const dayMillis = 24 * 60 * 60 * 1000;
+
+  const dateString = (isodate: string | number): string => new Date(isodate).toUTCString();
+
+  const inMillis = (isodate: string | number): number => new Date(isodate).getTime();
+
+  const dueDateMillis = (borrowDate: string): number => {
+    return inMillis(inMillis(borrowDate) + allowedDays * dayMillis);
+  };
+
+  const remainingDays = (borrowDate: string): number => {
+    return Math.round((dueDateMillis(borrowDate) - new Date().getTime()) / dayMillis);
+  };
+
+  const remainingDaysString = (borrowDate: string): string => {
+    const remaining = remainingDays(borrowDate);
+    console.log(new Date(borrowDate), remaining);
+    return `${Math.abs(remaining)} days ${remaining < 0 ? 'overdue' : 'remaining'}`;
+  };
+
+  const outstanding = (borrowDate: string, returnDate: string | null): number => {
+    return !returnDate
+      ? Math.abs(remainingDays(borrowDate))
+      : Math.round((inMillis(returnDate) - dueDateMillis(borrowDate)) / dayMillis);
+  };
+
+  // -----------------------------------------------------------------------------------------------
 
   const returnHandler = async (transID: string) => {
     const response = await fetchGraphQLResponse(
@@ -174,8 +184,8 @@ export default function DashboardContent() {
         </div>
       )}
       <h2>Pending returns</h2>
-      {!dataFetched && <div className="rolling"></div>}
-      {dataFetched && userPending.length > 0 && (
+      {!pendingFetched && <div className="rolling"></div>}
+      {pendingFetched && userPending.length > 0 && (
         <div id="pending-table" className="transaction-table">
           <table>
             <thead>
@@ -196,12 +206,12 @@ export default function DashboardContent() {
                       {transaction.bookID}
                     </span>
                   </td>
-                  <td>{parseDate(transaction.borrowDate)}</td>
-                  <td>{parseDate(transaction.borrowDate, allowedDays)}</td>
+                  <td>{dateString(transaction.borrowDate)}</td>
+                  <td>{dateString(dueDateMillis(transaction.borrowDate))}</td>
                   <td>
                     <button
                       className={
-                        getRemainingDays(transaction.borrowDate) < 0
+                        remainingDays(transaction.borrowDate) < 0
                           ? 'return-btn-due'
                           : 'return-btn-ok'
                       }
@@ -212,7 +222,7 @@ export default function DashboardContent() {
                     >
                       {transaction.transID === returning && <div className="rolling-3"></div>}
                       {transaction.transID !== returning &&
-                        getRemainingString(transaction.borrowDate)}
+                        remainingDaysString(transaction.borrowDate)}
                     </button>
                   </td>
                 </tr>
@@ -221,12 +231,12 @@ export default function DashboardContent() {
           </table>
         </div>
       )}
-      {dataFetched && userPending.length === 0 && (
+      {pendingFetched && userPending.length === 0 && (
         <div className="no-transaction">No Pending Transactions</div>
       )}
       <h2>Outstanding transactions</h2>
-      {!dataFetched && <div className="rolling"></div>}
-      {dataFetched && userOutstanding.length > 0 && (
+      {!outstandingFetched && <div className="rolling"></div>}
+      {outstandingFetched && userOutstanding.length > 0 && (
         <div id="outstanding-table" className="transaction-table">
           <table>
             <thead>
@@ -247,9 +257,9 @@ export default function DashboardContent() {
                       {transaction.bookID}
                     </span>
                   </td>
-                  <td>{parseDate(transaction.borrowDate)}</td>
-                  <td>{!transaction.returnDate ? '-' : parseDate(transaction.returnDate)}</td>
-                  <td>{getOutstanding(transaction.borrowDate, transaction.returnDate)}</td>
+                  <td>{dateString(transaction.borrowDate)}</td>
+                  <td>{!transaction.returnDate ? '-' : dateString(transaction.returnDate)}</td>
+                  <td>{outstanding(transaction.borrowDate, transaction.returnDate)}</td>
                 </tr>
               ))}
             </tbody>
@@ -257,7 +267,7 @@ export default function DashboardContent() {
           {/* <div id="pay-outstanding">{totalOutstanding}</div> */}
         </div>
       )}
-      {dataFetched && userOutstanding.length === 0 && (
+      {outstandingFetched && userOutstanding.length === 0 && (
         <div className="no-transaction">No Outstanding Transactions</div>
       )}
       {viewingBookID && (document.body.style.overflow = 'hidden') && (
