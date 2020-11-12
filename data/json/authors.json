@@ -1,0 +1,63 @@
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a5c"},"books":["BK1000001"],"name":"P. D. Dahiya","__v":0,"authorID":"A00000001"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a5d"},"books":["BK1000002"],"name":"Rajiv Ahir","__v":0,"authorID":"A00000002"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a5e"},"books":["BK1000003"],"name":"Shashi Tharoor","__v":0,"authorID":"A00000003"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a5f"},"books":["BK1000004"],"name":"Edward Albert","__v":0,"authorID":"A00000004"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a60"},"books":["BK1000005","BK1000052"],"name":"Norman Lewis","__v":0,"authorID":"A00000005"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a61"},"books":["BK1000006"],"name":"Majid Hussain","__v":0,"authorID":"A00000006"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a62"},"books":["BK1000007"],"name":"G. C. Leong","__v":0,"authorID":"A00000007"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a63"},"books":["BK1000008"],"name":"Nitin Sangwan","__v":0,"authorID":"A00000008"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a64"},"books":["BK1000008"],"name":"Seema","__v":0,"authorID":"A00000009"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a65"},"books":["BK1000009"],"name":"Harlambos","__v":0,"authorID":"A00000010"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a66"},"books":["BK1000009"],"name":"Holborn","__v":0,"authorID":"A00000011"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a67"},"books":["BK1000010"],"name":"Nadeem Hasnain","__v":0,"authorID":"A00000012"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a68"},"books":["BK1000011"],"name":"G. W. Brown","__v":0,"authorID":"A00000013"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a69"},"books":["BK1000011"],"name":"I. McLean","__v":0,"authorID":"A00000014"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a6a"},"books":["BK1000011"],"name":"A. McMillan","__v":0,"authorID":"A00000015"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a6b"},"books":["BK1000012"],"name":"F. Nietzsche","__v":0,"authorID":"A00000016"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a6c"},"books":["BK1000014","BK1000013","BK1000050"],"name":"ME Editorial Board","__v":0,"authorID":"A00000017"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a6d"},"books":["BK1000015"],"name":"H. C. Taneja","__v":0,"authorID":"A00000018"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a6e"},"books":["BK1000016"],"name":"Matt Parker","__v":0,"authorID":"A00000019"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a6f"},"books":["BK1000017","BK1000018"],"name":"Ravish R. Singh","__v":0,"authorID":"A00000020"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a70"},"books":["BK1000017","BK1000018"],"name":"Mukul Bhatt","__v":0,"authorID":"A00000021"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a71"},"books":["BK1000019"],"name":"Mahesh C. Jain","__v":0,"authorID":"A00000022"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a72"},"books":["BK1000020"],"name":"H. K. Dass","__v":0,"authorID":"A00000023"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a73"},"books":["BK1000020"],"name":"Rama Verma","__v":0,"authorID":"A00000024"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a74"},"books":["BK1000021"],"name":"Albert Einstein","__v":0,"authorID":"A00000025"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a75"},"books":["BK1000022"],"name":"David J. Griffiths","__v":0,"authorID":"A00000026"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a76"},"books":["BK1000023"],"name":"Murray Spiegel","__v":0,"authorID":"A00000027"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a77"},"books":["BK1000023"],"name":"Seymour Lipschutz","__v":0,"authorID":"A00000028"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a78"},"books":["BK1000023"],"name":"Dennis Spellman","__v":0,"authorID":"A00000029"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a79"},"books":["BK1000024"],"name":"Bahl Arun","__v":0,"authorID":"A00000030"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a7a"},"books":["BK1000024"],"name":"Bahl B. S.","__v":0,"authorID":"A00000031"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a7b"},"books":["BK1000025"],"name":"P. Atkins","__v":0,"authorID":"A00000032"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a7c"},"books":["BK1000025"],"name":"Julio de Paula","__v":0,"authorID":"A00000033"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a7d"},"books":["BK1000026"],"name":"P. Sykes","__v":0,"authorID":"A00000034"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a7e"},"books":["BK1000027"],"name":"P. S. Kalsi","__v":0,"authorID":"A00000035"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a7f"},"books":["BK1000028"],"name":"J. D. Lee","__v":0,"authorID":"A00000036"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a80"},"books":["BK1000029","BK1000032"],"name":"R. Nageswara Rao","__v":0,"authorID":"A00000037"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a81"},"books":["BK1000031","BK1000030"],"name":"Allen Downey","__v":0,"authorID":"A00000038"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a82"},"books":["BK1000031"],"name":"R. Peters","__v":0,"authorID":"A00000039"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a83"},"books":["BK1000033"],"name":"GKP","__v":0,"authorID":"A00000040"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a84"},"books":["BK1000034"],"name":"Kogent Learning Solutions Inc.","__v":0,"authorID":"A00000041"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a85"},"books":["BK1000035"],"name":"Dreamtech Press","__v":0,"authorID":"A00000042"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a86"},"books":["BK1000037","BK1000036"],"name":"Narasimha Karumanchi","__v":0,"authorID":"A00000043"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a87"},"books":["BK1000038","BK1000040","BK1000039"],"name":"B. E. Paraskar","__v":0,"authorID":"A00000044"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a88"},"books":["BK1000039"],"name":"Amol Parashar","__v":0,"authorID":"A00000045"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a89"},"books":["BK1000041","BK1000040"],"name":"Suraj Mal","__v":0,"authorID":"A00000046"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a8a"},"books":["BK1000042"],"name":"V. S. Pillai","__v":0,"authorID":"A00000047"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a8b"},"books":["BK1000043","BK1000044"],"name":"Rajkumar Pillai","__v":0,"authorID":"A00000048"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a8c"},"books":["BK1000044"],"name":"Najimullah Khan","__v":0,"authorID":"A00000049"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a8d"},"books":["BK1000046","BK1000047","BK1000048"],"name":"IES Master","__v":0,"authorID":"A00000050"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a8e"},"books":["BK1000045"],"name":"Jasmeet Kaur","__v":0,"authorID":"A00000051"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a8f"},"books":["BK1000045"],"name":"Pradip Singhania","__v":0,"authorID":"A00000052"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a90"},"books":["BK1000049"],"name":"Disha Experts","__v":0,"authorID":"A00000053"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a91"},"books":["BK1000051"],"name":"Prem Vardhan","__v":0,"authorID":"A00000054"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a92"},"books":["BK1000053"],"name":"V. Tripathi","__v":0,"authorID":"A00000055"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a93"},"books":["BK1000053","BK1000054","BK1000055"],"name":"Seema Rozario","__v":0,"authorID":"A00000056"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a94"},"books":["BK1000056"],"name":"S. James","__v":0,"authorID":"A00000057"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a95"},"books":["BK1000057"],"name":"R. Upulala","__v":0,"authorID":"A00000058"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a96"},"books":["BK1000059","BK1000060"],"name":"Naman Rai","__v":0,"authorID":"A00000059"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a97"},"books":["BK1000058"],"name":"Gurbux Singh","__v":0,"authorID":"A00000060"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a98"},"books":["BK1000060"],"name":"Govardhan","__v":0,"authorID":"A00000061"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a99"},"books":["BK1000061"],"name":"Margaret Oliphant","__v":0,"authorID":"A00000062"}
+{"_id":{"$oid":"5f9f390895ef7c16b8e32a9a"},"books":["BK1000062"],"name":"Bipin Chandra","__v":0,"authorID":"A00000063"}

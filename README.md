@@ -30,6 +30,16 @@ The project is built using the _MERN_ stack. `TypeScript` instead of conventiona
 
 ## How to Run
 
+### Setup Database
+
+- Create a MongoDB Atlas account and then create a cluster.
+- Open collections in the cluster and visit the `Command Line Tools` tab.
+- Scroll down to `Data Import and Export Tools` section and copy the import string. It should look like `mongoimport --uri mongodb+srv://<USERNAME>:<PASSWORD>@cluster0.snhzr.mongodb.net/<DATABASE> --collection <COLLECTION> --type <FILETYPE> --file <FILENAME>`
+- Install MongoDB Tools and then open terminal.
+- Follow for all 4 files in [dummy database content](./data/json/): paste the string from above while filling the data in the `<...>` parts — for `DATABASE` use `library`, for `COLLECTION` use `authors`, `books`, `users`, `transactions` one at a time, for `FILETYPE` use `json`, and finally for `FILENAME` provide path to each file relative to the terminal's PWD.
+
+### Steps
+
 - Install Node JS
 - Clone Repository
 - Navigate to each of `frontend` and `backend` directories and run (in terminal) `npm ci`
