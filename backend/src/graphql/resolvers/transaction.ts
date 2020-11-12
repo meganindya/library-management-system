@@ -5,11 +5,20 @@ import Transaction, { ITransactionDoc } from '../../models/transaction';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
-const parseDate = (dateString: string): number => new Date(dateString).getTime();
-
-function sortTransactions(transactions: ITransaction[]): ITransaction[] {
-    return transactions.sort(
-        (a: ITransaction, b: ITransaction) => parseDate(b.borrowDate) - parseDate(a.borrowDate)
+function transformTransactions(transactionDocs: ITransactionDoc[]): ITransaction[] {
+    const dateString = (date: Date): string => date.toISOString();
+    return (
+        transactionDocs
+            // sort by decreasing order of borrowDate
+            .sort(
+                (a: ITransactionDoc, b: ITransactionDoc) =>
+                    b.borrowDate.getTime() - a.borrowDate.getTime()
+            )
+            .map((transactionDoc) => ({
+                ...transactionDoc._doc,
+                borrowDate: dateString(transactionDoc.borrowDate),
+                returnDate: transactionDoc.returnDate ? dateString(transactionDoc.returnDate) : null
+            }))
     );
 }
 
@@ -17,31 +26,31 @@ function sortTransactions(transactions: ITransaction[]): ITransaction[] {
 
 export async function transactions(userID: string): Promise<ITransaction[]> {
     const user = await User.findOne({ userID });
-    if (!user) throw new Error('No User found');
-    return sortTransactions(await Transaction.find({ userID: user.userID }));
+    if (!user) throw new Error('no user found');
+    return transformTransactions(await Transaction.find({ userID: user.userID }));
 }
 
 export async function pending(userID: string): Promise<ITransaction[]> {
     const user = await User.findOne({ userID });
-    if (!user) throw new Error('No User found');
+    if (!user) throw new Error('no user found');
     const transactions = await Transaction.find({ userID: user.userID });
-    return sortTransactions(transactions.filter((transaction) => !transaction.returnDate));
+    return transformTransactions(transactions.filter((transaction) => !transaction.returnDate));
 }
 
 export async function outstanding(userID: string): Promise<ITransaction[]> {
     const user = await User.findOne({ userID });
-    if (!user) throw new Error('No User found');
-    const transactions = await Transaction.find({ userKey: user._id });
-    return sortTransactions(
+    if (!user) throw new Error('no user found');
+    const transactions = await Transaction.find({ userID });
+    return transformTransactions(
         transactions.filter((transaction) => {
             const dueDate = new Date(
-                parseDate(transaction.borrowDate) +
+                transaction.borrowDate.getTime() +
                     (user.type === 'Student' ? 30 : 180) * 1000 * 60 * 60 * 24
             ).getTime();
             if (!transaction.returnDate) {
                 return new Date().getTime() > dueDate;
             } else {
-                return parseDate(transaction.returnDate) > dueDate;
+                return transaction.returnDate.getTime() > dueDate;
             }
         })
     );
@@ -73,7 +82,7 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
         transID,
         userID,
         bookID,
-        borrowDate: new Date().toISOString(),
+        borrowDate: new Date(),
         returnDate: null
     }).save();
 
@@ -90,10 +99,7 @@ export async function returnBook(transID: string): Promise<ITransaction | null> 
     if (transaction.returnDate) throw new Error('already returned');
 
     // update returnDate in transaction
-    await Transaction.updateOne(
-        { _id: transaction._id },
-        { $set: { returnDate: new Date().toISOString() } }
-    );
+    await Transaction.updateOne({ _id: transaction._id }, { $set: { returnDate: new Date() } });
     const updatedTransaction = await Transaction.findOne({ transID });
 
     // update book quantity
@@ -111,14 +117,5 @@ export async function returnBook(transID: string): Promise<ITransaction | null> 
 // -- Temporary ------------------------------------------------------------------------------------
 
 export async function tempTransactionAction(): Promise<ITransaction[]> {
-    const transactionDocs = await Transaction.find({});
-    for (let transactionDoc of transactionDocs) {
-        await Transaction.updateOne(
-            { transID: transactionDoc.transID },
-            { $unset: { userKey: 1, bookKey: 1 } }
-        );
-    }
-    return sortTransactions(
-        (await Transaction.find({})).map((transactionDoc) => transactionDoc._doc)
-    );
+    return transformTransactions(await Transaction.find({}));
 }
