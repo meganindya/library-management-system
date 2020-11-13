@@ -1,4 +1,10 @@
-import { GraphQLFieldConfigMap, GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
+import {
+    GraphQLBoolean,
+    GraphQLFieldConfigMap,
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLString
+} from 'graphql';
 import { GQLBook, GQLBookInp, GQLCategory } from '../types/book';
 import {
     addBook,
@@ -29,11 +35,13 @@ export const BookQueries: GraphQLFieldConfigMap<any, any> = {
         type: GraphQLList(GQLBook),
         description: 'A list of books whose titles have a match with query string',
         args: {
-            queryString: { type: GraphQLNonNull(GraphQLString) }
+            query: { type: GraphQLNonNull(GraphQLString) },
+            author: { type: GraphQLNonNull(GraphQLBoolean) },
+            category: { type: GraphQLNonNull(GraphQLString) }
         },
-        resolve: (_, args) => bookSearch(args.queryString)
+        resolve: (_, args) => bookSearch(args.query, args.author, args.category)
     },
-    // for debugging
+    // development
     books: {
         type: GraphQLList(GQLBook),
         description: 'A list of books',
@@ -42,14 +50,6 @@ export const BookQueries: GraphQLFieldConfigMap<any, any> = {
 };
 
 export const BookMutations: GraphQLFieldConfigMap<any, any> = {
-    addBook: {
-        type: GQLBook,
-        description: 'Creates a new book',
-        args: {
-            bookInput: { type: GQLBookInp }
-        },
-        resolve: (_, args) => addBook(args.bookInput)
-    },
     subscribe: {
         type: GQLBook,
         description: 'Subscribes a user to a book',
@@ -67,6 +67,15 @@ export const BookMutations: GraphQLFieldConfigMap<any, any> = {
             userID: { type: GraphQLNonNull(GraphQLString) }
         },
         resolve: (_, args) => unsubscribe(args.bookID, args.userID)
+    },
+    // development
+    addBook: {
+        type: GQLBook,
+        description: 'Creates a new book',
+        args: {
+            bookInput: { type: GQLBookInp }
+        },
+        resolve: (_, args) => addBook(args.bookInput)
     },
     //temporary
     tempBookAction: {

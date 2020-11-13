@@ -1,4 +1,5 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
+import { GQLBook } from './book';
 
 export const GQLTransaction = new GraphQLObjectType({
     name: 'Transaction',
@@ -8,6 +9,7 @@ export const GQLTransaction = new GraphQLObjectType({
         userID: { type: GraphQLNonNull(GraphQLString) },
         bookID: { type: GraphQLNonNull(GraphQLString) },
         borrowDate: { type: GraphQLNonNull(GraphQLString) },
-        returnDate: { type: GraphQLString }
+        returnDate: { type: GraphQLString },
+        book: { type: GQLBook }
     }
 });

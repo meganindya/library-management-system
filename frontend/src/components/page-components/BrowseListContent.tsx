@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Select from 'react-select';
 
+import { IBook } from '../../@types/book';
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 
 import BookDetailsModal from '../BookDetailsModal';
@@ -13,109 +15,98 @@ import AuthContext from '../../context/auth-context';
 
 import './BrowseListContent.scss';
 
-interface IBook {
-  bookID: string;
-  title: string;
-  category: string;
-  authors: { name: string }[];
-  abstract: string;
-  quantity: number;
-}
-
 export default function BrowseListContent(props: {
   categories: string[];
   searchQuery: {
-    queryString: string;
-    queryCategory: string;
+    query: string;
+    category: string;
   };
   resetGlobalSearchQuery: Function;
 }) {
   const authContext = useContext(AuthContext);
+  const browserHistory = useHistory();
+
   const [borrowLimit, setBorrowLimit] = useState(-1);
+  // update user borrowing limit when user type changes
   useEffect(() => {
     if (authContext.type) {
       setBorrowLimit(authContext.type === 'Student' ? 5 : 8);
     }
   }, [authContext.type]);
 
-  const [searchQuery, setSearchQuery] = useState<{
-    queryString: string;
-    queryCategory: string;
-  }>(props.searchQuery);
-  const [loading, setLoading] = useState(true);
-  const [prevBorrowedIDs, setPrevBorrowedIDs] = useState<string[]>([]);
-  const [borrowedIDs, setBorrowedIDs] = useState<string[]>([]);
-  const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
-  const [viewingBookDetails, setViewingBookDetails] = useState<IBook | null>(null);
-  const [borrowing, setBorrowing] = useState<string | null>(null);
-  const [subscribing, setSubscribing] = useState<string | null>(null);
+  // -- Data Fetch Operations ----------------------------------------------------------------------
 
-  const browserHistory = useHistory();
-
+  const [notifications, setNotifications] = useState<string[]>([]);
+  const [borrowedCurr, setBorrowedCurr] = useState<string[]>([]);
+  const [borrowedPrev, setBorrowedPrev] = useState<string[]>([]);
+  // fetch subscribed, currently borrowed, and previously borrowed bookIDs on mount
   useEffect(() => {
     (async () => {
       const response = await fetchGraphQLResponse(
-        `query transactions($userID: String!) {
-          transactions(userID: $userID) {
-            bookID
-            returnDate
+        `query user($userID: String!) {
+          user(userID: $userID) {
+            notifications {
+              bookID
+            }
+            borrowedCurr
+            borrowedPrev
           }
         }`,
         { userID: authContext.userID },
-        'Borrowed Books Fetch Failed'
+        'borrowed books fetch failed'
       );
 
       if (!response) return;
 
-      setPrevBorrowedIDs(
-        response.data.transactions
-          .filter((entry: { bookID: string; returnDate: string | null }) => entry.returnDate)
-          .map((entry: Partial<{ bookID: string }>) => entry.bookID)
+      setNotifications(
+        response.data.user.notifications.map(
+          (notification: { bookID: string }) => notification.bookID
+        )
       );
-
-      setBorrowedIDs(
-        response.data.transactions
-          .filter((entry: { bookID: string; returnDate: string | null }) => !entry.returnDate)
-          .map((entry: Partial<{ bookID: string }>) => entry.bookID)
-      );
+      setBorrowedCurr(response.data.user.borrowedCurr);
+      setBorrowedPrev(response.data.user.borrowedPrev);
     })();
   }, []);
 
+  const [searchQuery, setSearchQuery] = useState<{ query: string; category: string }>(
+    props.searchQuery
+  );
+
+  const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
+  const [searchItemListFetched, setSearchItemListFetched] = useState(false);
+  // fetch search items list when search query changes
   useEffect(() => {
     (async () => {
       const response = await fetchGraphQLResponse(
-        `query bookSearch($queryString: String!) {
-            bookSearch(queryString: $queryString) {
-              bookID
-              title
-              category
-              authors {
-                name
-              }
-              abstract
-              quantity
+        `query bookSearch($query: String!, $author: Boolean!, $category: String!) {
+          bookSearch(query: $query, author: $author, category: $category) {
+            bookID
+            title
+            category
+            authors {
+              name
             }
-          }`,
-        { queryString: searchQuery.queryString },
-        'Book Search Failed'
+            abstract
+            quantity
+          }
+        }`,
+        { query: searchQuery.query, author: false, category: searchQuery.category },
+        'book search failed'
       );
 
       if (!response) return;
 
       setSearchItemsList(
-        response.data.bookSearch
-          .map((book: IBook) => ({
-            ...book,
-            authors: book.authors.map((author) => author.name)
-          }))
-          .filter((book: IBook) => {
-            if (searchQuery.queryCategory === 'Any category') return true;
-            else return book.category === searchQuery.queryCategory;
-          })
+        response.data.bookSearch.map((book: IBook) => ({
+          ...book,
+          authors: book.authors.map((author) => author.name)
+        }))
       );
-      setLoading(false);
+      setSearchItemListFetched(true);
     })();
   }, [searchQuery]);
+
+  // -- Callbacks ----------------------------------------------------------------------------------
 
   const borrowHandler = async (bookID: string) => {
     const response = await fetchGraphQLResponse(
@@ -149,6 +140,14 @@ export default function BrowseListContent(props: {
     browserHistory.push('/dashboard');
   };
 
+  // -- Transient states ---------------------------------------------------------------------------
+
+  const [viewingBookDetails, setViewingBookDetails] = useState<IBook | null>(null);
+  const [borrowingID, setBorrowingID] = useState<string | null>(null);
+  const [subscribingID, setSubscribingID] = useState<string | null>(null);
+
+  // -- Render -------------------------------------------------------------------------------------
+
   return (
     <React.Fragment>
       <div id="search-list-search-container">
@@ -161,7 +160,7 @@ export default function BrowseListContent(props: {
                 onClick={() => props.resetGlobalSearchQuery()}
               />
             </div>
-            {borrowedIDs.length >= borrowLimit && (
+            {borrowedCurr.length >= borrowLimit && (
               <div id="borrow-limit-disclaimer">
                 <span>You have reached borrow limit</span>
               </div>
@@ -169,44 +168,35 @@ export default function BrowseListContent(props: {
           </div>
           <div id="search-list-search-bar-wrap">
             <SearchBar
-              searchHandler={(queryString: string, activeSearch: boolean) => {
-                setLoading(!activeSearch);
-                setSearchQuery({
-                  queryString: queryString,
-                  queryCategory: searchQuery.queryCategory
-                });
+              searchHandler={(query: string, activeSearch: boolean) => {
+                setSearchItemListFetched(activeSearch);
+                setSearchQuery({ query, category: searchQuery.category });
               }}
-              initialValue={searchQuery.queryString}
+              initialValue={searchQuery.query}
               activeSearch={true}
             />
             <Select
               id="search-category-dropdown"
               options={[
-                { value: 'Any category', label: 'Any category' },
+                { value: 'Any Category', label: 'Any Category' },
                 ...props.categories.map((category) => ({
                   value: `${category}`,
                   label: `${category}`
                 }))
               ]}
-              defaultValue={{
-                value: `${searchQuery.queryCategory}`,
-                label: `${searchQuery.queryCategory}`
-              }}
+              defaultValue={{ value: `${searchQuery.category}`, label: `${searchQuery.category}` }}
               onChange={(option: any) => {
                 if (option) {
-                  setLoading(true);
-                  setSearchQuery({
-                    queryString: searchQuery.queryString,
-                    queryCategory: option.label
-                  });
+                  setSearchItemListFetched(false);
+                  setSearchQuery({ query: searchQuery.query, category: option.label });
                 }
               }}
             ></Select>
           </div>
         </div>
       </div>
-      {loading && <div className="rolling" style={{ marginTop: '3rem' }}></div>}
-      {!loading && (
+      {!searchItemListFetched && <div className="rolling" style={{ marginTop: '3rem' }}></div>}
+      {searchItemListFetched && (
         <div id="search-list-items" className="container">
           {searchItemsList.map((searchItem, index) => (
             <div className="search-item-block" key={index}>
@@ -218,7 +208,7 @@ export default function BrowseListContent(props: {
                   <h4 className="search-item-category">{searchItem.category}</h4>
                   <ul className="search-item-authors">
                     {searchItem.authors.map((author, index) => (
-                      <li key={`"${index}"`}>
+                      <li key={`search-item-author${index}`}>
                         <h4>{author}</h4>
                       </li>
                     ))}
@@ -226,7 +216,7 @@ export default function BrowseListContent(props: {
                 </div>
                 <div>
                   <p
-                    className="search-item-abstract"
+                    className="search-item-see-details"
                     onClick={() => setViewingBookDetails(searchItem)}
                   >
                     see details
@@ -234,63 +224,68 @@ export default function BrowseListContent(props: {
                   <div className="search-item-button-wrap">
                     {searchItem.quantity > 0 ? (
                       <h4>
-                        <React.Fragment>
-                          In shelf:&nbsp;<b>{searchItem.quantity}</b>
-                        </React.Fragment>
+                        In shelf:&nbsp;<b>{searchItem.quantity}</b>
                       </h4>
                     ) : (
                       <h4 style={{ color: 'coral' }}>Not in shelf</h4>
                     )}
-                    {borrowedIDs.length >= borrowLimit && (
+                    {borrowedCurr.length >= borrowLimit && (
                       <button style={{ background: 'none', color: 'white' }}>.</button>
                     )}
-                    {prevBorrowedIDs.indexOf(searchItem.bookID) !== -1 && (
+                    {borrowedPrev.indexOf(searchItem.bookID) !== -1 && (
                       <div className="borrowed-prev">
                         <FontAwesomeIcon icon={faClock} className="input-field-icon" />
                       </div>
                     )}
-                    {borrowedIDs.length < borrowLimit &&
-                      borrowedIDs.indexOf(searchItem.bookID) === -1 &&
-                      (searchItem.quantity > 0 ? (
+                    {borrowedCurr.length < borrowLimit &&
+                      searchItem.quantity > 0 &&
+                      borrowedCurr.indexOf(searchItem.bookID) === -1 && (
                         <button
                           className={`search-item-button-bor ${
-                            searchItem.bookID === borrowing ? 'search-item-button-rolling' : ''
+                            searchItem.bookID === borrowingID ? 'search-item-button-rolling' : ''
                           }`}
                           onClick={() => {
-                            setBorrowing(searchItem.bookID);
+                            setBorrowingID(searchItem.bookID);
                             borrowHandler(searchItem.bookID);
                           }}
                         >
-                          {searchItem.bookID === borrowing && <div className="rolling-3"></div>}
-                          {searchItem.bookID !== borrowing && (
+                          {searchItem.bookID === borrowingID && <div className="rolling-3"></div>}
+                          {searchItem.bookID !== borrowingID && (
                             <React.Fragment>
                               BORROW
                               <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
                             </React.Fragment>
                           )}
                         </button>
-                      ) : (
+                      )}
+                    {searchItem.quantity > 0 && borrowedCurr.indexOf(searchItem.bookID) !== -1 && (
+                      <h4 className="search-item-no-btn-text search-item-borrowed">borrowed</h4>
+                    )}
+                    {borrowedCurr.length < borrowLimit &&
+                      searchItem.quantity <= 0 &&
+                      notifications.indexOf(searchItem.bookID) === -1 && (
                         <button
                           className={`search-item-button-req ${
-                            searchItem.bookID === subscribing ? 'search-item-button-rolling' : ''
+                            searchItem.bookID === subscribingID ? 'search-item-button-rolling' : ''
                           }`}
                           onClick={() => {
-                            setSubscribing(searchItem.bookID);
+                            setSubscribingID(searchItem.bookID);
                             subscribeHandler(searchItem.bookID);
                           }}
                         >
-                          {searchItem.bookID === subscribing && <div className="rolling-3"></div>}
-                          {searchItem.bookID !== subscribing && (
+                          {searchItem.bookID === subscribingID && <div className="rolling-3"></div>}
+                          {searchItem.bookID !== subscribingID && (
                             <React.Fragment>
                               NOTIFY
                               <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
                             </React.Fragment>
                           )}
                         </button>
-                      ))}
-                    {borrowedIDs.indexOf(searchItem.bookID) !== -1 && (
-                      <h4 className="search-item-borrowed">borrowed</h4>
-                    )}
+                      )}
+                    {searchItem.quantity <= 0 &&
+                      notifications.indexOf(searchItem.bookID) !== -1 && (
+                        <h4 className="search-item-no-btn-text search-item-borrowed">borrowed</h4>
+                      )}
                   </div>
                 </div>
               </div>

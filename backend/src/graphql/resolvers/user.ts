@@ -3,7 +3,22 @@ import jwt from 'jsonwebtoken';
 
 import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
-import Book from '../../models/book';
+import Transaction from '../../models/transaction';
+import { booksFromIDs } from './book';
+
+// -- Utilities ------------------------------------------------------------------------------------
+
+async function borrowedCurr(userID: string): Promise<string[]> {
+    return (await Transaction.find({ userID }))
+        .filter((transaction) => !transaction.returnDate)
+        .map((transaction) => transaction.bookID);
+}
+
+async function borrowedPrev(userID: string): Promise<string[]> {
+    return (await Transaction.find({ userID }))
+        .filter((transaction) => transaction.returnDate)
+        .map((transaction) => transaction.bookID);
+}
 
 // -- Query Resolvers ------------------------------------------------------------------------------
 
@@ -20,10 +35,20 @@ export async function login(userID: string, password: string): Promise<IUserAuth
 export async function user(userID: string): Promise<Partial<IUser> | null> {
     // find user with userID: `userID`
     const user = await User.findOne({ userID: userID });
-    return !user ? null : { ...user._doc, password: '' };
+    return !user
+        ? null
+        : {
+              ...user._doc,
+              password: '',
+              borrowedCurr: async () => await borrowedCurr(userID),
+              borrowedPrev: async () => await borrowedPrev(userID),
+              notifications: async () => await booksFromIDs(user.notifications)
+          };
 }
 
 // -- Mutation Resolvers ---------------------------------------------------------------------------
+
+// -- Development --------------------------------------------------------------
 
 export async function addUser(input: IUser): Promise<IUser> {
     // check if userID exists
@@ -32,10 +57,14 @@ export async function addUser(input: IUser): Promise<IUser> {
     const hashedPass = await bcrypt.hash(input.password, 12);
     const user: IUserDoc = new User({ ...input, password: hashedPass, notifications: [] });
     let userDoc: IUserDoc = await user.save();
-    return { ...userDoc._doc, password: '' };
+    return {
+        ...userDoc._doc,
+        password: '',
+        notifications: async () => booksFromIDs(userDoc.notifications)
+    };
 }
 
-// -- Temporary ---------------------------------------------------------------------------
+// -- Temporary ----------------------------------------------------------------
 
 export async function tempUserAction(): Promise<IUser[]> {
     // const userDocs = await User.find({});
@@ -46,5 +75,10 @@ export async function tempUserAction(): Promise<IUser[]> {
     //     );
     // }
 
-    return await User.find({});
+    return (await User.find({})).map((user) => ({
+        ...user,
+        borrowedCurr: [],
+        borrowedPrev: [],
+        notifications: async () => await booksFromIDs(user.notifications)
+    }));
 }

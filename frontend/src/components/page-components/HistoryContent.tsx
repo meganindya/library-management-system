@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import { ITransaction } from '../../@types/transaction';
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
+import { dateString, outstanding, remainingDays } from '../../utils/DateUtils';
 
 import BookDetailsModal from '../BookDetailsModal';
 
@@ -10,20 +13,20 @@ import './HistoryContent.scss';
 
 export default function HistoryContent() {
   const authContext = useContext(AuthContext);
-  const [allowedDays, setAllowedDays] = useState(-1);
+
+  const [allowedDays, setAllowedDays] = useState(999);
+  // set user allowed borrowing days when user type changes
   useEffect(() => {
     if (authContext.type) {
       setAllowedDays(authContext.type === 'Student' ? 30 : 180);
     }
   }, [authContext.type]);
 
-  const [dataFetched, setDataFetched] = useState(false);
-  const [userHistory, setUserHistory] = useState<
-    { transID: string; bookID: string; borrowDate: string; returnDate: string | null }[]
-  >([]);
-  const [notificationStatus, setNotificationStatus] = useState<{ [key: string]: boolean }>({});
-  const [viewingBookID, setViewingBookID] = useState<string | null>(null);
+  // -- Data Fetch Operations ----------------------------------------------------------------------
 
+  const [userHistory, setUserHistory] = useState<(ITransaction & { remaining: number })[]>([]);
+  const [historyFetched, setHistoryFetched] = useState(false);
+  // fetch user transaction history on mount
   useEffect(() => {
     (async () => {
       const response = await fetchGraphQLResponse(
@@ -33,6 +36,9 @@ export default function HistoryContent() {
             bookID
             borrowDate
             returnDate
+            book {
+              subscribers
+            }
           }
         }`,
         { userID: authContext.userID },
@@ -41,81 +47,49 @@ export default function HistoryContent() {
 
       if (!response) return;
 
-      setDataFetched(true);
-
       setUserHistory(
-        response.data.transactions.sort(
-          (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
-        )
+        response.data.transactions
+          .map((transaction: ITransaction) => ({
+            ...transaction,
+            remaining: remainingDays(
+              transaction.borrowDate,
+              authContext.type === 'Student' ? 30 : 180
+            )
+          }))
+          .sort(
+            (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
+          )
       );
-
-      const getSubscriptionStatus = async (bookID: string): Promise<boolean> => {
-        const response = await fetchGraphQLResponse(
-          `query book($bookID: String!) {
-          book(bookID: $bookID) {
-            subscribers
-          }
-        }`,
-          { bookID },
-          'Subscription Status Fetch Failed'
-        );
-
-        if (!response) return false;
-
-        return response.data.book.subscribers.length > 0;
-      };
-
-      const notificationStatusObj: { [key: string]: boolean } = {};
-      for (let transaction of response.data.transactions) {
-        if (!transaction.returnDate) {
-          notificationStatusObj[transaction.bookID] = await getSubscriptionStatus(
-            transaction.bookID
-          );
-        }
-      }
-      setNotificationStatus(notificationStatusObj);
+      setHistoryFetched(true);
     })();
   }, []);
 
-  const parseDate = (isodate: string) => new Date(isodate).toUTCString();
+  // -- Date operations ----------------------------------------------------------------------------
 
   const getTransactionStatusStyle = (
     borrowDateISO: string,
     returnDateISO: string | null
   ): string => {
-    const borrowDateMills = new Date(borrowDateISO).valueOf();
-    let dueDate = new Date(borrowDateISO);
-    dueDate.setDate(dueDate.getDate() + allowedDays);
-    const dueDateMills = dueDate.valueOf();
-    const returnDateMills = returnDateISO ? new Date(returnDateISO).valueOf() : null;
-
-    if (returnDateMills) {
-      return (returnDateMills - borrowDateMills) / (1000 * 60 * 60 * 24) > allowedDays
-        ? 'status-returned-overdue'
-        : 'status-returned';
-    } else {
-      return new Date().valueOf() - dueDateMills > 0 ? 'status-pending-overdue' : 'status-pending';
-    }
+    return !returnDateISO
+      ? remainingDays(borrowDateISO, allowedDays) >= 0
+        ? 'status-pending'
+        : 'status-pending-overdue'
+      : outstanding(borrowDateISO, returnDateISO, allowedDays) >= 0
+      ? 'status-returned-overdue'
+      : 'status-returned';
   };
 
-  const getRemainingDays = (borrowDate: string): number | null => {
-    const parseDate = (isodate: string, addToDate?: number) => {
-      let date = new Date(isodate);
-      if (addToDate) date.setDate(date.getDate() + addToDate);
-      return date.toUTCString();
-    };
-    const days = Math.round(
-      (new Date(parseDate(borrowDate, allowedDays)).valueOf() - new Date().valueOf()) /
-        (1000 * 60 * 60 * 24)
-    );
-    return days <= 5 && days >= 0 ? days : null;
-  };
+  // -- Transient states ---------------------------------------------------------------------------
+
+  const [viewingBookID, setViewingBookID] = useState<string | null>(null);
+
+  // -- Render -------------------------------------------------------------------------------------
 
   return (
     <div id="history-content" className="container">
       <h2>History of transactions</h2>
-      {!dataFetched && <div className="rolling"></div>}
-      {dataFetched && userHistory.length > 0 && (
+      {!historyFetched && <div className="rolling"></div>}
+      {historyFetched && userHistory.length > 0 && (
         <div id="history-table" className="transaction-table">
           <table>
             <thead>
@@ -128,30 +102,30 @@ export default function HistoryContent() {
               </tr>
             </thead>
             <tbody>
-              {userHistory.map((transaction: any, index) => (
+              {userHistory.map((transaction, index) => (
                 <tr key={`history-item-${index}`}>
                   <td>{transaction.transID}</td>
                   <td className="transaction-book-detail-btn">
-                    {notificationStatus[transaction.bookID] && (
+                    {!transaction.returnDate && transaction.book.subscribers.length > 0 && (
                       <div className="book-requested"></div>
                     )}
                     <span onClick={() => setViewingBookID(transaction.bookID)}>
                       {transaction.bookID}
                     </span>
                   </td>
-                  <td>{parseDate(transaction.borrowDate)}</td>
-                  <td>{transaction.returnDate ? parseDate(transaction.returnDate) : '-'}</td>
+                  <td>{dateString(transaction.borrowDate)}</td>
+                  <td>{transaction.returnDate ? dateString(transaction.returnDate) : '-'}</td>
                   <td
                     className={getTransactionStatusStyle(
                       transaction.borrowDate,
                       transaction.returnDate
                     )}
                   >
-                    {getRemainingDays(transaction.borrowDate) && (
-                      <div className="history-days-warning">
-                        {getRemainingDays(transaction.borrowDate)}
-                      </div>
-                    )}
+                    {!transaction.returnDate &&
+                      transaction.remaining >= 0 &&
+                      transaction.remaining <= 5 && (
+                        <div className="history-days-warning">{transaction.remaining}</div>
+                      )}
                     {transaction.returnDate ? 'returned' : 'pending'}
                   </td>
                 </tr>
@@ -160,7 +134,7 @@ export default function HistoryContent() {
           </table>
         </div>
       )}
-      {dataFetched && userHistory.length === 0 && (
+      {historyFetched && userHistory.length === 0 && (
         <div className="no-transaction">No Transaction History</div>
       )}
       {viewingBookID && (document.body.style.overflow = 'hidden') && (

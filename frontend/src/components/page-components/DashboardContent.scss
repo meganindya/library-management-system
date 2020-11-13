@@ -37,6 +37,7 @@
 
     #user-details-type {
       font-family: 'Raleway', sans-serif;
+      font-weight: 600;
       color: yellow;
     }
 
@@ -58,16 +59,13 @@
     flex-direction: column;
 
     .user-notification {
+      margin-top: 5rem;
       padding: 0.5rem 1rem;
       border-top: 1px solid $silver;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-
-      &:first-of-type {
-        margin-top: 5rem;
-      }
 
       &:last-of-type {
         border-bottom: 1px solid $silver;

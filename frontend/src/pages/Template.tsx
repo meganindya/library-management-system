@@ -30,6 +30,8 @@ export default function TemplatePage(props: { pageName: string }) {
     debounce: 500
   });
 
+  // -- Render -------------------------------------------------------------------------------------
+
   return (
     <React.Fragment>
       <div id="sidebar-wrap">

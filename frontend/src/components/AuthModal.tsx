@@ -9,16 +9,17 @@ import './AuthModal.scss';
 
 export default function AuthModal() {
   const authContext = useContext(AuthContext);
-  const [authStatus, setAuthStatus] = useState<{
-    failed: boolean;
-    message: string | null;
-  }>({
+  const [authStatus, setAuthStatus] = useState<{ failed: boolean; message: string | null }>({
     failed: false,
     message: null
   });
 
+  // -- Referenced elements ------------------------------------------------------------------------
+
   const userEl = React.createRef<HTMLInputElement>();
   const passEl = React.createRef<HTMLInputElement>();
+
+  // -- Callbacks ----------------------------------------------------------------------------------
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,7 +38,7 @@ export default function AuthModal() {
         }
       }`,
       { userID: user, password: pass },
-      'Login Failed'
+      'login failed'
     );
 
     if (!response) return;
@@ -64,6 +65,8 @@ export default function AuthModal() {
       );
     }
   };
+
+  // -- Render -------------------------------------------------------------------------------------
 
   return (
     <div id="auth-modal">

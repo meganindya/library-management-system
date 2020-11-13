@@ -5,6 +5,8 @@ import AuthModal from '../components/AuthModal';
 import './Auth.scss';
 
 export default function AuthPage() {
+  // -- Render -------------------------------------------------------------------------------------
+
   return (
     <div id="auth-back">
       <div id="auth-back-shape">

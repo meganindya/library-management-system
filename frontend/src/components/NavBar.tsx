@@ -13,6 +13,7 @@ export default function NavBar() {
   const authContext = useContext(AuthContext);
   const [name, setName] = useState('');
 
+  // fetch user's first name on mount
   useEffect(() => {
     (async () => {
       const response = await fetchGraphQLResponse(
@@ -22,7 +23,7 @@ export default function NavBar() {
         }
       }`,
         { userID: authContext.userID },
-        'Username Fetch Failed'
+        'user first name fetch failed'
       );
 
       if (!response) return;
@@ -30,6 +31,8 @@ export default function NavBar() {
       setName(response.data.user.firstName || '');
     })();
   }, []);
+
+  // -- Render -------------------------------------------------------------------------------------
 
   return (
     <nav className="container-fluid">

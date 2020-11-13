@@ -6,5 +6,5 @@ export interface ITransaction {
     bookID: string;
     borrowDate: string;
     returnDate: string | null;
-    book: IBook | Function;
+    book: IBook;
 }

@@ -1,3 +1,5 @@
+import { IBook } from './book';
+
 export interface IUser {
     userID: string;
     firstName: string;
@@ -6,9 +8,9 @@ export interface IUser {
     email: string;
     password: string;
     type: string;
-    notifications: Function;
-    borrowedCurr: string[] | Function;
-    borrowedPrev: string[] | Function;
+    notifications: IBook[];
+    borrowedCurr: string[] | null;
+    borrowedPrev: string[] | null;
 }
 
 export interface IUserAuth {

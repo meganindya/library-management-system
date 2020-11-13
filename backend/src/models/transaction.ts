@@ -4,7 +4,7 @@ import { ITransaction } from '../@types/transaction';
 const { Schema } = mongoose;
 
 export interface ITransactionDoc
-    extends Omit<ITransaction, 'borrowDate' | 'returnDate'>,
+    extends Omit<ITransaction, 'borrowDate' | 'returnDate' | 'book'>,
         mongoose.Document {
     borrowDate: Date;
     returnDate: Date | null;

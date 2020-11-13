@@ -1,7 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { IUser } from '../../@types/user';
+import { ITransaction } from '../../@types/transaction';
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
+import {
+  dateString,
+  dueDateMillis,
+  outstanding,
+  remainingDays,
+  remainingDaysString
+} from '../../utils/DateUtils';
 
 import BookDetailsModal from '../BookDetailsModal';
 
@@ -13,17 +23,19 @@ export default function DashboardContent() {
   const authContext = useContext(AuthContext);
   const browserHistory = useHistory();
 
+  const [allowedDays, setAllowedDays] = useState(999);
+  // set user allowed borrowing days when user type changes
+  useEffect(() => {
+    if (authContext.type) {
+      setAllowedDays(authContext.type === 'Student' ? 30 : 180);
+    }
+  }, [authContext.type]);
+
   // -- Data Fetch Operations ----------------------------------------------------------------------
 
-  const [userDetails, setUserDetails] = useState<{
-    userID: string;
-    name: string;
-    email: string;
-    type: string;
-    notifications: string[];
-  } | null>(null);
-  const [notificationStatus, setNotificationStatus] = useState<{ [key: string]: boolean }>({});
-  const [subscriptionStatus, setSubscriptionStatus] = useState<{ [key: string]: boolean }>({});
+  const [userDetails, setUserDetails] = useState<
+    (Pick<IUser, 'userID' | 'email' | 'type' | 'notifications'> & { name: string }) | null
+  >(null);
   // fetch user details on mount
   useEffect(() => {
     (async () => {
@@ -36,11 +48,14 @@ export default function DashboardContent() {
           lastName
           email
           type
-          notifications
+          notifications {
+            bookID
+            quantity
+          }
         }
       }`,
         { userID: authContext.userID },
-        'User Details Fetch Failed'
+        'user details fetch failed'
       );
 
       if (!response) return;
@@ -62,44 +77,8 @@ export default function DashboardContent() {
     })();
   }, []);
 
-  // get notification status of subscribed books
-  useEffect(() => {
-    (async () => {
-      const getNotificationStatus = async (bookID: string): Promise<boolean> => {
-        const response = await fetchGraphQLResponse(
-          `query book($bookID: String!) {
-          book(bookID: $bookID) {
-            quantity
-          }
-        }`,
-          { bookID },
-          'Subscription Status Fetch Failed'
-        );
-
-        if (!response) return false;
-
-        return response.data.book.quantity > 0;
-      };
-
-      if (userDetails) {
-        const notificationStatusObj: { [key: string]: boolean } = {};
-        for (let bookID of userDetails.notifications) {
-          notificationStatusObj[bookID] = await getNotificationStatus(bookID);
-        }
-        setNotificationStatus(notificationStatusObj);
-      }
-    })();
-  }, [userDetails]);
-
+  const [userPending, setUserPending] = useState<ITransaction[]>([]);
   const [pendingFetched, setPendingFetched] = useState(false);
-  const [userPending, setUserPending] = useState<
-    {
-      transID: string;
-      bookID: string;
-      borrowDate: string;
-      returnDate: string | null;
-    }[]
-  >([]);
   // fetch pending transactions on mount
   useEffect(() => {
     (async () => {
@@ -110,10 +89,13 @@ export default function DashboardContent() {
             bookID
             borrowDate
             returnDate
+            book {
+              subscribers
+            }
           }
         }`,
         { userID: authContext.userID },
-        'Pending Transactions Fetch Failed'
+        'pending transactions fetch failed'
       );
 
       if (!response) return;
@@ -127,15 +109,8 @@ export default function DashboardContent() {
     })();
   }, []);
 
+  const [userOutstanding, setUserOutstanding] = useState<ITransaction[]>([]);
   const [outstandingFetched, setOutstandingFetched] = useState(false);
-  const [userOutstanding, setUserOutstanding] = useState<
-    {
-      transID: string;
-      bookID: string;
-      borrowDate: string;
-      returnDate: string | null;
-    }[]
-  >([]);
   // fetch outstanding transactions on mount
   useEffect(() => {
     (async () => {
@@ -146,10 +121,13 @@ export default function DashboardContent() {
             bookID
             borrowDate
             returnDate
+            book {
+              subscribers
+            }
           }
         }`,
         { userID: authContext.userID },
-        'Outstanding Transactions Fetch Failed'
+        'outstanding transactions fetch failed'
       );
 
       if (!response) return;
@@ -163,76 +141,12 @@ export default function DashboardContent() {
     })();
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      const getSubscriptionStatus = async (bookID: string): Promise<boolean> => {
-        const response = await fetchGraphQLResponse(
-          `query book($bookID: String!) {
-          book(bookID: $bookID) {
-            subscribers
-          }
-        }`,
-          { bookID },
-          'Subscription Status Fetch Failed'
-        );
-
-        if (!response) return false;
-
-        return response.data.book.subscribers.length > 0;
-      };
-
-      if (userPending && userOutstanding) {
-        const subscriptionStatusObj: { [key: string]: boolean } = {};
-        for (let transaction of [...userPending, ...userOutstanding]) {
-          subscriptionStatusObj[transaction.bookID] = await getSubscriptionStatus(
-            transaction.bookID
-          );
-        }
-        setSubscriptionStatus(subscriptionStatusObj);
-      }
-    })();
-  }, [userPending, userOutstanding]);
-
-  // -----------------------------------------------------------------------------------------------
-
-  const [allowedDays, setAllowedDays] = useState(999);
-  useEffect(() => {
-    if (authContext.type) {
-      setAllowedDays(authContext.type === 'Student' ? 30 : 180);
-    }
-  }, [authContext.type]);
+  // -- Transient states ---------------------------------------------------------------------------
 
   const [viewingBookID, setViewingBookID] = useState<string | null>(null);
   const [returning, setReturning] = useState<string | null>(null);
 
-  // -- Date Operations ----------------------------------------------------------------------------
-
-  const dayMillis = 24 * 60 * 60 * 1000;
-
-  const dateString = (isodate: string | number): string => new Date(isodate).toUTCString();
-
-  const inMillis = (isodate: string | number): number => new Date(isodate).getTime();
-
-  const dueDateMillis = (borrowDate: string): number => {
-    return inMillis(inMillis(borrowDate) + allowedDays * dayMillis);
-  };
-
-  const remainingDays = (borrowDate: string): number => {
-    return Math.round((dueDateMillis(borrowDate) - new Date().getTime()) / dayMillis);
-  };
-
-  const remainingDaysString = (borrowDate: string): string => {
-    const remaining = remainingDays(borrowDate);
-    return `${Math.abs(remaining)} days ${remaining < 0 ? 'overdue' : 'remaining'}`;
-  };
-
-  const outstanding = (borrowDate: string, returnDate: string | null): number => {
-    return !returnDate
-      ? Math.abs(remainingDays(borrowDate))
-      : Math.round((inMillis(returnDate) - dueDateMillis(borrowDate)) / dayMillis);
-  };
-
-  // -----------------------------------------------------------------------------------------------
+  // -- Callbacks ----------------------------------------------------------------------------------
 
   const unsubscribeHandler = async (bookID: string) => {
     const response = await fetchGraphQLResponse(
@@ -264,6 +178,8 @@ export default function DashboardContent() {
     browserHistory.push('/history');
   };
 
+  // -- Render -------------------------------------------------------------------------------------
+
   return (
     <div id="dashboard-content" className="container">
       {!userDetails && <div className="rolling-2"></div>}
@@ -276,23 +192,29 @@ export default function DashboardContent() {
       )}
       {userDetails && userDetails.notifications.length > 0 && (
         <div id="user-notifications">
-          {userDetails.notifications.map((bookID) => (
-            <div className="user-notification" id={`notification-${bookID}`}>
-              {notificationStatus[bookID] ? (
+          {userDetails.notifications.map((book) => (
+            <div
+              className="user-notification"
+              id={`notification-${book.bookID}`}
+              key={`notification-${book.bookID}`}
+            >
+              {book.quantity > 0 ? (
                 <h4 className="user-notification-yes">
-                  <span onClick={() => setViewingBookID(bookID)}>{bookID}</span>is back in shelf
+                  <span onClick={() => setViewingBookID(book.bookID)}>{book.bookID}</span>
+                  is back in shelf
                 </h4>
               ) : (
                 <h4 className="user-notification-no">
-                  <span onClick={() => setViewingBookID(bookID)}>{bookID}</span>is not in shelf
+                  <span onClick={() => setViewingBookID(book.bookID)}>{book.bookID}</span>
+                  is not in shelf
                 </h4>
               )}
               <div
                 className="user-notification-remove"
                 onClick={() => {
-                  let thisElem = document.getElementById(`notification-${bookID}`);
+                  let thisElem = document.getElementById(`notification-${book.bookID}`);
                   if (thisElem) thisElem.style.display = 'none';
-                  unsubscribeHandler(bookID);
+                  unsubscribeHandler(book.bookID);
                 }}
               >
                 &times;
@@ -320,7 +242,7 @@ export default function DashboardContent() {
                 <tr key={`pending-item-${index}`}>
                   <td>{transaction.transID}</td>
                   <td className="transaction-book-detail-btn">
-                    {subscriptionStatus[transaction.bookID] && (
+                    {transaction.book.subscribers.length > 0 && (
                       <div className="book-requested"></div>
                     )}
                     <span onClick={() => setViewingBookID(transaction.bookID)}>
@@ -328,11 +250,11 @@ export default function DashboardContent() {
                     </span>
                   </td>
                   <td>{dateString(transaction.borrowDate)}</td>
-                  <td>{dateString(dueDateMillis(transaction.borrowDate))}</td>
+                  <td>{dateString(dueDateMillis(transaction.borrowDate, allowedDays))}</td>
                   <td>
                     <button
                       className={
-                        remainingDays(transaction.borrowDate) < 0
+                        remainingDays(transaction.borrowDate, allowedDays) < 0
                           ? 'return-btn-due'
                           : 'return-btn-ok'
                       }
@@ -343,7 +265,7 @@ export default function DashboardContent() {
                     >
                       {transaction.transID === returning && <div className="rolling-3"></div>}
                       {transaction.transID !== returning &&
-                        remainingDaysString(transaction.borrowDate)}
+                        remainingDaysString(transaction.borrowDate, allowedDays)}
                     </button>
                   </td>
                 </tr>
@@ -374,7 +296,7 @@ export default function DashboardContent() {
                 <tr key={`outstanding-item-${index}`}>
                   <td>{transaction.transID}</td>
                   <td className="transaction-book-detail-btn">
-                    {subscriptionStatus[transaction.bookID] && (
+                    {transaction.book.subscribers.length > 0 && (
                       <div className="book-requested"></div>
                     )}
                     <span onClick={() => setViewingBookID(transaction.bookID)}>
@@ -383,7 +305,9 @@ export default function DashboardContent() {
                   </td>
                   <td>{dateString(transaction.borrowDate)}</td>
                   <td>{!transaction.returnDate ? '-' : dateString(transaction.returnDate)}</td>
-                  <td>{outstanding(transaction.borrowDate, transaction.returnDate)}</td>
+                  <td>
+                    {outstanding(transaction.borrowDate, transaction.returnDate, allowedDays)}
+                  </td>
                 </tr>
               ))}
             </tbody>

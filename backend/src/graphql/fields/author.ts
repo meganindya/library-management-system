@@ -4,6 +4,7 @@ import { GQLBook } from '../types/book';
 import { addAuthor, authorBooks, authors, tempAuthorAction } from '../resolvers/author';
 
 export const AuthorQueries: GraphQLFieldConfigMap<any, any> = {
+    // development
     authorBooks: {
         type: GraphQLList(GQLBook),
         description: 'A list of books for author names',
@@ -12,7 +13,7 @@ export const AuthorQueries: GraphQLFieldConfigMap<any, any> = {
         },
         resolve: (_, args) => authorBooks(args.nameQuery)
     },
-    // for debugging
+    // development
     authors: {
         type: GraphQLList(GQLAuthor),
         description: 'A list of authors',
@@ -21,6 +22,7 @@ export const AuthorQueries: GraphQLFieldConfigMap<any, any> = {
 };
 
 export const AuthorMutations: GraphQLFieldConfigMap<any, any> = {
+    // development
     addAuthor: {
         type: GQLAuthor,
         description: 'Creates a new author entry',

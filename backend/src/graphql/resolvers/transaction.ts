@@ -6,8 +6,18 @@ import { unsubscribe } from './book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
+function transformTransaction(transactionDoc: ITransactionDoc): ITransaction {
+    const dateString = (date: Date | string): string =>
+        date instanceof Date ? date.toISOString() : date;
+    return {
+        ...transactionDoc._doc,
+        borrowDate: dateString(transactionDoc.borrowDate),
+        returnDate: transactionDoc.returnDate ? dateString(transactionDoc.returnDate) : null,
+        book: async () => await Book.findOne({ bookID: transactionDoc.bookID })
+    };
+}
+
 function transformTransactions(transactionDocs: ITransactionDoc[]): ITransaction[] {
-    const dateString = (date: Date): string => date.toISOString();
     return (
         transactionDocs
             // sort by decreasing order of borrowDate
@@ -15,11 +25,7 @@ function transformTransactions(transactionDocs: ITransactionDoc[]): ITransaction
                 (a: ITransactionDoc, b: ITransactionDoc) =>
                     b.borrowDate.getTime() - a.borrowDate.getTime()
             )
-            .map((transactionDoc) => ({
-                ...transactionDoc._doc,
-                borrowDate: dateString(transactionDoc.borrowDate),
-                returnDate: transactionDoc.returnDate ? dateString(transactionDoc.returnDate) : null
-            }))
+            .map((transactionDoc) => transformTransaction(transactionDoc))
     );
 }
 
@@ -93,7 +99,7 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
     // update book quantity
     await Book.updateOne({ bookID }, { $set: { quantity: book.quantity - 1 } });
 
-    return { ...transactionDoc._doc };
+    return transformTransaction(transactionDoc);
 }
 
 export async function returnBook(transID: string): Promise<ITransaction | null> {
@@ -115,7 +121,7 @@ export async function returnBook(transID: string): Promise<ITransaction | null> 
         );
     }
 
-    return !updatedTransaction ? null : updatedTransaction._doc;
+    return !updatedTransaction ? null : transformTransaction(updatedTransaction);
 }
 
 // -- Temporary ------------------------------------------------------------------------------------
