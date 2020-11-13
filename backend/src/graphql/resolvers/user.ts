@@ -25,6 +25,8 @@ export async function user(userID: string): Promise<Partial<IUser> | null> {
 
 // -- Mutation Resolvers ---------------------------------------------------------------------------
 
+// -- Development --------------------------------------------------------------
+
 export async function addUser(input: IUser): Promise<IUser> {
     // check if userID exists
     if (await User.findOne({ userID: input.userID })) throw new Error('user already exists');
@@ -35,7 +37,7 @@ export async function addUser(input: IUser): Promise<IUser> {
     return { ...userDoc._doc, password: '' };
 }
 
-// -- Temporary ---------------------------------------------------------------------------
+// -- Temporary ----------------------------------------------------------------
 
 export async function tempUserAction(): Promise<IUser[]> {
     // const userDocs = await User.find({});

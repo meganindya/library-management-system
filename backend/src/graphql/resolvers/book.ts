@@ -3,6 +3,7 @@ import { IAuthor } from '../../@types/author';
 import Book, { IBookDoc } from '../../models/book';
 import Author from '../../models/author';
 import User from '../../models/user';
+import { authorBooks } from './author';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -37,9 +38,20 @@ export async function categories(): Promise<ICategory[]> {
     return Object.keys(categories).map((name) => ({ name, quantity: categories[name] }));
 }
 
-export async function bookSearch(queryString: string): Promise<IBook[]> {
-    const books = await Book.find({ title: new RegExp(`.*${queryString}.*`) });
-    return await Promise.all(books.map(async (book) => transformBook(book)));
+export async function bookSearch(
+    queryString: string,
+    author: boolean,
+    category: string
+): Promise<IBook[]> {
+    if (author) {
+        let books = await authorBooks(queryString);
+        if (category !== 'any') books = books.filter((book) => book.category === category);
+        return books;
+    } else {
+        let books = await Book.find(category === 'any' ? {} : { category });
+        books = books.filter((book) => book.title.match(new RegExp(queryString, 'i')) !== null);
+        return await Promise.all(books.map(async (book) => await transformBook(book)));
+    }
 }
 
 export async function book(bookID: string): Promise<IBook | null> {
@@ -47,32 +59,14 @@ export async function book(bookID: string): Promise<IBook | null> {
     return !bookDoc ? null : transformBook(bookDoc);
 }
 
+// -- Development --------------------------------------------------------------
+
 export async function books(): Promise<IBook[]> {
     const bookDocs = await Book.find({});
     return await Promise.all(bookDocs.map(async (book) => transformBook(book)));
 }
 
 // -- Mutation Resolvers ---------------------------------------------------------------------------
-
-export async function addBook(input: IBookInp): Promise<IBook> {
-    // book with bookID already exists
-    if (await Book.findOne({ bookID: input.bookID })) throw new Error('Book already exists');
-
-    const book: IBookDoc = new Book({ ...input, subscribers: [] });
-    const bookDoc: IBookDoc = await book.save();
-
-    // update books lists for corresponding authors
-    for (let authorID of input.authors) {
-        if (typeof authorID !== 'string') continue;
-        const author = await Author.findOne({ authorID });
-        if (!author) continue;
-        let books = author.books;
-        books.push(bookDoc.bookID);
-        await Author.updateOne({ _id: authorID }, { books });
-    }
-
-    return { ...bookDoc._doc };
-}
 
 export async function subscribe(bookID: string, userID: string): Promise<IBook | null> {
     const book = await Book.findOne({ bookID });
@@ -96,6 +90,9 @@ export async function unsubscribe(bookID: string, userID: string): Promise<IBook
     const user = await User.findOne({ userID });
     if (!user || !book) throw new Error('invalid user or book');
 
+    if (book.subscribers.indexOf(userID) === -1 && user.notifications.indexOf(bookID) === -1)
+        throw new Error('user already unsubscribed');
+
     await Book.updateOne(
         { bookID },
         {
@@ -113,6 +110,28 @@ export async function unsubscribe(bookID: string, userID: string): Promise<IBook
 
     const bookDoc = await Book.findOne({ bookID });
     return !bookDoc ? null : transformBook(bookDoc);
+}
+
+// -- Development --------------------------------------------------------------
+
+export async function addBook(input: IBookInp): Promise<IBook> {
+    // book with bookID already exists
+    if (await Book.findOne({ bookID: input.bookID })) throw new Error('Book already exists');
+
+    const book: IBookDoc = new Book({ ...input, subscribers: [] });
+    const bookDoc: IBookDoc = await book.save();
+
+    // update books lists for corresponding authors
+    for (let authorID of input.authors) {
+        if (typeof authorID !== 'string') continue;
+        const author = await Author.findOne({ authorID });
+        if (!author) continue;
+        let books = author.books;
+        books.push(bookDoc.bookID);
+        await Author.updateOne({ _id: authorID }, { books });
+    }
+
+    return { ...bookDoc._doc };
 }
 
 // -- Temporary ----------------------------------------------------------------

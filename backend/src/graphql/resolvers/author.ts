@@ -27,20 +27,24 @@ async function transformAuthor(author: IAuthorDoc): Promise<IAuthor> {
 
 // -- Query Resolvers ------------------------------------------------------------------------------
 
+// also used by bookSearch of ./books.ts
 export async function authorBooks(nameQuery: string): Promise<IBook[]> {
-    const authors = await Author.find({ name: new RegExp(`.*${nameQuery}.*`) });
+    const authors = await Author.find({ name: new RegExp(`.*${nameQuery}.*`, 'i') });
     let books: IBook[] = [];
     for (let author of authors) books.push(...(await getBookDocs(author.books)));
     return books;
 }
 
-// for debugging
+// -- Development --------------------------------------------------------------
+
 export async function authors(): Promise<IAuthor[]> {
     const authors = await Author.find({});
     return await Promise.all(authors.map(async (author) => transformAuthor(author)));
 }
 
 // -- Mutation Resolvers ---------------------------------------------------------------------------
+
+// -- Development --------------------------------------------------------------
 
 export async function addAuthor(name: string): Promise<IAuthor> {
     let authorID: string = '';
@@ -53,17 +57,17 @@ export async function addAuthor(name: string): Promise<IAuthor> {
     return { ...authorDoc._doc };
 }
 
-// -- Temporary ------------------------------------------------------------------------------------
+// -- Temporary ----------------------------------------------------------------
 
 export async function tempAuthorAction(): Promise<IAuthor[]> {
-    const authorDocs = await Author.find({});
-    for (let i in authorDocs) {
-        const authorDoc = authorDocs[i];
-        await Author.updateOne(
-            { _id: authorDoc._id },
-            { $set: { authorID: 'A' + authorDoc.authorID.substring(1) } }
-        );
-    }
+    // const authorDocs = await Author.find({});
+    // for (let i in authorDocs) {
+    //     const authorDoc = authorDocs[i];
+    //     await Author.updateOne(
+    //         { _id: authorDoc._id },
+    //         { $set: { authorID: 'A' + authorDoc.authorID.substring(1) } }
+    //     );
+    // }
     const authorDocsNew = await Author.find({});
     return await Promise.all(authorDocsNew.map(async (author) => transformAuthor(author)));
 }

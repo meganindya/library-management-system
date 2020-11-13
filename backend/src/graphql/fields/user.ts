@@ -23,6 +23,7 @@ export const UserQueries: GraphQLFieldConfigMap<any, any> = {
 };
 
 export const UserMutations: GraphQLFieldConfigMap<any, any> = {
+    // development
     addUser: {
         type: GQLUser,
         description: 'Creates a new user entry',
