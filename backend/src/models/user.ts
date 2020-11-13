@@ -3,7 +3,7 @@ import { IUser } from '../@types/user';
 
 const { Schema } = mongoose;
 
-export interface IUserDoc extends IUser, mongoose.Document {
+export interface IUserDoc extends Omit<IUser, 'borrowedCurr' | 'borrowedPrev'>, mongoose.Document {
     _doc: IUser;
 }
 

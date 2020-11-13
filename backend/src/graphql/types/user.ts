@@ -29,7 +29,9 @@ export const GQLUser = new GraphQLObjectType({
         email: { type: GraphQLNonNull(GraphQLString) },
         password: { type: GraphQLString },
         type: { type: GraphQLNonNull(GraphQLString) },
-        notifications: { type: GraphQLList(GraphQLString) }
+        notifications: { type: GraphQLList(GraphQLString) },
+        borrowedCurr: { type: GraphQLList(GraphQLString) },
+        borrowedPrev: { type: GraphQLList(GraphQLString) }
     }
 });
 

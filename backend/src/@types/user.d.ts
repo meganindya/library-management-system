@@ -7,6 +7,8 @@ export interface IUser {
     password: string;
     type: string;
     notifications: string[];
+    borrowedCurr: string[] | Function;
+    borrowedPrev: string[] | Function;
 }
 
 export interface IUserAuth {

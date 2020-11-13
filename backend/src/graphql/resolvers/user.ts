@@ -3,7 +3,21 @@ import jwt from 'jsonwebtoken';
 
 import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
-import Book from '../../models/book';
+import Transaction from '../../models/transaction';
+
+// -- Utilities ------------------------------------------------------------------------------------
+
+async function borrowedCurr(userID: string): Promise<string[]> {
+    return (await Transaction.find({ userID }))
+        .filter((transaction) => !transaction.returnDate)
+        .map((transaction) => transaction.bookID);
+}
+
+async function borrowedPrev(userID: string): Promise<string[]> {
+    return (await Transaction.find({ userID }))
+        .filter((transaction) => transaction.returnDate)
+        .map((transaction) => transaction.bookID);
+}
 
 // -- Query Resolvers ------------------------------------------------------------------------------
 
@@ -20,7 +34,14 @@ export async function login(userID: string, password: string): Promise<IUserAuth
 export async function user(userID: string): Promise<Partial<IUser> | null> {
     // find user with userID: `userID`
     const user = await User.findOne({ userID: userID });
-    return !user ? null : { ...user._doc, password: '' };
+    return !user
+        ? null
+        : {
+              ...user._doc,
+              password: '',
+              borrowedCurr: async () => await borrowedCurr(userID),
+              borrowedPrev: async () => await borrowedPrev(userID)
+          };
 }
 
 // -- Mutation Resolvers ---------------------------------------------------------------------------
@@ -48,5 +69,5 @@ export async function tempUserAction(): Promise<IUser[]> {
     //     );
     // }
 
-    return await User.find({});
+    return (await User.find({})).map((user) => ({ ...user, borrowedCurr: [], borrowedPrev: [] }));
 }
