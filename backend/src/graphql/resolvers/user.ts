@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
 import Transaction from '../../models/transaction';
+import { booksFromIDs } from './book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -40,7 +41,8 @@ export async function user(userID: string): Promise<Partial<IUser> | null> {
               ...user._doc,
               password: '',
               borrowedCurr: async () => await borrowedCurr(userID),
-              borrowedPrev: async () => await borrowedPrev(userID)
+              borrowedPrev: async () => await borrowedPrev(userID),
+              notifications: async () => await booksFromIDs(user.notifications)
           };
 }
 
@@ -55,7 +57,11 @@ export async function addUser(input: IUser): Promise<IUser> {
     const hashedPass = await bcrypt.hash(input.password, 12);
     const user: IUserDoc = new User({ ...input, password: hashedPass, notifications: [] });
     let userDoc: IUserDoc = await user.save();
-    return { ...userDoc._doc, password: '' };
+    return {
+        ...userDoc._doc,
+        password: '',
+        notifications: async () => booksFromIDs(userDoc.notifications)
+    };
 }
 
 // -- Temporary ----------------------------------------------------------------
@@ -69,5 +75,10 @@ export async function tempUserAction(): Promise<IUser[]> {
     //     );
     // }
 
-    return (await User.find({})).map((user) => ({ ...user, borrowedCurr: [], borrowedPrev: [] }));
+    return (await User.find({})).map((user) => ({
+        ...user,
+        borrowedCurr: [],
+        borrowedPrev: [],
+        notifications: async () => await booksFromIDs(user.notifications)
+    }));
 }

@@ -7,6 +7,8 @@ import { faBookReader, faCashRegister, faColumns } from '@fortawesome/free-solid
 import './SideBar.scss';
 
 export default function SideBar(props: { activeLinkName: string }) {
+  // -- Render -------------------------------------------------------------------------------------
+
   return (
     <div id="sidebar">
       <div id="sidebar-overlay"></div>

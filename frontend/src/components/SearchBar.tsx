@@ -12,7 +12,11 @@ export default function SearchBar(props: {
 }) {
   const [hasText, setHasText] = useState(false);
 
+  // -- Referenced elements ------------------------------------------------------------------------
+
   const searchEl = React.createRef<HTMLInputElement>();
+
+  // -- Callbacks ----------------------------------------------------------------------------------
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -33,6 +37,8 @@ export default function SearchBar(props: {
       document.getElementById('search-field')?.focus();
     }
   };
+
+  // -- Render -------------------------------------------------------------------------------------
 
   return (
     <form onSubmit={submitHandler} className="search-bar">

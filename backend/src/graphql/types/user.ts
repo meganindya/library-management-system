@@ -6,6 +6,7 @@ import {
     GraphQLObjectType,
     GraphQLString
 } from 'graphql';
+import { GQLBook } from './book';
 
 export const GQLUserAuth = new GraphQLObjectType({
     name: 'AuthData',
@@ -29,7 +30,7 @@ export const GQLUser = new GraphQLObjectType({
         email: { type: GraphQLNonNull(GraphQLString) },
         password: { type: GraphQLString },
         type: { type: GraphQLNonNull(GraphQLString) },
-        notifications: { type: GraphQLList(GraphQLString) },
+        notifications: { type: GraphQLList(GQLBook) },
         borrowedCurr: { type: GraphQLList(GraphQLString) },
         borrowedPrev: { type: GraphQLList(GraphQLString) }
     }

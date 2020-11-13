@@ -39,17 +39,17 @@ export async function categories(): Promise<ICategory[]> {
 }
 
 export async function bookSearch(
-    queryString: string,
+    query: string,
     author: boolean,
     category: string
 ): Promise<IBook[]> {
     if (author) {
-        let books = await authorBooks(queryString);
+        let books = await authorBooks(query);
         if (category !== 'any') books = books.filter((book) => book.category === category);
         return books;
     } else {
         let books = await Book.find(category === 'any' ? {} : { category });
-        books = books.filter((book) => book.title.match(new RegExp(queryString, 'i')) !== null);
+        books = books.filter((book) => book.title.match(new RegExp(query, 'i')) !== null);
         return await Promise.all(books.map(async (book) => await transformBook(book)));
     }
 }
@@ -57,6 +57,15 @@ export async function bookSearch(
 export async function book(bookID: string): Promise<IBook | null> {
     const bookDoc = await Book.findOne({ bookID });
     return !bookDoc ? null : transformBook(bookDoc);
+}
+
+// used by ./user
+export async function booksFromIDs(bookIDs: string[]): Promise<IBook[]> {
+    return await Promise.all(
+        (await Book.find({ bookID: { $in: bookIDs } })).map(
+            async (book) => await transformBook(book)
+        )
+    );
 }
 
 // -- Development --------------------------------------------------------------
@@ -93,20 +102,13 @@ export async function unsubscribe(bookID: string, userID: string): Promise<IBook
     if (book.subscribers.indexOf(userID) === -1 && user.notifications.indexOf(bookID) === -1)
         throw new Error('user already unsubscribed');
 
-    await Book.updateOne(
-        { bookID },
-        {
-            $set: { subscribers: book.subscribers.splice(book.subscribers.indexOf(userID), 1) }
-        }
-    );
-    await User.updateOne(
-        { userID },
-        {
-            $set: {
-                notifications: user.notifications.splice(user.notifications.indexOf(bookID), 1)
-            }
-        }
-    );
+    const subscribers = book.subscribers;
+    subscribers.splice(book.subscribers.indexOf(userID), 1);
+    await Book.updateOne({ bookID }, { $set: { subscribers } });
+
+    const notifications = user.notifications;
+    notifications.splice(user.notifications.indexOf(bookID), 1);
+    await User.updateOne({ userID }, { $set: { notifications } });
 
     const bookDoc = await Book.findOne({ bookID });
     return !bookDoc ? null : transformBook(bookDoc);

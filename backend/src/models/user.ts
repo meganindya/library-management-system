@@ -3,7 +3,10 @@ import { IUser } from '../@types/user';
 
 const { Schema } = mongoose;
 
-export interface IUserDoc extends Omit<IUser, 'borrowedCurr' | 'borrowedPrev'>, mongoose.Document {
+export interface IUserDoc
+    extends Omit<IUser, 'notifications' | 'borrowedCurr' | 'borrowedPrev'>,
+        mongoose.Document {
+    notifications: string[];
     _doc: IUser;
 }
 

@@ -35,11 +35,11 @@ export const BookQueries: GraphQLFieldConfigMap<any, any> = {
         type: GraphQLList(GQLBook),
         description: 'A list of books whose titles have a match with query string',
         args: {
-            queryString: { type: GraphQLNonNull(GraphQLString) },
+            query: { type: GraphQLNonNull(GraphQLString) },
             author: { type: GraphQLNonNull(GraphQLBoolean) },
             category: { type: GraphQLNonNull(GraphQLString) }
         },
-        resolve: (_, args) => bookSearch(args.queryString, args.author, args.category)
+        resolve: (_, args) => bookSearch(args.query, args.author, args.category)
     },
     // development
     books: {

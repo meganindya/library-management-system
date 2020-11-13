@@ -9,6 +9,8 @@ export default function BrowseGreetContent(props: {
   categories: string[];
   setSearchQuery: Function;
 }) {
+  // -- Render -------------------------------------------------------------------------------------
+
   return (
     <div id="browse-content" className="container">
       <div id="browse-greet-box">
@@ -20,11 +22,8 @@ export default function BrowseGreetContent(props: {
           <h2>Pick your mind with some keywords</h2>
           <div id="browse-search-bar-wrap">
             <SearchBar
-              searchHandler={(queryString: string) =>
-                props.setSearchQuery({
-                  queryString,
-                  queryCategory: 'Any category'
-                })
+              searchHandler={(query: string) =>
+                props.setSearchQuery({ query, category: 'Any Category' })
               }
               initialValue=""
               activeSearch={false}
@@ -41,7 +40,7 @@ export default function BrowseGreetContent(props: {
               <div
                 className="browse-category-block"
                 key={`category-block-${index}`}
-                onClick={() => props.setSearchQuery({ queryString: '', queryCategory: category })}
+                onClick={() => props.setSearchQuery({ query: '', category })}
               >
                 <div>{<CategorySprite />}</div>
                 <h3>{category}</h3>

@@ -1,18 +1,9 @@
-import { faDivide } from '@fortawesome/free-solid-svg-icons';
 import React, { useState } from 'react';
+import { IBook } from '../@types/book';
 
 import { fetchGraphQLResponse } from '../utils/HttpUtils';
 
 import './BookDetailsModal.scss';
-
-interface IBook {
-  bookID: string;
-  title: string;
-  category: string;
-  authors: { name: string }[];
-  abstract: string;
-  quantity: number;
-}
 
 export default function BookDetailsModal(props: {
   book: IBook | null;
@@ -38,7 +29,7 @@ export default function BookDetailsModal(props: {
             }
           }`,
           { bookID: props.bookID },
-          'Book Search Failed'
+          'book search failed'
         );
 
         if (!response) return;
@@ -47,6 +38,8 @@ export default function BookDetailsModal(props: {
       }
     })();
   }
+
+  // -- Render -------------------------------------------------------------------------------------
 
   return (
     <div id="book-details-modal">
@@ -68,8 +61,8 @@ export default function BookDetailsModal(props: {
             <h4 className="search-item-category">{viewingBook.category}</h4>
             <ul className="search-item-authors">
               {viewingBook.authors.map((author, index) => (
-                <li key={`"${index}"`}>
-                  <h4>{author.name}</h4>
+                <li key={`search-item-author-${index}`}>
+                  <h4>{typeof author === 'string' ? author : author.name}</h4>
                 </li>
               ))}
             </ul>
