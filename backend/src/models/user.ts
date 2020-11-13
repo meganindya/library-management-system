@@ -15,7 +15,7 @@ const userSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     type: { type: String, required: true },
-    points: { type: Number, required: true }
+    notifications: { type: [String], required: true }
 });
 
 export default mongoose.model<IUserDoc>('User', userSchema);

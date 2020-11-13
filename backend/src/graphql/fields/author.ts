@@ -16,7 +16,7 @@ export const AuthorQueries: GraphQLFieldConfigMap<any, any> = {
     authors: {
         type: GraphQLList(GQLAuthor),
         description: 'A list of authors',
-        resolve: () => authors()
+        resolve: authors
     }
 };
 
@@ -33,6 +33,6 @@ export const AuthorMutations: GraphQLFieldConfigMap<any, any> = {
     tempAuthorAction: {
         type: GQLAuthor,
         description: 'Does some temporary action on author',
-        resolve: () => tempAuthorAction()
+        resolve: tempAuthorAction
     }
 };

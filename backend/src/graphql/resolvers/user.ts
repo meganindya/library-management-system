@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
+import Book from '../../models/book';
 
 // -- Query Resolvers ------------------------------------------------------------------------------
 
@@ -29,7 +30,21 @@ export async function addUser(input: IUser): Promise<IUser> {
     if (await User.findOne({ userID: input.userID })) throw new Error('user already exists');
     // hash password with 12 rounds of salting
     const hashedPass = await bcrypt.hash(input.password, 12);
-    const user: IUserDoc = new User({ ...input, password: hashedPass, points: 0 });
+    const user: IUserDoc = new User({ ...input, password: hashedPass, notifications: [] });
     let userDoc: IUserDoc = await user.save();
     return { ...userDoc._doc, password: '' };
+}
+
+// -- Temporary ---------------------------------------------------------------------------
+
+export async function tempUserAction(): Promise<IUser[]> {
+    // const userDocs = await User.find({});
+    // for (let userDoc of userDocs) {
+    //     await User.updateOne(
+    //         { userID: userDoc.userID },
+    //         { $set: { notifications: [] }, $unset: { points: 1 } }
+    //     );
+    // }
+
+    return await User.find({});
 }

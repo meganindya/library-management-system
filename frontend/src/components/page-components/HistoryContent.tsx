@@ -8,15 +8,6 @@ import AuthContext from '../../context/auth-context';
 
 import './HistoryContent.scss';
 
-interface IBook {
-  bookID: string;
-  title: string;
-  category: string;
-  authors: { name: string }[];
-  abstract: string;
-  quantity: number;
-}
-
 export default function HistoryContent() {
   const authContext = useContext(AuthContext);
   const [allowedDays, setAllowedDays] = useState(-1);
@@ -27,7 +18,10 @@ export default function HistoryContent() {
   }, [authContext.type]);
 
   const [dataFetched, setDataFetched] = useState(false);
-  const [userHistory, setUserHistory] = useState([]);
+  const [userHistory, setUserHistory] = useState<
+    { transID: string; bookID: string; borrowDate: string; returnDate: string | null }[]
+  >([]);
+  const [notificationStatus, setNotificationStatus] = useState<{ [key: string]: boolean }>({});
   const [viewingBookID, setViewingBookID] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,11 +42,38 @@ export default function HistoryContent() {
       if (!response) return;
 
       setDataFetched(true);
+
       setUserHistory(
         response.data.transactions.sort(
           (a: any, b: any) => new Date(b.borrowDate).valueOf() - new Date(a.borrowDate).valueOf()
         )
       );
+
+      const getSubscriptionStatus = async (bookID: string): Promise<boolean> => {
+        const response = await fetchGraphQLResponse(
+          `query book($bookID: String!) {
+          book(bookID: $bookID) {
+            subscribers
+          }
+        }`,
+          { bookID },
+          'Subscription Status Fetch Failed'
+        );
+
+        if (!response) return false;
+
+        return response.data.book.subscribers.length > 0;
+      };
+
+      const notificationStatusObj: { [key: string]: boolean } = {};
+      for (let transaction of response.data.transactions) {
+        if (!transaction.returnDate) {
+          notificationStatusObj[transaction.bookID] = await getSubscriptionStatus(
+            transaction.bookID
+          );
+        }
+      }
+      setNotificationStatus(notificationStatusObj);
     })();
   }, []);
 
@@ -111,6 +132,9 @@ export default function HistoryContent() {
                 <tr key={`history-item-${index}`}>
                   <td>{transaction.transID}</td>
                   <td className="transaction-book-detail-btn">
+                    {notificationStatus[transaction.bookID] && (
+                      <div className="book-requested"></div>
+                    )}
                     <span onClick={() => setViewingBookID(transaction.bookID)}>
                       {transaction.bookID}
                     </span>

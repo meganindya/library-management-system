@@ -1,12 +1,21 @@
 import { GraphQLFieldConfigMap, GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { GQLBook, GQLBookInp, GQLCategory } from '../types/book';
-import { addBook, book, books, bookSearch, categories, tempBookAction } from '../resolvers/book';
+import {
+    addBook,
+    book,
+    books,
+    bookSearch,
+    categories,
+    subscribe,
+    unsubscribe,
+    tempBookAction
+} from '../resolvers/book';
 
 export const BookQueries: GraphQLFieldConfigMap<any, any> = {
     categories: {
         type: GraphQLList(GQLCategory),
         description: 'A list of categories',
-        resolve: () => categories()
+        resolve: categories
     },
     book: {
         type: GQLBook,
@@ -28,7 +37,7 @@ export const BookQueries: GraphQLFieldConfigMap<any, any> = {
     books: {
         type: GraphQLList(GQLBook),
         description: 'A list of books',
-        resolve: () => books()
+        resolve: books
     }
 };
 
@@ -41,10 +50,28 @@ export const BookMutations: GraphQLFieldConfigMap<any, any> = {
         },
         resolve: (_, args) => addBook(args.bookInput)
     },
+    subscribe: {
+        type: GQLBook,
+        description: 'Subscribes a user to a book',
+        args: {
+            bookID: { type: GraphQLNonNull(GraphQLString) },
+            userID: { type: GraphQLNonNull(GraphQLString) }
+        },
+        resolve: (_, args) => subscribe(args.bookID, args.userID)
+    },
+    unsubscribe: {
+        type: GQLBook,
+        description: 'Unsubscribes a user to a book',
+        args: {
+            bookID: { type: GraphQLNonNull(GraphQLString) },
+            userID: { type: GraphQLNonNull(GraphQLString) }
+        },
+        resolve: (_, args) => unsubscribe(args.bookID, args.userID)
+    },
     //temporary
     tempBookAction: {
-        type: GQLBook,
+        type: GraphQLList(GQLBook),
         description: 'Does some temporary action on book',
-        resolve: () => tempBookAction()
+        resolve: tempBookAction
     }
 };

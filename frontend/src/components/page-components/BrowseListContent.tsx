@@ -48,7 +48,7 @@ export default function BrowseListContent(props: {
   const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
   const [viewingBookDetails, setViewingBookDetails] = useState<IBook | null>(null);
   const [borrowing, setBorrowing] = useState<string | null>(null);
-  const [requesting, setRequesting] = useState<string | null>(null);
+  const [subscribing, setSubscribing] = useState<string | null>(null);
 
   const browserHistory = useHistory();
 
@@ -119,12 +119,11 @@ export default function BrowseListContent(props: {
 
   const borrowHandler = async (bookID: string) => {
     const response = await fetchGraphQLResponse(
-      `
-          mutation borrowBook($userID: String!, $bookID: String!) {
-            borrowBook(userID: $userID, bookID: $bookID) {
-              transID
-            }
-          }`,
+      `mutation borrowBook($userID: String!, $bookID: String!) {
+        borrowBook(userID: $userID, bookID: $bookID) {
+          transID
+        }
+      }`,
       { userID: authContext.userID, bookID: bookID },
       ''
     );
@@ -134,7 +133,21 @@ export default function BrowseListContent(props: {
     browserHistory.push('/history');
   };
 
-  const requestHandler = async (bookID: string) => {};
+  const subscribeHandler = async (bookID: string) => {
+    const response = await fetchGraphQLResponse(
+      `mutation subscribe($userID: String!, $bookID: String!) {
+        subscribe(userID: $userID, bookID: $bookID) {
+          bookID
+        }
+      }`,
+      { userID: authContext.userID, bookID: bookID },
+      ''
+    );
+
+    if (!response) return;
+
+    browserHistory.push('/dashboard');
+  };
 
   return (
     <React.Fragment>
@@ -192,7 +205,7 @@ export default function BrowseListContent(props: {
           </div>
         </div>
       </div>
-      {loading && <div className="rolling"></div>}
+      {loading && <div className="rolling" style={{ marginTop: '3rem' }}></div>}
       {!loading && (
         <div id="search-list-items" className="container">
           {searchItemsList.map((searchItem, index) => (
@@ -259,17 +272,17 @@ export default function BrowseListContent(props: {
                       ) : (
                         <button
                           className={`search-item-button-req ${
-                            searchItem.bookID === requesting ? 'search-item-button-rolling' : ''
+                            searchItem.bookID === subscribing ? 'search-item-button-rolling' : ''
                           }`}
                           onClick={() => {
-                            setRequesting(searchItem.bookID);
-                            requestHandler(searchItem.bookID);
+                            setSubscribing(searchItem.bookID);
+                            subscribeHandler(searchItem.bookID);
                           }}
                         >
-                          {searchItem.bookID === requesting && <div className="rolling-3"></div>}
-                          {searchItem.bookID !== requesting && (
+                          {searchItem.bookID === subscribing && <div className="rolling-3"></div>}
+                          {searchItem.bookID !== subscribing && (
                             <React.Fragment>
-                              REQUEST
+                              NOTIFY
                               <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
                             </React.Fragment>
                           )}

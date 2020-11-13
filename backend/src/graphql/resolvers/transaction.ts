@@ -2,6 +2,7 @@ import { ITransaction } from '../../@types/transaction';
 import User from '../../models/user';
 import Book from '../../models/book';
 import Transaction, { ITransactionDoc } from '../../models/transaction';
+import { unsubscribe } from './book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -68,7 +69,7 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
     const book = await Book.findOne({ bookID });
     if (!user || !book) throw new Error('invalid user or book');
 
-    const pendingTransactions = await pending(transID);
+    const pendingTransactions = await pending(userID);
     // check if borrow limit reached
     if (pendingTransactions.length >= (user.type === 'Student' ? 5 : 8))
         throw new Error('borrow limit reached');
@@ -85,6 +86,9 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
         borrowDate: new Date(),
         returnDate: null
     }).save();
+
+    // unsubscribe userID for bookID
+    await unsubscribe(bookID, userID);
 
     // update book quantity
     await Book.updateOne({ bookID }, { $set: { quantity: book.quantity - 1 } });

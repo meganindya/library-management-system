@@ -6,7 +6,7 @@ export interface IUser {
     email: string;
     password: string;
     type: string;
-    points: number;
+    notifications: string[];
 }
 
 export interface IUserAuth {

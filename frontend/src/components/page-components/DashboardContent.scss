@@ -50,11 +50,76 @@
     #user-details-email {
       font-family: 'PT Sans', sans-serif;
     }
+  }
 
-    #user-details-points {
-      span {
-        font-weight: 600;
-        color: yellow;
+  #user-notifications {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+
+    .user-notification {
+      padding: 0.5rem 1rem;
+      border-top: 1px solid $silver;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      &:first-of-type {
+        margin-top: 5rem;
+      }
+
+      &:last-of-type {
+        border-bottom: 1px solid $silver;
+      }
+
+      h4 {
+        margin: 0;
+        font-family: 'Nunito', sans-serif;
+        font-weight: 400;
+        text-align: center;
+
+        &.user-notification-yes {
+          color: $accentdark;
+        }
+
+        &.user-notification-no {
+          color: coral;
+        }
+
+        span {
+          margin-right: 1rem;
+          padding: 0.325rem 0.5rem;
+          border: 1px solid $darkgray;
+          border-radius: 0.25rem;
+          color: black;
+          background: $lightgray;
+          cursor: pointer;
+          transition: all 0.25s ease;
+
+          &:hover {
+            color: white;
+            background: $accent;
+          }
+        }
+      }
+
+      .user-notification-remove {
+        width: 2rem;
+        height: 2rem;
+        border: 1px solid $darkgray;
+        border-radius: 25%;
+        font-size: 1.25rem;
+        text-align: center;
+        line-height: 2rem;
+        color: $darkgray;
+        background: $silver;
+        cursor: pointer;
+        transition: all 0.25s ease;
+
+        &:hover {
+          background: $lightgray;
+        }
       }
     }
   }

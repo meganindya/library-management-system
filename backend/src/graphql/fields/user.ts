@@ -1,6 +1,6 @@
-import { GraphQLFieldConfigMap, GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLFieldConfigMap, GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { GQLUser, GQLUserAuth, GQLUserInp } from '../types/user';
-import { addUser, login, user } from '../resolvers/user';
+import { addUser, login, user, tempUserAction } from '../resolvers/user';
 
 export const UserQueries: GraphQLFieldConfigMap<any, any> = {
     login: {
@@ -30,5 +30,11 @@ export const UserMutations: GraphQLFieldConfigMap<any, any> = {
             userInput: { type: GQLUserInp }
         },
         resolve: (_, args) => addUser(args.userInput)
+    },
+    // temporary
+    tempUserAction: {
+        type: GraphQLList(GQLUser),
+        description: 'Does some temporary action on user',
+        resolve: tempUserAction
     }
 };

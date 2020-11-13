@@ -17,7 +17,8 @@ export const GQLBook = new GraphQLObjectType({
         category: { type: GraphQLNonNull(GraphQLString) },
         abstract: { type: GraphQLString },
         quantity: { type: GraphQLNonNull(GraphQLInt) },
-        authors: { type: GraphQLList(GQLAuthor) }
+        authors: { type: GraphQLList(GQLAuthor) },
+        subscribers: { type: GraphQLList(GraphQLString) }
     })
 });
 

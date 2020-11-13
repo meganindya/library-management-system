@@ -20,8 +20,10 @@ export default function DashboardContent() {
     name: string;
     email: string;
     type: string;
-    points: number;
+    notifications: string[];
   } | null>(null);
+  const [notificationStatus, setNotificationStatus] = useState<{ [key: string]: boolean }>({});
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{ [key: string]: boolean }>({});
   // fetch user details on mount
   useEffect(() => {
     (async () => {
@@ -34,7 +36,7 @@ export default function DashboardContent() {
           lastName
           email
           type
-          points
+          notifications
         }
       }`,
         { userID: authContext.userID },
@@ -43,19 +45,61 @@ export default function DashboardContent() {
 
       if (!response) return;
 
-      const { userID, firstName, middleName, lastName, email, type, points } = response.data.user;
+      const { firstName, middleName, lastName } = response.data.user;
       const name = (
         (firstName.trim() + ' ' + middleName.trim()).trim() +
         ' ' +
         lastName.trim()
       ).trim();
 
-      setUserDetails({ userID, name, email, type, points });
+      setUserDetails({
+        userID: response.data.user.userID,
+        name,
+        email: response.data.user.email,
+        type: response.data.user.type,
+        notifications: response.data.user.notifications
+      });
     })();
   }, []);
 
+  // get notification status of subscribed books
+  useEffect(() => {
+    (async () => {
+      const getNotificationStatus = async (bookID: string): Promise<boolean> => {
+        const response = await fetchGraphQLResponse(
+          `query book($bookID: String!) {
+          book(bookID: $bookID) {
+            quantity
+          }
+        }`,
+          { bookID },
+          'Subscription Status Fetch Failed'
+        );
+
+        if (!response) return false;
+
+        return response.data.book.quantity > 0;
+      };
+
+      if (userDetails) {
+        const notificationStatusObj: { [key: string]: boolean } = {};
+        for (let bookID of userDetails.notifications) {
+          notificationStatusObj[bookID] = await getNotificationStatus(bookID);
+        }
+        setNotificationStatus(notificationStatusObj);
+      }
+    })();
+  }, [userDetails]);
+
   const [pendingFetched, setPendingFetched] = useState(false);
-  const [userPending, setUserPending] = useState([]);
+  const [userPending, setUserPending] = useState<
+    {
+      transID: string;
+      bookID: string;
+      borrowDate: string;
+      returnDate: string | null;
+    }[]
+  >([]);
   // fetch pending transactions on mount
   useEffect(() => {
     (async () => {
@@ -84,7 +128,14 @@ export default function DashboardContent() {
   }, []);
 
   const [outstandingFetched, setOutstandingFetched] = useState(false);
-  const [userOutstanding, setUserOutstanding] = useState([]);
+  const [userOutstanding, setUserOutstanding] = useState<
+    {
+      transID: string;
+      bookID: string;
+      borrowDate: string;
+      returnDate: string | null;
+    }[]
+  >([]);
   // fetch outstanding transactions on mount
   useEffect(() => {
     (async () => {
@@ -111,6 +162,36 @@ export default function DashboardContent() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      const getSubscriptionStatus = async (bookID: string): Promise<boolean> => {
+        const response = await fetchGraphQLResponse(
+          `query book($bookID: String!) {
+          book(bookID: $bookID) {
+            subscribers
+          }
+        }`,
+          { bookID },
+          'Subscription Status Fetch Failed'
+        );
+
+        if (!response) return false;
+
+        return response.data.book.subscribers.length > 0;
+      };
+
+      if (userPending && userOutstanding) {
+        const subscriptionStatusObj: { [key: string]: boolean } = {};
+        for (let transaction of [...userPending, ...userOutstanding]) {
+          subscriptionStatusObj[transaction.bookID] = await getSubscriptionStatus(
+            transaction.bookID
+          );
+        }
+        setSubscriptionStatus(subscriptionStatusObj);
+      }
+    })();
+  }, [userPending, userOutstanding]);
 
   // -----------------------------------------------------------------------------------------------
 
@@ -142,7 +223,6 @@ export default function DashboardContent() {
 
   const remainingDaysString = (borrowDate: string): string => {
     const remaining = remainingDays(borrowDate);
-    console.log(new Date(borrowDate), remaining);
     return `${Math.abs(remaining)} days ${remaining < 0 ? 'overdue' : 'remaining'}`;
   };
 
@@ -153,6 +233,20 @@ export default function DashboardContent() {
   };
 
   // -----------------------------------------------------------------------------------------------
+
+  const unsubscribeHandler = async (bookID: string) => {
+    const response = await fetchGraphQLResponse(
+      `mutation unsubscribe($userID: String!, $bookID: String!) {
+        unsubscribe(userID: $userID, bookID: $bookID) {
+          bookID
+        }
+      }`,
+      { userID: authContext.userID, bookID },
+      ''
+    );
+
+    if (!response) return;
+  };
 
   const returnHandler = async (transID: string) => {
     const response = await fetchGraphQLResponse(
@@ -178,9 +272,33 @@ export default function DashboardContent() {
           <div id="user-details-type">{userDetails.type === 'Student' ? 'Student' : 'Faculty'}</div>
           <div id="user-details-name">{userDetails.name}</div>
           <div id="user-details-email">{userDetails.email}</div>
-          <div id="user-details-points">
-            <span>{userDetails.points}</span> points
-          </div>
+        </div>
+      )}
+      {userDetails && userDetails.notifications.length > 0 && (
+        <div id="user-notifications">
+          {userDetails.notifications.map((bookID) => (
+            <div className="user-notification" id={`notification-${bookID}`}>
+              {notificationStatus[bookID] ? (
+                <h4 className="user-notification-yes">
+                  <span onClick={() => setViewingBookID(bookID)}>{bookID}</span>is back in shelf
+                </h4>
+              ) : (
+                <h4 className="user-notification-no">
+                  <span onClick={() => setViewingBookID(bookID)}>{bookID}</span>is not in shelf
+                </h4>
+              )}
+              <div
+                className="user-notification-remove"
+                onClick={() => {
+                  let thisElem = document.getElementById(`notification-${bookID}`);
+                  if (thisElem) thisElem.style.display = 'none';
+                  unsubscribeHandler(bookID);
+                }}
+              >
+                &times;
+              </div>
+            </div>
+          ))}
         </div>
       )}
       <h2>Pending returns</h2>
@@ -202,6 +320,9 @@ export default function DashboardContent() {
                 <tr key={`pending-item-${index}`}>
                   <td>{transaction.transID}</td>
                   <td className="transaction-book-detail-btn">
+                    {subscriptionStatus[transaction.bookID] && (
+                      <div className="book-requested"></div>
+                    )}
                     <span onClick={() => setViewingBookID(transaction.bookID)}>
                       {transaction.bookID}
                     </span>
@@ -253,6 +374,9 @@ export default function DashboardContent() {
                 <tr key={`outstanding-item-${index}`}>
                   <td>{transaction.transID}</td>
                   <td className="transaction-book-detail-btn">
+                    {subscriptionStatus[transaction.bookID] && (
+                      <div className="book-requested"></div>
+                    )}
                     <span onClick={() => setViewingBookID(transaction.bookID)}>
                       {transaction.bookID}
                     </span>

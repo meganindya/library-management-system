@@ -1,6 +1,7 @@
 import {
     GraphQLInputObjectType,
     GraphQLInt,
+    GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,
     GraphQLString
@@ -28,7 +29,7 @@ export const GQLUser = new GraphQLObjectType({
         email: { type: GraphQLNonNull(GraphQLString) },
         password: { type: GraphQLString },
         type: { type: GraphQLNonNull(GraphQLString) },
-        points: { type: GraphQLNonNull(GraphQLInt) }
+        notifications: { type: GraphQLList(GraphQLString) }
     }
 });
 
