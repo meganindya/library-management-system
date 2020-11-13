@@ -1,4 +1,4 @@
-import { IBook, IBookInp } from '../../@types/book';
+import { IBook, IBookInp, ICategory } from '../../@types/book';
 import { IAuthor } from '../../@types/author';
 import Book, { IBookDoc } from '../../models/book';
 import Author from '../../models/author';
@@ -28,10 +28,13 @@ async function transformBook(book: IBookDoc): Promise<IBook> {
 
 // -- Query Resolvers ------------------------------------------------------------------------------
 
-export async function categories(): Promise<{ categoryName: string }[]> {
-    let categorySet = new Set<string>();
-    (await Book.find({})).forEach((book) => categorySet.add(book.category));
-    return [...categorySet].map((category) => ({ categoryName: category }));
+export async function categories(): Promise<ICategory[]> {
+    let categories: { [key: string]: number } = {};
+    (await Book.find({})).forEach((book) => {
+        if (categories[book.category] !== undefined) categories[book.category]++;
+        else categories[book.category] = 1;
+    });
+    return Object.keys(categories).map((name) => ({ name, quantity: categories[name] }));
 }
 
 export async function bookSearch(queryString: string): Promise<IBook[]> {
@@ -112,7 +115,7 @@ export async function unsubscribe(bookID: string, userID: string): Promise<IBook
     return !bookDoc ? null : transformBook(bookDoc);
 }
 
-// -- Temporary ------------------------------------------------------------------------------------
+// -- Temporary ----------------------------------------------------------------
 
 export async function tempBookAction(): Promise<IBook[]> {
     // const bookDocs = await Book.find({});

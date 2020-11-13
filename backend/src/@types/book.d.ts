@@ -13,3 +13,8 @@ export interface IBook {
 export interface IBookInp extends Omit<IBook, 'authors'> {
     authors: string[];
 }
+
+export interface ICategory {
+    name: string;
+    quantity: number;
+}

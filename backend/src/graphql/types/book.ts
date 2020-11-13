@@ -39,6 +39,7 @@ export const GQLCategory = new GraphQLObjectType({
     name: 'Category',
     description: 'This represents a catetgory',
     fields: {
-        categoryName: { type: GraphQLNonNull(GraphQLString) }
+        name: { type: GraphQLNonNull(GraphQLString) },
+        quantity: { type: GraphQLNonNull(GraphQLInt) }
     }
 });
