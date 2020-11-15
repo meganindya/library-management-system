@@ -36,7 +36,10 @@ app.use('/api', graphqlHTTP({ schema: schema, graphiql: true }));
 // connection for mongoDB Atlas database using mongoose
 const mongoConnection = async () => {
     await mongoose.connect(
-        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+        // -- connection string for nodeJS 3.6 or later causes problems with mongoose
+        // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+        // -- connection string for nodeJS 2.12.0 works fine
+        `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST_SHARD_0}:${process.env.MONGO_PORT},${process.env.MONGO_HOST_SHARD_1}:${process.env.MONGO_PORT},${process.env.MONGO_HOST_SHARD_2}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?ssl=true&replicaSet=atlas-7vq935-shard-0&authSource=admin&retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     console.log('connected to mongoDB server');

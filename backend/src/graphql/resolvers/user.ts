@@ -3,21 +3,26 @@ import jwt from 'jsonwebtoken';
 
 import { IUser, IUserAuth } from '../../@types/user';
 import User, { IUserDoc } from '../../models/user';
-import Transaction from '../../models/transaction';
 import { booksFromIDs } from './book';
+import postgresClient from '../../app';
+import { ITransactionPG } from '../../@types/transaction';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
 async function borrowedCurr(userID: string): Promise<string[]> {
-    return (await Transaction.find({ userID }))
-        .filter((transaction) => !transaction.returnDate)
-        .map((transaction) => transaction.bookID);
+    return (
+        await postgresClient.query(
+            `SELECT "transID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NULL`
+        )
+    ).rows.map((transaction: Pick<ITransactionPG, 'transID'>) => transaction.transID);
 }
 
 async function borrowedPrev(userID: string): Promise<string[]> {
-    return (await Transaction.find({ userID }))
-        .filter((transaction) => transaction.returnDate)
-        .map((transaction) => transaction.bookID);
+    return (
+        await postgresClient.query(
+            `SELECT "transID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NOT NULL`
+        )
+    ).rows.map((transaction: Pick<ITransactionPG, 'transID'>) => transaction.transID);
 }
 
 // -- Query Resolvers ------------------------------------------------------------------------------

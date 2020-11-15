@@ -3,6 +3,7 @@ import { UserMutations, UserQueries } from './fields/user';
 import { BookMutations, BookQueries } from './fields/book';
 import { AuthorMutations, AuthorQueries } from './fields/author';
 import { TransactionMutations, TransactionQueries } from './fields/transaction';
+import { AwaitingMutations, AwaitingQueries } from './fields/awaiting';
 
 const schema = new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -12,7 +13,8 @@ const schema = new GraphQLSchema({
             ...UserQueries,
             ...AuthorQueries,
             ...BookQueries,
-            ...TransactionQueries
+            ...TransactionQueries,
+            ...AwaitingQueries
         })
     }),
     mutation: new GraphQLObjectType({
@@ -22,7 +24,8 @@ const schema = new GraphQLSchema({
             ...UserMutations,
             ...AuthorMutations,
             ...BookMutations,
-            ...TransactionMutations
+            ...TransactionMutations,
+            ...AwaitingMutations
         })
     })
 });
