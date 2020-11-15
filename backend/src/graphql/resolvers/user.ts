@@ -39,7 +39,12 @@ export async function login(userID: string, password: string): Promise<IUserAuth
 
 export async function user(userID: string): Promise<Partial<IUser> | null> {
     // find user with userID: `userID`
-    const user = await User.findOne({ userID: userID });
+    const user = await User.findOne({ userID });
+    const notifications = (
+        await postgresClient.query(
+            `SELECT "bookID" FROM notifications WHERE "userID" = '${userID}'`
+        )
+    ).rows.map((row: { bookID: string }) => row.bookID);
     return !user
         ? null
         : {
@@ -47,7 +52,7 @@ export async function user(userID: string): Promise<Partial<IUser> | null> {
               password: '',
               borrowedCurr: async () => await borrowedCurr(userID),
               borrowedPrev: async () => await borrowedPrev(userID),
-              notifications: async () => await booksFromIDs(user.notifications)
+              notifications: async () => await booksFromIDs(notifications)
           };
 }
 
@@ -60,12 +65,12 @@ export async function addUser(input: IUser): Promise<IUser> {
     if (await User.findOne({ userID: input.userID })) throw new Error('user already exists');
     // hash password with 12 rounds of salting
     const hashedPass = await bcrypt.hash(input.password, 12);
-    const user: IUserDoc = new User({ ...input, password: hashedPass, notifications: [] });
+    const user: IUserDoc = new User({ ...input, password: hashedPass });
     let userDoc: IUserDoc = await user.save();
     return {
         ...userDoc._doc,
         password: '',
-        notifications: async () => booksFromIDs(userDoc.notifications)
+        notifications: []
     };
 }
 
@@ -84,6 +89,6 @@ export async function tempUserAction(): Promise<IUser[]> {
         ...user,
         borrowedCurr: [],
         borrowedPrev: [],
-        notifications: async () => await booksFromIDs(user.notifications)
+        notifications: []
     }));
 }
