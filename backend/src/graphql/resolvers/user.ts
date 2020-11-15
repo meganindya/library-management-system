@@ -1,11 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { IUser, IUserAuth } from '../../@types/user';
-import User, { IUserDoc } from '../../models/user';
-import { booksFromIDs } from './book';
 import postgresClient from '../../app';
+import User, { IUserDoc } from '../../models/user';
+
+import { IUser, IUserAuth } from '../../@types/user';
 import { ITransactionPG } from '../../@types/transaction';
+import { booksFromIDs } from './book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -67,24 +68,12 @@ export async function addUser(input: IUser): Promise<IUser> {
     const hashedPass = await bcrypt.hash(input.password, 12);
     const user: IUserDoc = new User({ ...input, password: hashedPass });
     let userDoc: IUserDoc = await user.save();
-    return {
-        ...userDoc._doc,
-        password: '',
-        notifications: []
-    };
+    return { ...userDoc._doc, password: '', notifications: [] };
 }
 
 // -- Temporary ----------------------------------------------------------------
 
 export async function tempUserAction(): Promise<IUser[]> {
-    // const userDocs = await User.find({});
-    // for (let userDoc of userDocs) {
-    //     await User.updateOne(
-    //         { userID: userDoc.userID },
-    //         { $set: { notifications: [] }, $unset: { points: 1 } }
-    //     );
-    // }
-
     return (await User.find({})).map((user) => ({
         ...user,
         borrowedCurr: [],

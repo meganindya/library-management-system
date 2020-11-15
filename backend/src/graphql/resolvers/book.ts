@@ -1,10 +1,10 @@
-import { IBook, IBookInp, ICategory } from '../../@types/book';
-import { IAuthor } from '../../@types/author';
+import postgresClient from '../../app';
 import Book, { IBookDoc } from '../../models/book';
 import Author from '../../models/author';
-import User from '../../models/user';
+
+import { IBook, IBookInp, ICategory } from '../../@types/book';
+import { IAuthor } from '../../@types/author';
 import { authorBooks } from './author';
-import postgresClient from '../../app';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -144,16 +144,6 @@ export async function addBook(input: IBookInp): Promise<IBook> {
 // -- Temporary ----------------------------------------------------------------
 
 export async function tempBookAction(): Promise<IBook[]> {
-    const books = (await Book.find({})).map((book) => book.bookID);
-    for (let bookID of books) {
-        await Book.updateOne({ bookID }, { $unset: { quantity: 1, subscribers: 1 } });
-    }
-
-    const users = (await User.find({})).map((user) => user.userID);
-    for (let userID of users) {
-        await User.updateOne({ userID }, { $unset: { notifications: 1 } });
-    }
-
     const bookDocsNew = await Book.find({});
     return await Promise.all(bookDocsNew.map(async (book) => transformBook(book)));
 }

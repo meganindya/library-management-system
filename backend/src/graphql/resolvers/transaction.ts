@@ -1,8 +1,9 @@
-import { ITransaction, ITransactionPG } from '../../@types/transaction';
+import postgresClient from '../../app';
 import User from '../../models/user';
 import Book from '../../models/book';
+
+import { ITransaction, ITransactionPG } from '../../@types/transaction';
 import { unsubscribe } from './book';
-import postgresClient from '../../app';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -40,9 +41,11 @@ export async function pending(userID: string): Promise<ITransaction[]> {
     const user = await User.findOne({ userID });
     if (!user) throw new Error('no user found');
     const transactions: ITransactionPG[] = (
-        await postgresClient.query(`SELECT * FROM transactions WHERE "userID" = '${userID}'`)
+        await postgresClient.query(
+            `SELECT * FROM transactions WHERE "userID" = '${userID}' WHERE "returnDate" IS NULL`
+        )
     ).rows;
-    return transformTransactions(transactions.filter((transaction) => !transaction.returnDate));
+    return transformTransactions(transactions);
 }
 
 export async function outstanding(userID: string): Promise<ITransaction[]> {
@@ -68,8 +71,7 @@ export async function outstanding(userID: string): Promise<ITransaction[]> {
 
 export async function borrowBook(userID: string, bookID: string): Promise<ITransaction> {
     const user = await User.findOne({ userID });
-    const book = await Book.findOne({ bookID });
-    if (!user || !book) throw new Error('invalid user or book');
+    if (!user) throw new Error('invalid user');
 
     const pendingTransactions = await pending(userID);
     // check if borrow limit reached
@@ -79,7 +81,10 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
     if (pendingTransactions.find((transaction) => transaction.bookID === bookID))
         throw new Error('book already borrowed');
     // check if book remaining in shelf
-    if (book.quantity <= 0) throw new Error('book not in shelf');
+    const quantity: number = (
+        await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`)
+    ).rows[0].quantity;
+    if (quantity === 0) throw new Error('book not in shelf');
 
     const transID = ((await postgresClient.query('SELECT * FROM transactions')).rows.length + 1)
         .toString()
@@ -97,7 +102,9 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
     await unsubscribe(bookID, userID);
 
     // update book quantity
-    await Book.updateOne({ bookID }, { $set: { quantity: book.quantity - 1 } });
+    await postgresClient.query(
+        `UPDATE shelf SET "quantity" = ${quantity - 1} WHERE "bookID" = '${bookID}'`
+    );
 
     return transformTransaction(transaction);
 }
@@ -120,13 +127,12 @@ export async function returnBook(userID: string, bookID: string): Promise<ITrans
     );
 
     // update book quantity
-    const bookDoc = await Book.findOne({ bookID: transaction.bookID });
-    if (bookDoc) {
-        await Book.updateOne(
-            { bookID: transaction.bookID },
-            { $set: { quantity: bookDoc.quantity + 1 } }
-        );
-    }
+    const quantity: number = (
+        await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`)
+    ).rows[0].quantity;
+    await postgresClient.query(
+        `UPDATE shelf SET "quantity" = ${quantity + 1} WHERE "bookID" = '${bookID}'`
+    );
 
     const updatedTransaction: ITransactionPG = (
         await postgresClient.query(
