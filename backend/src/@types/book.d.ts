@@ -5,9 +5,9 @@ export interface IBook {
     title: string;
     category: string;
     abstract: string | null;
-    quantity: int;
+    quantity: number;
     authors: IAuthor[] | Function;
-    subscribers: string[];
+    subscribers: string[] | null;
 }
 
 export interface IBookInp extends Omit<IBook, 'authors'> {

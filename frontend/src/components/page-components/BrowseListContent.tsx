@@ -39,6 +39,7 @@ export default function BrowseListContent(props: {
   const [notifications, setNotifications] = useState<string[]>([]);
   const [borrowedCurr, setBorrowedCurr] = useState<string[]>([]);
   const [borrowedPrev, setBorrowedPrev] = useState<string[]>([]);
+  const [awaiting, setAwaiting] = useState<string[]>([]);
   // fetch subscribed, currently borrowed, and previously borrowed bookIDs on mount
   useEffect(() => {
     (async () => {
@@ -65,6 +66,26 @@ export default function BrowseListContent(props: {
       );
       setBorrowedCurr(response.data.user.borrowedCurr);
       setBorrowedPrev(response.data.user.borrowedPrev);
+
+      const responseAwaiting = await fetchGraphQLResponse(
+        `query awaiting($userID: String!) {
+          awaiting(userID: $userID, type: "") {
+            book {
+              bookID
+            }
+          }
+        }`,
+        { userID: authContext.userID },
+        'awaiting transactions fetch failed'
+      );
+
+      if (!responseAwaiting) return;
+
+      setAwaiting(
+        responseAwaiting.data.awaiting.map(
+          (entry: { book: { bookID: string } }) => entry.book.bookID
+        )
+      );
     })();
   }, []);
 
@@ -110,9 +131,9 @@ export default function BrowseListContent(props: {
 
   const borrowHandler = async (bookID: string) => {
     const response = await fetchGraphQLResponse(
-      `mutation borrowBook($userID: String!, $bookID: String!) {
-        borrowBook(userID: $userID, bookID: $bookID) {
-          transID
+      `mutation awaitTransaction($userID: String!, $bookID: String!) {
+        awaitTransaction(userID: $userID, bookID: $bookID, type: "borrow") {
+          createdAt
         }
       }`,
       { userID: authContext.userID, bookID: bookID },
@@ -121,7 +142,7 @@ export default function BrowseListContent(props: {
 
     if (!response) return;
 
-    browserHistory.push('/history');
+    browserHistory.push('/dashboard');
   };
 
   const subscribeHandler = async (bookID: string) => {
@@ -160,7 +181,7 @@ export default function BrowseListContent(props: {
                 onClick={() => props.resetGlobalSearchQuery()}
               />
             </div>
-            {borrowedCurr.length >= borrowLimit && (
+            {borrowedCurr.length + awaiting.length >= borrowLimit && (
               <div id="borrow-limit-disclaimer">
                 <span>You have reached borrow limit</span>
               </div>
@@ -237,14 +258,16 @@ export default function BrowseListContent(props: {
                         <FontAwesomeIcon icon={faClock} className="input-field-icon" />
                       </div>
                     )}
-                    {borrowedCurr.length < borrowLimit &&
+                    {borrowedCurr.length + awaiting.length < borrowLimit &&
                       searchItem.quantity > 0 &&
-                      borrowedCurr.indexOf(searchItem.bookID) === -1 && (
+                      borrowedCurr.indexOf(searchItem.bookID) === -1 &&
+                      awaiting.indexOf(searchItem.bookID) === -1 && (
                         <button
                           className={`search-item-button-bor ${
                             searchItem.bookID === borrowingID ? 'search-item-button-rolling' : ''
                           }`}
                           onClick={() => {
+                            if (borrowingID || subscribingID) return;
                             setBorrowingID(searchItem.bookID);
                             borrowHandler(searchItem.bookID);
                           }}
@@ -258,10 +281,16 @@ export default function BrowseListContent(props: {
                           )}
                         </button>
                       )}
+                    {borrowedCurr.length + awaiting.length < borrowLimit &&
+                      searchItem.quantity > 0 &&
+                      borrowedCurr.indexOf(searchItem.bookID) === -1 &&
+                      awaiting.indexOf(searchItem.bookID) !== -1 && (
+                        <h4 className="search-item-no-btn-text search-item-borrowed">awaited</h4>
+                      )}
                     {searchItem.quantity > 0 && borrowedCurr.indexOf(searchItem.bookID) !== -1 && (
                       <h4 className="search-item-no-btn-text search-item-borrowed">borrowed</h4>
                     )}
-                    {borrowedCurr.length < borrowLimit &&
+                    {borrowedCurr.length + awaiting.length < borrowLimit &&
                       searchItem.quantity <= 0 &&
                       notifications.indexOf(searchItem.bookID) === -1 && (
                         <button
@@ -269,6 +298,7 @@ export default function BrowseListContent(props: {
                             searchItem.bookID === subscribingID ? 'search-item-button-rolling' : ''
                           }`}
                           onClick={() => {
+                            if (borrowingID || subscribingID) return;
                             setSubscribingID(searchItem.bookID);
                             subscribeHandler(searchItem.bookID);
                           }}

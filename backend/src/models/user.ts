@@ -6,7 +6,6 @@ const { Schema } = mongoose;
 export interface IUserDoc
     extends Omit<IUser, 'notifications' | 'borrowedCurr' | 'borrowedPrev'>,
         mongoose.Document {
-    notifications: string[];
     _doc: IUser;
 }
 
@@ -17,8 +16,7 @@ const userSchema = new Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    type: { type: String, required: true },
-    notifications: { type: [String], required: true }
+    type: { type: String, required: true }
 });
 
 export default mongoose.model<IUserDoc>('User', userSchema);

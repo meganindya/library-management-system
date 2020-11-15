@@ -8,3 +8,8 @@ export interface ITransaction {
     returnDate: string | null;
     book: IBook | Function;
 }
+
+export interface ITransactionPG extends Omit<ITransaction, 'book'> {
+    borrowDate: Date;
+    returnDate: Date | null;
+}

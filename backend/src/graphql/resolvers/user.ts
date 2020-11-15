@@ -1,23 +1,29 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { IUser, IUserAuth } from '../../@types/user';
+import postgresClient from '../../app';
 import User, { IUserDoc } from '../../models/user';
-import Transaction from '../../models/transaction';
+
+import { IUser, IUserAuth } from '../../@types/user';
+import { ITransactionPG } from '../../@types/transaction';
 import { booksFromIDs } from './book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
 async function borrowedCurr(userID: string): Promise<string[]> {
-    return (await Transaction.find({ userID }))
-        .filter((transaction) => !transaction.returnDate)
-        .map((transaction) => transaction.bookID);
+    return (
+        await postgresClient.query(
+            `SELECT "transID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NULL`
+        )
+    ).rows.map((transaction: Pick<ITransactionPG, 'transID'>) => transaction.transID);
 }
 
 async function borrowedPrev(userID: string): Promise<string[]> {
-    return (await Transaction.find({ userID }))
-        .filter((transaction) => transaction.returnDate)
-        .map((transaction) => transaction.bookID);
+    return (
+        await postgresClient.query(
+            `SELECT "transID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NOT NULL`
+        )
+    ).rows.map((transaction: Pick<ITransactionPG, 'transID'>) => transaction.transID);
 }
 
 // -- Query Resolvers ------------------------------------------------------------------------------
@@ -34,7 +40,12 @@ export async function login(userID: string, password: string): Promise<IUserAuth
 
 export async function user(userID: string): Promise<Partial<IUser> | null> {
     // find user with userID: `userID`
-    const user = await User.findOne({ userID: userID });
+    const user = await User.findOne({ userID });
+    const notifications = (
+        await postgresClient.query(
+            `SELECT "bookID" FROM notifications WHERE "userID" = '${userID}'`
+        )
+    ).rows.map((row: { bookID: string }) => row.bookID);
     return !user
         ? null
         : {
@@ -42,7 +53,7 @@ export async function user(userID: string): Promise<Partial<IUser> | null> {
               password: '',
               borrowedCurr: async () => await borrowedCurr(userID),
               borrowedPrev: async () => await borrowedPrev(userID),
-              notifications: async () => await booksFromIDs(user.notifications)
+              notifications: async () => await booksFromIDs(notifications)
           };
 }
 
@@ -55,30 +66,18 @@ export async function addUser(input: IUser): Promise<IUser> {
     if (await User.findOne({ userID: input.userID })) throw new Error('user already exists');
     // hash password with 12 rounds of salting
     const hashedPass = await bcrypt.hash(input.password, 12);
-    const user: IUserDoc = new User({ ...input, password: hashedPass, notifications: [] });
+    const user: IUserDoc = new User({ ...input, password: hashedPass });
     let userDoc: IUserDoc = await user.save();
-    return {
-        ...userDoc._doc,
-        password: '',
-        notifications: async () => booksFromIDs(userDoc.notifications)
-    };
+    return { ...userDoc._doc, password: '', notifications: [] };
 }
 
 // -- Temporary ----------------------------------------------------------------
 
 export async function tempUserAction(): Promise<IUser[]> {
-    // const userDocs = await User.find({});
-    // for (let userDoc of userDocs) {
-    //     await User.updateOne(
-    //         { userID: userDoc.userID },
-    //         { $set: { notifications: [] }, $unset: { points: 1 } }
-    //     );
-    // }
-
     return (await User.find({})).map((user) => ({
         ...user,
         borrowedCurr: [],
         borrowedPrev: [],
-        notifications: async () => await booksFromIDs(user.notifications)
+        notifications: []
     }));
 }

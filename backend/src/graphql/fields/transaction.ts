@@ -50,9 +50,10 @@ export const TransactionMutations: GraphQLFieldConfigMap<any, any> = {
         type: GQLTransaction,
         description: 'Closes a transaction record',
         args: {
-            transID: { type: GraphQLNonNull(GraphQLString) }
+            userID: { type: GraphQLNonNull(GraphQLString) },
+            bookID: { type: GraphQLNonNull(GraphQLString) }
         },
-        resolve: (_, args) => returnBook(args.transID)
+        resolve: (_, args) => returnBook(args.userID, args.bookID)
     },
     // temporary
     tempTransactionAction: {

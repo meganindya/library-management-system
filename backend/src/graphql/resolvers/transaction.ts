@@ -1,31 +1,28 @@
-import { ITransaction } from '../../@types/transaction';
+import postgresClient from '../../app';
 import User from '../../models/user';
-import Book from '../../models/book';
-import Transaction, { ITransactionDoc } from '../../models/transaction';
-import { unsubscribe } from './book';
+
+import { ITransaction, ITransactionPG } from '../../@types/transaction';
+import { book, unsubscribe } from './book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
-function transformTransaction(transactionDoc: ITransactionDoc): ITransaction {
-    const dateString = (date: Date | string): string =>
-        date instanceof Date ? date.toISOString() : date;
+function transformTransaction(transaction: ITransactionPG): ITransaction {
     return {
-        ...transactionDoc._doc,
-        borrowDate: dateString(transactionDoc.borrowDate),
-        returnDate: transactionDoc.returnDate ? dateString(transactionDoc.returnDate) : null,
-        book: async () => await Book.findOne({ bookID: transactionDoc.bookID })
+        transID: transaction.transID,
+        userID: transaction.userID,
+        bookID: transaction.bookID,
+        borrowDate: transaction.borrowDate.toISOString(),
+        returnDate: transaction.returnDate ? transaction.returnDate.toISOString() : null,
+        book: async () => await book(transaction.bookID)
     };
 }
 
-function transformTransactions(transactionDocs: ITransactionDoc[]): ITransaction[] {
+function transformTransactions(transactions: ITransactionPG[]): ITransaction[] {
     return (
-        transactionDocs
+        transactions
             // sort by decreasing order of borrowDate
-            .sort(
-                (a: ITransactionDoc, b: ITransactionDoc) =>
-                    b.borrowDate.getTime() - a.borrowDate.getTime()
-            )
-            .map((transactionDoc) => transformTransaction(transactionDoc))
+            .sort((a, b) => parseInt(b.transID) - parseInt(a.transID))
+            .map((transaction) => transformTransaction(transaction))
     );
 }
 
@@ -34,31 +31,37 @@ function transformTransactions(transactionDocs: ITransactionDoc[]): ITransaction
 export async function transactions(userID: string): Promise<ITransaction[]> {
     const user = await User.findOne({ userID });
     if (!user) throw new Error('no user found');
-    return transformTransactions(await Transaction.find({ userID: user.userID }));
+    return transformTransactions(
+        (await postgresClient.query(`SELECT * FROM transactions WHERE "userID" = '${userID}'`)).rows
+    );
 }
 
 export async function pending(userID: string): Promise<ITransaction[]> {
     const user = await User.findOne({ userID });
     if (!user) throw new Error('no user found');
-    const transactions = await Transaction.find({ userID: user.userID });
-    return transformTransactions(transactions.filter((transaction) => !transaction.returnDate));
+    const transactions: ITransactionPG[] = (
+        await postgresClient.query(
+            `SELECT * FROM transactions WHERE "userID" = '${userID}' AND "returnDate" IS NULL`
+        )
+    ).rows;
+    return transformTransactions(transactions);
 }
 
 export async function outstanding(userID: string): Promise<ITransaction[]> {
     const user = await User.findOne({ userID });
     if (!user) throw new Error('no user found');
-    const transactions = await Transaction.find({ userID });
+    const transactions: ITransactionPG[] = (
+        await postgresClient.query(`SELECT * FROM transactions WHERE "userID" = '${userID}'`)
+    ).rows;
     return transformTransactions(
         transactions.filter((transaction) => {
             const dueDate = new Date(
                 transaction.borrowDate.getTime() +
                     (user.type === 'Student' ? 30 : 180) * 1000 * 60 * 60 * 24
             ).getTime();
-            if (!transaction.returnDate) {
-                return new Date().getTime() > dueDate;
-            } else {
-                return transaction.returnDate.getTime() > dueDate;
-            }
+            return !transaction.returnDate
+                ? Date.now() > dueDate
+                : transaction.returnDate.getTime() > dueDate;
         })
     );
 }
@@ -66,14 +69,8 @@ export async function outstanding(userID: string): Promise<ITransaction[]> {
 // -- Mutation Resolvers ---------------------------------------------------------------------------
 
 export async function borrowBook(userID: string, bookID: string): Promise<ITransaction> {
-    let transID: string = '';
-    await Transaction.countDocuments({ transID: /.*/ }, (_, count) => {
-        transID = (count + 1).toString().padStart(9, '0');
-    });
-
     const user = await User.findOne({ userID });
-    const book = await Book.findOne({ bookID });
-    if (!user || !book) throw new Error('invalid user or book');
+    if (!user) throw new Error('invalid user');
 
     const pendingTransactions = await pending(userID);
     // check if borrow limit reached
@@ -83,43 +80,64 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
     if (pendingTransactions.find((transaction) => transaction.bookID === bookID))
         throw new Error('book already borrowed');
     // check if book remaining in shelf
-    if (book.quantity <= 0) throw new Error('book not in shelf');
+    const quantity: number = (
+        await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`)
+    ).rows[0].quantity;
+    if (quantity === 0) throw new Error('book not in shelf');
 
-    const transactionDoc: ITransactionDoc = await new Transaction({
-        transID,
-        userID,
-        bookID,
-        borrowDate: new Date(),
-        returnDate: null
-    }).save();
+    const transID = ((await postgresClient.query('SELECT * FROM transactions')).rows.length + 1)
+        .toString()
+        .padStart(9, '0');
+
+    await postgresClient.query(
+        `INSERT INTO transactions VALUES ('${transID}', '${userID}', '${bookID}', to_timestamp(${Date.now()} / 1000.0), null)`
+    );
+
+    const transaction: ITransactionPG = (
+        await postgresClient.query(`SELECT * FROM transactions WHERE "transID" = '${transID}'`)
+    ).rows[0];
 
     // unsubscribe userID for bookID
     await unsubscribe(bookID, userID);
 
     // update book quantity
-    await Book.updateOne({ bookID }, { $set: { quantity: book.quantity - 1 } });
+    await postgresClient.query(
+        `UPDATE shelf SET "quantity" = ${quantity - 1} WHERE "bookID" = '${bookID}'`
+    );
 
-    return transformTransaction(transactionDoc);
+    return transformTransaction(transaction);
 }
 
-export async function returnBook(transID: string): Promise<ITransaction | null> {
-    const transaction = await Transaction.findOne({ transID });
+export async function returnBook(userID: string, bookID: string): Promise<ITransaction | null> {
+    const transaction: ITransactionPG = (
+        await postgresClient.query(
+            `SELECT * FROM transactions WHERE "userID" = ${userID} AND "bookID" = ${bookID}`
+        )
+    ).rows[0];
     if (!transaction) throw new Error('no transaction found');
     // check if already returned
     if (transaction.returnDate) throw new Error('already returned');
 
     // update returnDate in transaction
-    await Transaction.updateOne({ _id: transaction._id }, { $set: { returnDate: new Date() } });
-    const updatedTransaction = await Transaction.findOne({ transID });
+    await postgresClient.query(
+        `UPDATE transactions SET returndate = to_timestamp(${Date.now()} / 1000.0) WHERE "transID" = ${
+            transaction.transID
+        }`
+    );
 
     // update book quantity
-    const bookDoc = await Book.findOne({ bookID: transaction.bookID });
-    if (bookDoc) {
-        await Book.updateOne(
-            { bookID: transaction.bookID },
-            { $set: { quantity: bookDoc.quantity + 1 } }
-        );
-    }
+    const quantity: number = (
+        await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`)
+    ).rows[0].quantity;
+    await postgresClient.query(
+        `UPDATE shelf SET "quantity" = ${quantity + 1} WHERE "bookID" = '${bookID}'`
+    );
+
+    const updatedTransaction: ITransactionPG = (
+        await postgresClient.query(
+            `SELECT * FROM transactions WHERE "userID" = ${userID} AND "bookID" = ${bookID}`
+        )
+    ).rows[0];
 
     return !updatedTransaction ? null : transformTransaction(updatedTransaction);
 }
@@ -127,5 +145,5 @@ export async function returnBook(transID: string): Promise<ITransaction | null> 
 // -- Temporary ------------------------------------------------------------------------------------
 
 export async function tempTransactionAction(): Promise<ITransaction[]> {
-    return transformTransactions(await Transaction.find({}));
+    return transformTransactions((await postgresClient.query(`SELECT * FROM transactions`)).rows);
 }

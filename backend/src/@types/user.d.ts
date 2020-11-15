@@ -6,7 +6,7 @@ export interface IUser {
     email: string;
     password: string;
     type: string;
-    notifications: Function;
+    notifications: string[] | Function;
     borrowedCurr: string[] | Function;
     borrowedPrev: string[] | Function;
 }

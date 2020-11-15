@@ -1,7 +1,8 @@
-import { IAuthor } from '../../@types/author';
-import { IBook } from '../../@types/book';
 import Author, { IAuthorDoc } from '../../models/author';
 import Book from '../../models/book';
+
+import { IAuthor } from '../../@types/author';
+import { IBook } from '../../@types/book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -60,14 +61,6 @@ export async function addAuthor(name: string): Promise<IAuthor> {
 // -- Temporary ----------------------------------------------------------------
 
 export async function tempAuthorAction(): Promise<IAuthor[]> {
-    // const authorDocs = await Author.find({});
-    // for (let i in authorDocs) {
-    //     const authorDoc = authorDocs[i];
-    //     await Author.updateOne(
-    //         { _id: authorDoc._id },
-    //         { $set: { authorID: 'A' + authorDoc.authorID.substring(1) } }
-    //     );
-    // }
     const authorDocsNew = await Author.find({});
     return await Promise.all(authorDocsNew.map(async (author) => transformAuthor(author)));
 }

@@ -13,14 +13,14 @@ export default function App() {
     token: string | null;
     tokenExpiration: number;
   }>({
-    userID: null,
-    token: null,
-    type: null,
-    tokenExpiration: 99
-    // userID: '11118001',
-    // token: 'abcdefghijklmnopqrstuvwxyz',
-    // type: 'Student',
+    // userID: null,
+    // token: null,
+    // type: null,
     // tokenExpiration: 99
+    userID: '11118001',
+    token: 'abcdefghijklmnopqrstuvwxyz',
+    type: 'Student',
+    tokenExpiration: 99
   });
 
   const authContextDefaultVals: IAuthContext = {
@@ -58,13 +58,28 @@ export default function App() {
                   <Route path="/auth" component={AuthPage}></Route>
                 </React.Fragment>
               )}
-              {userState.token && (
+              {userState.token && userState.type !== 'Librarian' && (
                 <React.Fragment>
                   <Redirect from="/" to="/browse" exact />
                   <Redirect from="/auth" to="/browse" exact />
+                  <Redirect from="/awaiting" to="/browse" exact />
+                  <Redirect from="/borrow" to="/browse" exact />
+                  <Redirect from="/return" to="/browse" exact />
                   <Route path="/browse" render={() => <TemplatePage pageName="browse" />} />
                   <Route path="/history" render={() => <TemplatePage pageName="history" />} />
                   <Route path="/dashboard" render={() => <TemplatePage pageName="dashboard" />} />
+                </React.Fragment>
+              )}
+              {userState.token && userState.type === 'Librarian' && (
+                <React.Fragment>
+                  <Redirect from="/" to="/awaiting" exact />
+                  <Redirect from="/auth" to="/awaiting" exact />
+                  <Redirect from="/browse" to="/awaiting" exact />
+                  <Redirect from="/history" to="/awaiting" exact />
+                  <Redirect from="/dashboard" to="/awaiting" exact />
+                  <Route path="/awaiting" render={() => <TemplatePage pageName="awaiting" />} />
+                  <Route path="/borrow" render={() => <TemplatePage pageName="borrow" />} />
+                  <Route path="/return" render={() => <TemplatePage pageName="return" />} />
                 </React.Fragment>
               )}
               {/* <Redirect from="/" to="/browse" exact />

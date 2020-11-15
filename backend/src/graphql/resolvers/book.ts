@@ -1,8 +1,9 @@
-import { IBook, IBookInp, ICategory } from '../../@types/book';
-import { IAuthor } from '../../@types/author';
+import postgresClient from '../../app';
 import Book, { IBookDoc } from '../../models/book';
 import Author from '../../models/author';
-import User from '../../models/user';
+
+import { IBook, IBookInp, ICategory } from '../../@types/book';
+import { IAuthor } from '../../@types/author';
 import { authorBooks } from './author';
 
 // -- Utilities ------------------------------------------------------------------------------------
@@ -24,7 +25,20 @@ async function getAuthorDocs(authorIDs: string[]): Promise<IAuthor[]> {
 }
 
 async function transformBook(book: IBookDoc): Promise<IBook> {
-    return { ...book._doc, authors: async () => await getAuthorDocs(book.authors) };
+    const quantity: { quantity: number } = (
+        await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${book.bookID}'`)
+    ).rows[0];
+    const subscribers: string[] = (
+        await postgresClient.query(
+            `SELECT "userID" from notifications WHERE "bookID" = '${book.bookID}'`
+        )
+    ).rows.map((row) => row.userID);
+    return {
+        ...book._doc,
+        quantity: quantity.quantity,
+        authors: async () => await getAuthorDocs(book.authors),
+        subscribers
+    };
 }
 
 // -- Query Resolvers ------------------------------------------------------------------------------
@@ -77,41 +91,38 @@ export async function books(): Promise<IBook[]> {
 
 // -- Mutation Resolvers ---------------------------------------------------------------------------
 
-export async function subscribe(bookID: string, userID: string): Promise<IBook | null> {
-    const book = await Book.findOne({ bookID });
-    const user = await User.findOne({ userID });
-    if (!book || !user) throw new Error('invalid book or user');
+export async function subscribe(bookID: string, userID: string): Promise<void> {
+    if (
+        (await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`))
+            .rows[0] > 0
+    )
+        throw new Error('book already in shelf');
 
-    if (book.quantity > 0) throw new Error('book already in shelf');
-
-    if (book.subscribers.indexOf(userID) !== -1 || user.notifications.indexOf(bookID) !== -1)
+    if (
+        (
+            await postgresClient.query(
+                `SELECT * FROM notifications WHERE "userID" = '${userID}' AND "bookID" = '${bookID}'`
+            )
+        ).rows.length > 0
+    )
         throw new Error('user already subscribed');
 
-    await Book.updateOne({ bookID }, { $set: { subscribers: [...book.subscribers, userID] } });
-    await User.updateOne({ userID }, { $set: { notifications: [...user.notifications, bookID] } });
-
-    const bookDoc = await Book.findOne({ bookID });
-    return !bookDoc ? null : transformBook(bookDoc);
+    await postgresClient.query(`INSERT INTO notifications VALUES ('${userID}', '${bookID}')`);
 }
 
-export async function unsubscribe(bookID: string, userID: string): Promise<IBook | null> {
-    const book = await Book.findOne({ bookID });
-    const user = await User.findOne({ userID });
-    if (!user || !book) throw new Error('invalid user or book');
-
-    if (book.subscribers.indexOf(userID) === -1 && user.notifications.indexOf(bookID) === -1)
+export async function unsubscribe(bookID: string, userID: string): Promise<void> {
+    if (
+        (
+            await postgresClient.query(
+                `SELECT * FROM notifications WHERE "userID" = '${userID}' AND "bookID" = '${bookID}'`
+            )
+        ).rows.length === 0
+    )
         throw new Error('user already unsubscribed');
 
-    const subscribers = book.subscribers;
-    subscribers.splice(book.subscribers.indexOf(userID), 1);
-    await Book.updateOne({ bookID }, { $set: { subscribers } });
-
-    const notifications = user.notifications;
-    notifications.splice(user.notifications.indexOf(bookID), 1);
-    await User.updateOne({ userID }, { $set: { notifications } });
-
-    const bookDoc = await Book.findOne({ bookID });
-    return !bookDoc ? null : transformBook(bookDoc);
+    await postgresClient.query(
+        `DELETE FROM notifications WHERE "userID" = '${userID}' AND "bookID" = '${bookID}'`
+    );
 }
 
 // -- Development --------------------------------------------------------------
@@ -139,23 +150,6 @@ export async function addBook(input: IBookInp): Promise<IBook> {
 // -- Temporary ----------------------------------------------------------------
 
 export async function tempBookAction(): Promise<IBook[]> {
-    // const bookDocs = await Book.find({});
-    // for (let i in bookDocs) {
-    //     const bookDoc = bookDocs[i];
-    //     const authorIDs: string[] = [];
-    //     for (let authorID of bookDoc.authors) {
-    //         if (typeof authorID !== 'string') continue;
-    //         authorIDs.push('A' + authorID.substring(1));
-    //     }
-    //     console.log(authorIDs);
-    //     await Book.updateOne({ bookID: bookDoc.bookID }, { $set: { authors: authorIDs } });
-    // }
-
-    // const bookDocs = await Book.find({});
-    // for (let bookDoc of bookDocs) {
-    //     await Book.updateOne({ bookID: bookDoc.bookID }, { $set: { subscribers: [] } });
-    // }
-
     const bookDocsNew = await Book.find({});
     return await Promise.all(bookDocsNew.map(async (book) => transformBook(book)));
 }

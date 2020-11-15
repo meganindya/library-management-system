@@ -139,6 +139,60 @@
     height: 100px;
   }
 
+  #user-awaiting-table {
+    table {
+      tr {
+        th:nth-of-type(1),
+        td:nth-of-type(1) {
+          width: 30%;
+        }
+
+        th:nth-of-type(2),
+        td:nth-of-type(2) {
+          width: 27.5%;
+        }
+
+        th:nth-of-type(3),
+        td:nth-of-type(3) {
+          width: 30%;
+        }
+
+        th:nth-of-type(4),
+        td:nth-of-type(4) {
+          width: 12.5%;
+        }
+
+        .awaiting-clear-btn {
+          text-align: left;
+
+          > div {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid $darkgray;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            background: $lightgray;
+            cursor: pointer;
+            transition: all 0.25s ease;
+
+            &:hover {
+              color: white;
+              background: coral;
+            }
+          }
+
+          &.waiting {
+            > div {
+              color: rgba(0, 0, 0, 0);
+              background: url('/images/loading-3.gif') no-repeat;
+              background-size: contain;
+              background-position: center;
+            }
+          }
+        }
+      }
+    }
+  }
+
   #pending-table {
     table {
       tr {
