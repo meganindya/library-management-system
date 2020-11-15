@@ -20,6 +20,7 @@ export default function SearchBar(props: {
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    props.searchHandler(' ', false);
     props.searchHandler(searchEl.current?.value.trim() || '', false);
   };
 

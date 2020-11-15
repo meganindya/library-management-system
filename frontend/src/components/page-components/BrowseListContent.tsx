@@ -197,6 +197,7 @@ export default function BrowseListContent(props: {
             <SearchBar
               searchHandler={(query: string, activeSearch: boolean) => {
                 setSearchItemListFetched(activeSearch);
+                console.log(query);
                 setSearchQuery({
                   query,
                   category: searchQuery.category,

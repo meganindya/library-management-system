@@ -57,13 +57,16 @@ export async function bookSearch(
     author: boolean,
     category: string
 ): Promise<IBook[]> {
+    console.log(arguments);
     if (author) {
         let books = await authorBooks(query);
         if (category !== 'Any Category') books = books.filter((book) => book.category === category);
+        console.log('-- ' + books.length);
         return books;
     } else {
         let books = await Book.find(category === 'Any Category' ? {} : { category });
         books = books.filter((book) => book.title.match(new RegExp(query, 'i')) !== null);
+        console.log('++ ' + books.length);
         return await Promise.all(books.map(async (book) => await transformBook(book)));
     }
 }
