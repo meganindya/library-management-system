@@ -20,6 +20,7 @@ export default function BrowseListContent(props: {
   searchQuery: {
     query: string;
     category: string;
+    author: boolean;
   };
   resetGlobalSearchQuery: Function;
 }) {
@@ -89,15 +90,18 @@ export default function BrowseListContent(props: {
     })();
   }, []);
 
-  const [searchQuery, setSearchQuery] = useState<{ query: string; category: string }>(
-    props.searchQuery
-  );
+  const [searchQuery, setSearchQuery] = useState<{
+    query: string;
+    category: string;
+    author: boolean;
+  }>(props.searchQuery);
 
   const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
   const [searchItemListFetched, setSearchItemListFetched] = useState(false);
   // fetch search items list when search query changes
   useEffect(() => {
     (async () => {
+      console.log('updating');
       const response = await fetchGraphQLResponse(
         `query bookSearch($query: String!, $author: Boolean!, $category: String!) {
           bookSearch(query: $query, author: $author, category: $category) {
@@ -111,12 +115,14 @@ export default function BrowseListContent(props: {
             quantity
           }
         }`,
-        { query: searchQuery.query, author: false, category: searchQuery.category },
+        { ...searchQuery },
         'book search failed'
       );
+      console.log(response);
 
       if (!response) return;
 
+      console.log('updated');
       setSearchItemsList(
         response.data.bookSearch.map((book: IBook) => ({
           ...book,
@@ -125,7 +131,7 @@ export default function BrowseListContent(props: {
       );
       setSearchItemListFetched(true);
     })();
-  }, [searchQuery]);
+  }, [searchQuery.query, searchQuery.category]);
 
   // -- Callbacks ----------------------------------------------------------------------------------
 
@@ -191,11 +197,32 @@ export default function BrowseListContent(props: {
             <SearchBar
               searchHandler={(query: string, activeSearch: boolean) => {
                 setSearchItemListFetched(activeSearch);
-                setSearchQuery({ query, category: searchQuery.category });
+                setSearchQuery({
+                  query,
+                  category: searchQuery.category,
+                  author: searchQuery.author
+                });
               }}
               initialValue={searchQuery.query}
-              activeSearch={true}
+              activeSearch={false}
             />
+            <input
+              type="checkbox"
+              id="search-author"
+              name="author"
+              value="Author"
+              style={{ marginLeft: '1rem' }}
+              checked={searchQuery.author}
+              onChange={() => {
+                // setSearchItemListFetched(false);
+                setSearchQuery({
+                  query: searchQuery.query,
+                  category: searchQuery.category,
+                  author: !searchQuery.author
+                });
+              }}
+            ></input>
+            <span style={{ color: 'gray' }}>Author</span>
             <Select
               id="search-category-dropdown"
               options={[
@@ -209,7 +236,11 @@ export default function BrowseListContent(props: {
               onChange={(option: any) => {
                 if (option) {
                   setSearchItemListFetched(false);
-                  setSearchQuery({ query: searchQuery.query, category: option.label });
+                  setSearchQuery({
+                    query: searchQuery.query,
+                    category: option.label,
+                    author: searchQuery.author
+                  });
                 }
               }}
             ></Select>
@@ -217,6 +248,11 @@ export default function BrowseListContent(props: {
         </div>
       </div>
       {!searchItemListFetched && <div className="rolling" style={{ marginTop: '3rem' }}></div>}
+      {searchItemListFetched && searchItemsList.length === 0 && (
+        <h2 id="search-list-no-items" className="container">
+          No Items Found
+        </h2>
+      )}
       {searchItemListFetched && (
         <div id="search-list-items" className="container">
           {searchItemsList.map((searchItem, index) => (

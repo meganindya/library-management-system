@@ -30,7 +30,11 @@ export default function BrowseContent() {
     })();
   }, []);
 
-  const [searchQuery, setSearchQuery] = useState<{ query: string; category: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState<{
+    query: string;
+    category: string;
+    author: boolean;
+  } | null>(null);
 
   // -- Render -------------------------------------------------------------------------------------
 

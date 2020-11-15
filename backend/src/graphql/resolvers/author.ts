@@ -1,3 +1,4 @@
+import postgresClient from '../../app';
 import Author, { IAuthorDoc } from '../../models/author';
 import Book from '../../models/book';
 
@@ -17,7 +18,17 @@ async function getBookDocs(bookIDs: string[]): Promise<IBook[]> {
             const authorDoc = await Author.findOne({ authorID });
             if (authorDoc) authors.push(await transformAuthor(authorDoc));
         }
-        books.push({ ...book._doc, authors });
+        const quantity: number = (
+            await postgresClient.query(
+                `SELECT "quantity" FROM shelf WHERE "bookID" = '${book.bookID}'`
+            )
+        ).rows[0].quantity;
+        const subscribers: string[] = (
+            await postgresClient.query(
+                `SELECT "userID" from notifications WHERE "bookID" = '${book.bookID}'`
+            )
+        ).rows.map((row) => row.userID);
+        books.push({ ...book._doc, authors, quantity, subscribers });
     }
     return books;
 }

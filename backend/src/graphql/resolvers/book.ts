@@ -25,9 +25,9 @@ async function getAuthorDocs(authorIDs: string[]): Promise<IAuthor[]> {
 }
 
 async function transformBook(book: IBookDoc): Promise<IBook> {
-    const quantity: { quantity: number } = (
+    const quantity: number = (
         await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${book.bookID}'`)
-    ).rows[0];
+    ).rows[0].quantity;
     const subscribers: string[] = (
         await postgresClient.query(
             `SELECT "userID" from notifications WHERE "bookID" = '${book.bookID}'`
@@ -35,8 +35,8 @@ async function transformBook(book: IBookDoc): Promise<IBook> {
     ).rows.map((row) => row.userID);
     return {
         ...book._doc,
-        quantity: quantity.quantity,
         authors: async () => await getAuthorDocs(book.authors),
+        quantity,
         subscribers
     };
 }
@@ -59,10 +59,10 @@ export async function bookSearch(
 ): Promise<IBook[]> {
     if (author) {
         let books = await authorBooks(query);
-        if (category !== 'any') books = books.filter((book) => book.category === category);
+        if (category !== 'Any Category') books = books.filter((book) => book.category === category);
         return books;
     } else {
-        let books = await Book.find(category === 'any' ? {} : { category });
+        let books = await Book.find(category === 'Any Category' ? {} : { category });
         books = books.filter((book) => book.title.match(new RegExp(query, 'i')) !== null);
         return await Promise.all(books.map(async (book) => await transformBook(book)));
     }

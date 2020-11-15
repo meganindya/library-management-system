@@ -66,6 +66,19 @@
   }
 }
 
+#search-list-no-items {
+  padding: 1.5rem;
+  margin-top: 5rem;
+  box-sizing: border-box;
+  border: 1px solid $lightgray;
+  border-radius: 0.5rem;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: center;
+  color: $darkgray;
+}
+
 #search-list-items {
   padding-top: 5rem;
   padding-bottom: 7rem;
