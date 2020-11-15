@@ -7,11 +7,14 @@ import { borrowBook, returnBook } from './transaction';
 
 // -- Query Resolvers ------------------------------------------------------------------------------
 
-export async function awaiting(userID: string, type: string | undefined): Promise<IAwaiting[]> {
+export async function awaiting(userID: string, type: string): Promise<IAwaiting[]> {
     const transactions: IAwaitingPG[] = (
         await postgresClient.query(
-            `SELECT * FROM awaiting WHERE "userID" = '${userID}'` +
-                (typeof type === 'string' ? ` AND "type" = '${type}'` : '')
+            `SELECT * FROM awaiting` +
+                (userID !== '' || type !== '' ? ' WHERE' : '') +
+                (userID !== '' ? ` "userID" = '${userID}'` : '') +
+                (userID !== '' && type !== '' ? ' AND' : '') +
+                (type !== '' ? ` "type" = '${type}'` : '')
         )
     ).rows;
     return await Promise.all(

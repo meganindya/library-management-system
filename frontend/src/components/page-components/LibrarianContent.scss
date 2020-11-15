@@ -1,0 +1,109 @@
+@import '../../css-utils/colors';
+
+#awaiting-content {
+  margin-top: 5rem;
+  margin-bottom: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Nunito Sans', Verdana, Helvetica, sans-serif;
+
+  > h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0.25px;
+    text-align: center;
+  }
+
+  #awaiting-table {
+    table {
+      tr {
+        th:nth-of-type(1),
+        td:nth-of-type(1) {
+          width: 20%;
+        }
+
+        th:nth-of-type(2),
+        td:nth-of-type(2) {
+          position: relative;
+          width: 20%;
+        }
+
+        th:nth-of-type(3),
+        td:nth-of-type(3) {
+          width: 30%;
+        }
+
+        th:nth-of-type(4),
+        td:nth-of-type(4) {
+          width: 22.5%;
+        }
+
+        th:nth-of-type(5),
+        td:nth-of-type(5) {
+          position: relative;
+          width: 7.5%;
+        }
+
+        .awaiting-confirm-btn {
+          text-align: right;
+
+          > div {
+            width: 100%;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid $darkgray;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            color: white;
+            background: $accentsecondary;
+            cursor: pointer;
+            transition: all 0.25s ease;
+
+            &:hover {
+              color: $accentsecondary;
+              background: white;
+            }
+          }
+
+          &.waiting {
+            > div {
+              color: rgba(0, 0, 0, 0);
+              background: url('/images/loading-3.gif') no-repeat;
+              background-size: contain;
+              background-position: center;
+            }
+          }
+        }
+
+        .awaiting-clear-btn {
+          text-align: left;
+
+          > div {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid $darkgray;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            background: $lightgray;
+            cursor: pointer;
+            transition: all 0.25s ease;
+
+            &:hover {
+              color: white;
+              background: coral;
+            }
+          }
+
+          &.waiting {
+            > div {
+              color: rgba(0, 0, 0, 0);
+              background: url('/images/loading-3.gif') no-repeat;
+              background-size: contain;
+              background-position: center;
+            }
+          }
+        }
+      }
+    }
+  }
+}

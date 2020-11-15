@@ -8,7 +8,7 @@ export const AwaitingQueries: GraphQLFieldConfigMap<any, any> = {
         description: 'A list of awaiting transactions for a user',
         args: {
             userID: { type: GraphQLNonNull(GraphQLString) },
-            type: { type: GraphQLString }
+            type: { type: GraphQLNonNull(GraphQLString) }
         },
         resolve: (_, args) => awaiting(args.userID, args.type)
     }
