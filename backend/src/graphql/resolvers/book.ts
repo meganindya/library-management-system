@@ -28,10 +28,16 @@ async function transformBook(book: IBookDoc): Promise<IBook> {
     const quantity: { quantity: number } = (
         await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${book.bookID}'`)
     ).rows[0];
+    const subscribers: string[] = (
+        await postgresClient.query(
+            `SELECT "userID" from notifications WHERE "bookID" = '${book.bookID}'`
+        )
+    ).rows.map((row) => row.userID);
     return {
         ...book._doc,
         quantity: quantity.quantity,
-        authors: async () => await getAuthorDocs(book.authors)
+        authors: async () => await getAuthorDocs(book.authors),
+        subscribers
     };
 }
 

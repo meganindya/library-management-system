@@ -1,9 +1,8 @@
 import postgresClient from '../../app';
 import User from '../../models/user';
-import Book from '../../models/book';
 
 import { ITransaction, ITransactionPG } from '../../@types/transaction';
-import { unsubscribe } from './book';
+import { book, unsubscribe } from './book';
 
 // -- Utilities ------------------------------------------------------------------------------------
 
@@ -14,7 +13,7 @@ function transformTransaction(transaction: ITransactionPG): ITransaction {
         bookID: transaction.bookID,
         borrowDate: transaction.borrowDate.toISOString(),
         returnDate: transaction.returnDate ? transaction.returnDate.toISOString() : null,
-        book: async () => await Book.findOne({ bookID: transaction.bookID })
+        book: async () => await book(transaction.bookID)
     };
 }
 
@@ -42,7 +41,7 @@ export async function pending(userID: string): Promise<ITransaction[]> {
     if (!user) throw new Error('no user found');
     const transactions: ITransactionPG[] = (
         await postgresClient.query(
-            `SELECT * FROM transactions WHERE "userID" = '${userID}' WHERE "returnDate" IS NULL`
+            `SELECT * FROM transactions WHERE "userID" = '${userID}' AND "returnDate" IS NULL`
         )
     ).rows;
     return transformTransactions(transactions);

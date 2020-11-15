@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { IUser } from '../../@types/user';
+import { IAwaiting } from '../../@types/awaiting';
 import { ITransaction } from '../../@types/transaction';
 
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
@@ -74,6 +75,33 @@ export default function DashboardContent() {
         type: response.data.user.type,
         notifications: response.data.user.notifications
       });
+    })();
+  }, []);
+
+  const [awaiting, setAwaiting] = useState<IAwaiting[]>([]);
+  const [awaitingFetched, setAwaitingFetched] = useState(false);
+  const [waitingClear, setWaitingClear] = useState<string | null>(null);
+  // fetch awaiting transactions on mount
+  useEffect(() => {
+    (async () => {
+      const response = await fetchGraphQLResponse(
+        `query awaiting($userID: String!) {
+          awaiting(userID: $userID, type: "") {
+            book {
+              bookID
+            }
+            type
+            createdAt
+          }
+        }`,
+        { userID: authContext.userID },
+        'awaiting transactions fetch failed'
+      );
+
+      if (!response) return;
+
+      setAwaiting(response.data.awaiting);
+      setAwaitingFetched(true);
     })();
   }, []);
 
@@ -162,14 +190,31 @@ export default function DashboardContent() {
     if (!response) return;
   };
 
-  const returnHandler = async (transID: string) => {
+  const clearAwaitingHandler = async (bookID: string): Promise<void> => {
     const response = await fetchGraphQLResponse(
-      `mutation returnBook($transID: String!) {
-        returnBook(transID: $transID) {
-          transID
+      `mutation clearAwaiting($userID: String!, $bookID: String!) {
+          clearAwaiting(userID: $userID, bookID: $bookID) {
+            createdAt
+          }
+        }`,
+      { userID: authContext.userID, bookID },
+      'awaiting transaction clear failed'
+    );
+
+    if (!response) return;
+
+    setWaitingClear(null);
+    browserHistory.push(`/browse`);
+  };
+
+  const returnHandler = async (bookID: string) => {
+    const response = await fetchGraphQLResponse(
+      `mutation awaitTransaction($userID: String!, $bookID: String!) {
+        awaitTransaction(userID: $userID, bookID: $bookID, type: "return") {
+          createdAt
         }
       }`,
-      { transID },
+      { userID: authContext.userID, bookID },
       'Return Failed'
     );
 
@@ -223,7 +268,57 @@ export default function DashboardContent() {
           ))}
         </div>
       )}
-      <h2>Pending returns</h2>
+      <h2>Awaiting Confirmation</h2>
+      {!awaitingFetched && <div className="rolling"></div>}
+      {awaitingFetched && awaiting.length > 0 && (
+        <div id="user-awaiting-table" className="transaction-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Book ID</th>
+                <th>Created At</th>
+                <th>Type</th>
+                <th>Cancel</th>
+              </tr>
+            </thead>
+            <tbody>
+              {awaiting.map((transaction: IAwaiting, index) => (
+                <tr key={`user-awaiting-item-${index}`}>
+                  <td className="transaction-book-detail-btn">
+                    <span onClick={() => setViewingBookID(transaction.book.bookID)}>
+                      {transaction.book.bookID}
+                    </span>
+                  </td>
+                  <td>{dateString(transaction.createdAt)}</td>
+                  <td style={{ fontWeight: 600, color: 'carbon' }}>
+                    {transaction.type.toUpperCase()}
+                  </td>
+                  <td
+                    className={
+                      `awaiting-clear-btn` +
+                      (waitingClear && waitingClear === transaction.book.bookID ? ' waiting' : '')
+                    }
+                  >
+                    <div
+                      onClick={() => {
+                        if (waitingClear || returning) return;
+                        setWaitingClear(transaction.book.bookID);
+                        clearAwaitingHandler(transaction.book.bookID);
+                      }}
+                    >
+                      &times;
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {awaitingFetched && awaiting.length === 0 && (
+        <div className="no-transaction">No Awaiting Transactions</div>
+      )}
+      <h2>Pending Returns</h2>
       {!pendingFetched && <div className="rolling"></div>}
       {pendingFetched && userPending.length > 0 && (
         <div id="pending-table" className="transaction-table">
@@ -259,8 +354,9 @@ export default function DashboardContent() {
                           : 'return-btn-ok'
                       }
                       onClick={() => {
+                        if (returning || waitingClear) return;
                         setReturning(transaction.transID);
-                        returnHandler(transaction.transID);
+                        returnHandler(transaction.bookID);
                       }}
                     >
                       {transaction.transID === returning && <div className="rolling-3"></div>}
@@ -277,7 +373,7 @@ export default function DashboardContent() {
       {pendingFetched && userPending.length === 0 && (
         <div className="no-transaction">No Pending Transactions</div>
       )}
-      <h2>Outstanding transactions</h2>
+      <h2>Outstanding Transactions</h2>
       {!outstandingFetched && <div className="rolling"></div>}
       {outstandingFetched && userOutstanding.length > 0 && (
         <div id="outstanding-table" className="transaction-table">

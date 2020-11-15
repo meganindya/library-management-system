@@ -132,6 +132,7 @@ export default function LibrarianContent(props: { pageName: string }) {
                   >
                     <div
                       onClick={() => {
+                        if (waiting) return;
                         setWaiting({
                           userID: transaction.user.userID,
                           bookID: transaction.book.bookID,
@@ -156,6 +157,7 @@ export default function LibrarianContent(props: { pageName: string }) {
                   >
                     <div
                       onClick={() => {
+                        if (waiting) return;
                         setWaiting({
                           userID: transaction.user.userID,
                           bookID: transaction.book.bookID,
