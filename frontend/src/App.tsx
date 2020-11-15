@@ -13,14 +13,14 @@ export default function App() {
     token: string | null;
     tokenExpiration: number;
   }>({
-    // userID: null,
-    // token: null,
-    // type: null,
-    // tokenExpiration: 99
-    userID: '11118001',
-    token: 'abcdefghijklmnopqrstuvwxyz',
-    type: 'Student',
+    userID: null,
+    token: null,
+    type: null,
     tokenExpiration: 99
+    // userID: '11118001',
+    // token: 'abcdefghijklmnopqrstuvwxyz',
+    // type: 'Student',
+    // tokenExpiration: 99
   });
 
   const authContextDefaultVals: IAuthContext = {
