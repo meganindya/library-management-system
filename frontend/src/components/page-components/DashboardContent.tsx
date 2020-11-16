@@ -195,9 +195,7 @@ export default function DashboardContent() {
 
     if (!response) return;
 
-    if (response.errors) {
-      alert(response.errors.map((err: any) => err.message));
-    }
+    if (response.errors) alert(response.errors.map((err: any) => err.message));
   };
 
   const clearAwaitingHandler = async (bookID: string): Promise<void> => {
@@ -213,9 +211,7 @@ export default function DashboardContent() {
 
     if (!response) return;
 
-    if (response.errors) {
-      alert(response.errors.map((err: any) => err.message));
-    }
+    if (response.errors) alert(response.errors.map((err: any) => err.message));
 
     setWaitingClear(null);
     browserHistory.push(`/browse`);
@@ -234,9 +230,7 @@ export default function DashboardContent() {
 
     if (!response) return;
 
-    if (response.errors) {
-      alert(response.errors.map((err: any) => err.message));
-    }
+    if (response.errors) alert(response.errors.map((err: any) => err.message));
 
     browserHistory.push('/browse');
   };

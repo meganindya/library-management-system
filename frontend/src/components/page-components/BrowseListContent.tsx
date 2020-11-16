@@ -74,7 +74,7 @@ export default function BrowseListContent(props: {
       if (!response) return;
 
       console.log('updated');
-      console.log(notifications, borrowedCurr, borrowedPrev, awaiting, props.borrowLimit);
+      console.log(props.userBooks, props.borrowLimit);
 
       const findState = (bookID: string, quantity: number): string => {
         console.log(bookID, quantity);
@@ -132,6 +132,8 @@ export default function BrowseListContent(props: {
 
     if (!response) return;
 
+    if (response.errors) alert(response.errors[0].message);
+
     browserHistory.push('/dashboard');
   };
 
@@ -147,6 +149,8 @@ export default function BrowseListContent(props: {
     );
 
     if (!response) return;
+
+    if (response.errors) alert(response.errors[0].message);
 
     browserHistory.push('/dashboard');
   };

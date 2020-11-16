@@ -13,17 +13,17 @@ import { booksFromIDs } from './book';
 async function borrowedCurr(userID: string): Promise<string[]> {
     return (
         await postgresClient.query(
-            `SELECT "transID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NULL`
+            `SELECT "bookID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NULL`
         )
-    ).rows.map((transaction: Pick<ITransactionPG, 'transID'>) => transaction.transID);
+    ).rows.map((transaction: Pick<ITransactionPG, 'bookID'>) => transaction.bookID);
 }
 
 async function borrowedPrev(userID: string): Promise<string[]> {
     return (
         await postgresClient.query(
-            `SELECT "transID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NOT NULL`
+            `SELECT "bookID" from transactions WHERE "userID" = '${userID}' AND "returnDate" IS NOT NULL`
         )
-    ).rows.map((transaction: Pick<ITransactionPG, 'transID'>) => transaction.transID);
+    ).rows.map((transaction: Pick<ITransactionPG, 'bookID'>) => transaction.bookID);
 }
 
 // -- Query Resolvers ------------------------------------------------------------------------------
