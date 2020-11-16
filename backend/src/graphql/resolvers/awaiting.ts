@@ -63,7 +63,7 @@ export async function confirmAwaiting(userID: string, bookID: string): Promise<v
             await returnBook(userID, bookID);
         }
     } catch (error) {
-        alert(error.message);
+        console.log(error.message);
     }
 
     await clearAwaiting(userID, bookID);

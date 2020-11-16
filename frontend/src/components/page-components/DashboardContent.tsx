@@ -131,7 +131,13 @@ export default function DashboardContent() {
       if (response.errors) {
         console.error(response.errors[0].message);
       } else {
-        setUserPending(response.data.pending);
+        console.log(awaiting);
+        const awaitingIDs = awaiting.map((awaitingItem) => awaitingItem.book.bookID);
+        setUserPending(
+          response.data.pending.filter(
+            (item: ITransaction) => awaitingIDs.indexOf(item.bookID) === -1
+          )
+        );
         setPendingFetched(true);
       }
     })();
@@ -188,6 +194,10 @@ export default function DashboardContent() {
     );
 
     if (!response) return;
+
+    if (response.errors) {
+      alert(response.errors.map((err: any) => err.message));
+    }
   };
 
   const clearAwaitingHandler = async (bookID: string): Promise<void> => {
@@ -202,6 +212,10 @@ export default function DashboardContent() {
     );
 
     if (!response) return;
+
+    if (response.errors) {
+      alert(response.errors.map((err: any) => err.message));
+    }
 
     setWaitingClear(null);
     browserHistory.push(`/browse`);
@@ -220,7 +234,11 @@ export default function DashboardContent() {
 
     if (!response) return;
 
-    browserHistory.push('/history');
+    if (response.errors) {
+      alert(response.errors.map((err: any) => err.message));
+    }
+
+    browserHistory.push('/browse');
   };
 
   // -- Render -------------------------------------------------------------------------------------

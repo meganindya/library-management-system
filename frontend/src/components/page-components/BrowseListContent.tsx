@@ -23,72 +23,23 @@ export default function BrowseListContent(props: {
     author: boolean;
   };
   resetGlobalSearchQuery: Function;
+  userBooks: {
+    notifications: string[];
+    borrowedCurr: string[];
+    borrowedPrev: string[];
+    awaiting: string[];
+  };
+  borrowLimit: number;
 }) {
   const authContext = useContext(AuthContext);
   const browserHistory = useHistory();
 
-  const [borrowLimit, setBorrowLimit] = useState(-1);
-  // update user borrowing limit when user type changes
-  useEffect(() => {
-    if (authContext.type) {
-      setBorrowLimit(authContext.type === 'Student' ? 5 : 8);
-    }
-  }, [authContext.type]);
-
   // -- Data Fetch Operations ----------------------------------------------------------------------
 
-  const [notifications, setNotifications] = useState<string[]>([]);
-  const [borrowedCurr, setBorrowedCurr] = useState<string[]>([]);
-  const [borrowedPrev, setBorrowedPrev] = useState<string[]>([]);
-  const [awaiting, setAwaiting] = useState<string[]>([]);
-  // fetch subscribed, currently borrowed, and previously borrowed bookIDs on mount
-  useEffect(() => {
-    (async () => {
-      const response = await fetchGraphQLResponse(
-        `query user($userID: String!) {
-          user(userID: $userID) {
-            notifications {
-              bookID
-            }
-            borrowedCurr
-            borrowedPrev
-          }
-        }`,
-        { userID: authContext.userID },
-        'borrowed books fetch failed'
-      );
-
-      if (!response) return;
-
-      setNotifications(
-        response.data.user.notifications.map(
-          (notification: { bookID: string }) => notification.bookID
-        )
-      );
-      setBorrowedCurr(response.data.user.borrowedCurr);
-      setBorrowedPrev(response.data.user.borrowedPrev);
-
-      const responseAwaiting = await fetchGraphQLResponse(
-        `query awaiting($userID: String!) {
-          awaiting(userID: $userID, type: "") {
-            book {
-              bookID
-            }
-          }
-        }`,
-        { userID: authContext.userID },
-        'awaiting transactions fetch failed'
-      );
-
-      if (!responseAwaiting) return;
-
-      setAwaiting(
-        responseAwaiting.data.awaiting.map(
-          (entry: { book: { bookID: string } }) => entry.book.bookID
-        )
-      );
-    })();
-  }, []);
+  const [notifications] = useState<string[]>(props.userBooks.notifications);
+  const [borrowedCurr] = useState<string[]>(props.userBooks.borrowedCurr);
+  const [borrowedPrev] = useState<string[]>(props.userBooks.borrowedPrev);
+  const [awaiting] = useState<string[]>(props.userBooks.awaiting);
 
   const [searchQuery, setSearchQuery] = useState<{
     query: string;
@@ -96,7 +47,7 @@ export default function BrowseListContent(props: {
     author: boolean;
   }>(props.searchQuery);
 
-  const [searchItemsList, setSearchItemsList] = useState<IBook[]>([]);
+  const [searchItemsList, setSearchItemsList] = useState<(IBook & { actionState: string })[]>([]);
   const [searchItemListFetched, setSearchItemListFetched] = useState(false);
   // fetch search items list when search query changes
   useEffect(() => {
@@ -123,15 +74,48 @@ export default function BrowseListContent(props: {
       if (!response) return;
 
       console.log('updated');
+      console.log(notifications, borrowedCurr, borrowedPrev, awaiting, props.borrowLimit);
+
+      const findState = (bookID: string, quantity: number): string => {
+        console.log(bookID, quantity);
+        let state = '';
+        if (
+          awaiting.indexOf(bookID) === -1 &&
+          borrowedCurr.indexOf(bookID) === -1 &&
+          notifications.indexOf(bookID) === -1
+        ) {
+          console.log('atleast any');
+          if (awaiting.length + borrowedCurr.length < props.borrowLimit) {
+            state = quantity > 0 ? 'borrowable' : 'notifiable';
+          }
+        } else {
+          console.log('none');
+          if (borrowedCurr.indexOf(bookID) !== -1) {
+            state = awaiting.indexOf(bookID) !== -1 ? 'awaiting' : 'borrowed';
+          } else {
+            state = awaiting.indexOf(bookID) !== -1 ? 'awaiting' : 'subscribed';
+          }
+        }
+        return state;
+      };
+
       setSearchItemsList(
         response.data.bookSearch.map((book: IBook) => ({
           ...book,
-          authors: book.authors.map((author) => author.name)
+          authors: book.authors.map((author) => author.name),
+          actionState: findState(book.bookID, book.quantity)
         }))
       );
       setSearchItemListFetched(true);
     })();
-  }, [searchQuery.query, searchQuery.category]);
+  }, [
+    searchQuery.query,
+    searchQuery.category,
+    notifications,
+    borrowedCurr,
+    borrowedPrev,
+    awaiting
+  ]);
 
   // -- Callbacks ----------------------------------------------------------------------------------
 
@@ -187,7 +171,7 @@ export default function BrowseListContent(props: {
                 onClick={() => props.resetGlobalSearchQuery()}
               />
             </div>
-            {borrowedCurr.length + awaiting.length >= borrowLimit && (
+            {borrowedCurr.length + awaiting.length >= props.borrowLimit && (
               <div id="borrow-limit-disclaimer">
                 <span>You have reached borrow limit</span>
               </div>
@@ -287,7 +271,7 @@ export default function BrowseListContent(props: {
                     ) : (
                       <h4 style={{ color: 'coral' }}>Not in shelf</h4>
                     )}
-                    {borrowedCurr.length >= borrowLimit && (
+                    {borrowedCurr.length >= props.borrowLimit && (
                       <button style={{ background: 'none', color: 'white' }}>.</button>
                     )}
                     {borrowedPrev.indexOf(searchItem.bookID) !== -1 && (
@@ -295,7 +279,56 @@ export default function BrowseListContent(props: {
                         <FontAwesomeIcon icon={faClock} className="input-field-icon" />
                       </div>
                     )}
-                    {borrowedCurr.length + awaiting.length < borrowLimit &&
+
+                    {(searchItem.actionState === 'awaiting' ||
+                      searchItem.actionState === 'borrowed' ||
+                      searchItem.actionState === 'subscribed') && (
+                      <h4 className="search-item-no-btn-text search-item-borrowed">
+                        {searchItem.actionState}
+                      </h4>
+                    )}
+                    {searchItem.actionState === 'borrowable' && (
+                      <button
+                        className={`search-item-button-bor ${
+                          searchItem.bookID === borrowingID ? 'search-item-button-rolling' : ''
+                        }`}
+                        onClick={() => {
+                          if (borrowingID || subscribingID) return;
+                          setBorrowingID(searchItem.bookID);
+                          borrowHandler(searchItem.bookID);
+                        }}
+                      >
+                        {searchItem.bookID === borrowingID && <div className="rolling-3"></div>}
+                        {searchItem.bookID !== borrowingID && (
+                          <React.Fragment>
+                            BORROW
+                            <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                          </React.Fragment>
+                        )}
+                      </button>
+                    )}
+                    {searchItem.actionState === 'notifiable' && (
+                      <button
+                        className={`search-item-button-req ${
+                          searchItem.bookID === subscribingID ? 'search-item-button-rolling' : ''
+                        }`}
+                        onClick={() => {
+                          if (borrowingID || subscribingID) return;
+                          setSubscribingID(searchItem.bookID);
+                          subscribeHandler(searchItem.bookID);
+                        }}
+                      >
+                        {searchItem.bookID === subscribingID && <div className="rolling-3"></div>}
+                        {searchItem.bookID !== subscribingID && (
+                          <React.Fragment>
+                            NOTIFY
+                            <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
+                          </React.Fragment>
+                        )}
+                      </button>
+                    )}
+
+                    {/* {borrowedCurr.length + awaiting.length < borrowLimit &&
                       searchItem.quantity > 0 &&
                       borrowedCurr.indexOf(searchItem.bookID) === -1 &&
                       awaiting.indexOf(searchItem.bookID) === -1 && (
@@ -352,7 +385,7 @@ export default function BrowseListContent(props: {
                     {searchItem.quantity <= 0 &&
                       notifications.indexOf(searchItem.bookID) !== -1 && (
                         <h4 className="search-item-no-btn-text search-item-borrowed">borrowed</h4>
-                      )}
+                      )} */}
                   </div>
                 </div>
               </div>
