@@ -79,6 +79,7 @@ export default function DashboardContent() {
   }, []);
 
   const [awaiting, setAwaiting] = useState<IAwaiting[]>([]);
+  const [awaitingList, setAwaitingList] = useState<string[]>([]);
   const [awaitingFetched, setAwaitingFetched] = useState(false);
   const [waitingClear, setWaitingClear] = useState<string | null>(null);
   // fetch awaiting transactions on mount
@@ -101,6 +102,9 @@ export default function DashboardContent() {
       if (!response) return;
 
       setAwaiting(response.data.awaiting);
+      setAwaitingList(
+        response.data.awaiting.map((transaction: IAwaiting) => transaction.book.bookID)
+      );
       setAwaitingFetched(true);
     })();
   }, []);
@@ -131,17 +135,15 @@ export default function DashboardContent() {
       if (response.errors) {
         console.error(response.errors[0].message);
       } else {
-        console.log(awaiting);
-        const awaitingIDs = awaiting.map((awaitingItem) => awaitingItem.book.bookID);
         setUserPending(
           response.data.pending.filter(
-            (item: ITransaction) => awaitingIDs.indexOf(item.bookID) === -1
+            (item: ITransaction) => awaitingList.indexOf(item.bookID) === -1
           )
         );
         setPendingFetched(true);
       }
     })();
-  }, []);
+  }, [awaitingList]);
 
   const [userOutstanding, setUserOutstanding] = useState<ITransaction[]>([]);
   const [outstandingFetched, setOutstandingFetched] = useState(false);
@@ -214,7 +216,7 @@ export default function DashboardContent() {
     if (response.errors) alert(response.errors.map((err: any) => err.message));
 
     setWaitingClear(null);
-    browserHistory.push(`/browse`);
+    browserHistory.push(`/dashboard`);
   };
 
   const returnHandler = async (bookID: string) => {
