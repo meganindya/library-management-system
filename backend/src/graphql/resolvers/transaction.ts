@@ -80,9 +80,10 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
     if (pendingTransactions.find((transaction) => transaction.bookID === bookID))
         throw new Error('book already borrowed');
     // check if book remaining in shelf
-    const quantity: number = (
-        await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`)
-    ).rows[0].quantity;
+    const quantity: number = parseInt(
+        (await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`))
+            .rows[0].quantity
+    );
     if (quantity === 0) throw new Error('book not in shelf');
 
     const transID = ((await postgresClient.query('SELECT * FROM transactions')).rows.length + 1)
@@ -93,17 +94,21 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
         `INSERT INTO transactions VALUES ('${transID}', '${userID}', '${bookID}', to_timestamp(${Date.now()} / 1000.0), null)`
     );
 
-    const transaction: ITransactionPG = (
-        await postgresClient.query(`SELECT * FROM transactions WHERE "transID" = '${transID}'`)
-    ).rows[0];
-
     // unsubscribe userID for bookID
-    await unsubscribe(bookID, userID);
+    try {
+        await unsubscribe(bookID, userID);
+    } catch (err) {
+        console.log(err.message);
+    }
 
     // update book quantity
     await postgresClient.query(
         `UPDATE shelf SET "quantity" = ${quantity - 1} WHERE "bookID" = '${bookID}'`
     );
+
+    const transaction: ITransactionPG = (
+        await postgresClient.query(`SELECT * FROM transactions WHERE "transID" = '${transID}'`)
+    ).rows[0];
 
     return transformTransaction(transaction);
 }
@@ -111,7 +116,7 @@ export async function borrowBook(userID: string, bookID: string): Promise<ITrans
 export async function returnBook(userID: string, bookID: string): Promise<ITransaction | null> {
     const transaction: ITransactionPG = (
         await postgresClient.query(
-            `SELECT * FROM transactions WHERE "userID" = ${userID} AND "bookID" = ${bookID}`
+            `SELECT * FROM transactions WHERE "userID" = '${userID}' AND "bookID" = '${bookID}'`
         )
     ).rows[0];
     if (!transaction) throw new Error('no transaction found');
@@ -120,22 +125,23 @@ export async function returnBook(userID: string, bookID: string): Promise<ITrans
 
     // update returnDate in transaction
     await postgresClient.query(
-        `UPDATE transactions SET returndate = to_timestamp(${Date.now()} / 1000.0) WHERE "transID" = ${
+        `UPDATE transactions SET "returnDate" = to_timestamp(${Date.now()} / 1000.0) WHERE "transID" = '${
             transaction.transID
-        }`
+        }'`
     );
 
     // update book quantity
-    const quantity: number = (
-        await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`)
-    ).rows[0].quantity;
+    const quantity: number = parseInt(
+        (await postgresClient.query(`SELECT "quantity" FROM shelf WHERE "bookID" = '${bookID}'`))
+            .rows[0].quantity
+    );
     await postgresClient.query(
         `UPDATE shelf SET "quantity" = ${quantity + 1} WHERE "bookID" = '${bookID}'`
     );
 
     const updatedTransaction: ITransactionPG = (
         await postgresClient.query(
-            `SELECT * FROM transactions WHERE "userID" = ${userID} AND "bookID" = ${bookID}`
+            `SELECT * FROM transactions WHERE "userID" = '${userID}' AND "bookID" = '${bookID}'`
         )
     ).rows[0];
 

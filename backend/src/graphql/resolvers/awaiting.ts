@@ -54,13 +54,19 @@ export async function confirmAwaiting(userID: string, bookID: string): Promise<v
         )
     ).rows[0];
 
-    await clearAwaiting(userID, bookID);
+    if (!transaction) throw new Error('no awaiting transaction');
 
-    if (transaction.type === 'borrow') {
-        await borrowBook(userID, bookID);
-    } else {
-        await returnBook(userID, bookID);
+    try {
+        if (transaction.type === 'borrow') {
+            await borrowBook(userID, bookID);
+        } else {
+            await returnBook(userID, bookID);
+        }
+    } catch (error) {
+        alert(error.message);
     }
+
+    await clearAwaiting(userID, bookID);
 }
 
 export async function clearAwaiting(userID: string, bookID: string): Promise<void> {

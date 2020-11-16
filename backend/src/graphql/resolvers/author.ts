@@ -18,11 +18,13 @@ async function getBookDocs(bookIDs: string[]): Promise<IBook[]> {
             const authorDoc = await Author.findOne({ authorID });
             if (authorDoc) authors.push(await transformAuthor(authorDoc));
         }
-        const quantity: number = (
-            await postgresClient.query(
-                `SELECT "quantity" FROM shelf WHERE "bookID" = '${book.bookID}'`
-            )
-        ).rows[0].quantity;
+        const quantity: number = parseInt(
+            (
+                await postgresClient.query(
+                    `SELECT "quantity" FROM shelf WHERE "bookID" = '${book.bookID}'`
+                )
+            ).rows[0].quantity
+        );
         const subscribers: string[] = (
             await postgresClient.query(
                 `SELECT "userID" from notifications WHERE "bookID" = '${book.bookID}'`
