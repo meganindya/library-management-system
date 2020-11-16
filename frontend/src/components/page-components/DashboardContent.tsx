@@ -135,15 +135,11 @@ export default function DashboardContent() {
       if (response.errors) {
         console.error(response.errors[0].message);
       } else {
-        setUserPending(
-          response.data.pending.filter(
-            (item: ITransaction) => awaitingList.indexOf(item.bookID) === -1
-          )
-        );
+        setUserPending(response.data.pending);
         setPendingFetched(true);
       }
     })();
-  }, [awaitingList]);
+  }, []);
 
   const [userOutstanding, setUserOutstanding] = useState<ITransaction[]>([]);
   const [outstandingFetched, setOutstandingFetched] = useState(false);
@@ -349,7 +345,13 @@ export default function DashboardContent() {
             <tbody>
               {userPending.map((transaction: any, index) => (
                 <tr key={`pending-item-${index}`}>
-                  <td>{transaction.transID}</td>
+                  <td
+                    className={
+                      awaitingList.indexOf(transaction.bookID) !== -1 ? 'awaiting-transID' : ''
+                    }
+                  >
+                    {transaction.transID}
+                  </td>
                   <td className="transaction-book-detail-btn">
                     {transaction.book.subscribers.length > 0 && (
                       <div className="book-requested"></div>
@@ -363,12 +365,21 @@ export default function DashboardContent() {
                   <td>
                     <button
                       className={
-                        remainingDays(transaction.borrowDate, allowedDays) < 0
-                          ? 'return-btn-due'
-                          : 'return-btn-ok'
+                        awaitingList.indexOf(transaction.bookID) === -1
+                          ? remainingDays(transaction.borrowDate, allowedDays) < 0
+                            ? 'return-btn-due'
+                            : 'return-btn-ok'
+                          : remainingDays(transaction.borrowDate, allowedDays) < 0
+                          ? 'return-btn-awaiting-due'
+                          : 'return-btn-awaiting-ok'
                       }
                       onClick={() => {
-                        if (returning || waitingClear) return;
+                        if (
+                          returning ||
+                          waitingClear ||
+                          awaitingList.indexOf(transaction.bookID) !== -1
+                        )
+                          return;
                         setReturning(transaction.transID);
                         returnHandler(transaction.bookID);
                       }}

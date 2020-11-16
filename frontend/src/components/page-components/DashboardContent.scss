@@ -221,6 +221,11 @@
           width: 12.5%;
         }
 
+        .awaiting-transID {
+          color: $footertext;
+          font-weight: 600;
+        }
+
         button {
           height: 2.375rem;
           width: 5rem;
@@ -243,6 +248,28 @@
 
           &.return-btn-due {
             background: coral;
+          }
+
+          &.return-btn-awaiting-ok {
+            border: none;
+            background: white;
+            color: $accent;
+            cursor: initial;
+
+            &:hover {
+              box-shadow: none;
+            }
+          }
+
+          &.return-btn-awaiting-due {
+            border: none;
+            background: white;
+            color: coral;
+            cursor: initial;
+
+            &:hover {
+              box-shadow: none;
+            }
           }
         }
       }
