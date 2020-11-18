@@ -1,15 +1,21 @@
 import React from 'react';
 
+// -- Subcomponents --------------------------------------------------------------------------------
+
 import SearchBar from '../SearchBar';
 import { CategorySprite, StudyDesk } from '../Artworks';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './BrowseGreetContent.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function BrowseGreetContent(props: {
   categories: string[];
   setSearchQuery: Function;
 }) {
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <div id="browse-content" className="container">

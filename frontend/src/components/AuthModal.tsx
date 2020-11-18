@@ -1,25 +1,32 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { IUserAuth } from '../@types/user';
+
+// -- Utilities ------------------------------------------------------------------------------------
+
 import { fetchGraphQLResponse } from '../utils/HttpUtils';
+
+// -- Context --------------------------------------------------------------------------------------
 
 import AuthContext from '../context/auth-context';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './AuthModal.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function AuthModal() {
   const authContext = useContext(AuthContext);
-  const [authStatus, setAuthStatus] = useState<{ failed: boolean; message: string | null }>({
-    failed: false,
-    message: null
-  });
+  const [authFailMessage, setAuthFailMessage] = useState<string | null>(null);
 
-  // -- Referenced elements ------------------------------------------------------------------------
+  // -- Referenced elements ----------------------------------------------------
 
   const userEl = React.createRef<HTMLInputElement>();
   const passEl = React.createRef<HTMLInputElement>();
 
-  // -- Callbacks ----------------------------------------------------------------------------------
+  // -- Callbacks --------------------------------------------------------------
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,35 +51,25 @@ export default function AuthModal() {
     if (!response) return;
 
     if (response.errors) {
+      setAuthFailMessage(response.errors[0].message);
       if (userEl.current) userEl.current.value = '';
       if (passEl.current) passEl.current.value = '';
       const userField = document.getElementById('auth-form-user-id');
       if (userField) userField.focus();
-      setAuthStatus({
-        failed: true,
-        message: response.errors[0].message
-      });
     } else {
-      setAuthStatus({
-        failed: false,
-        message: null
-      });
-      authContext.login(
-        response.data.login.userID,
-        response.data.login.type,
-        response.data.login.token,
-        response.data.login.tokenExpiration
-      );
+      setAuthFailMessage(null);
+      const authData: IUserAuth = response.data.login;
+      authContext.login(authData.userID, authData.type, authData.token, authData.tokenExpiration);
     }
   };
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <div id="auth-modal">
       <h2>Welcome back</h2>
       <form onSubmit={submitHandler}>
-        {authStatus.failed && <span>{authStatus.message}</span>}
+        {authFailMessage && <span>{authFailMessage}</span>}
         <input type="text" id="auth-form-user-id" placeholder="User ID" ref={userEl} required />
         <input
           type="password"

@@ -4,16 +4,26 @@ import Select from 'react-select';
 
 import { IBook } from '../../@types/book';
 
+// -- Utilities ------------------------------------------------------------------------------------
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
+
+// -- Subcomponents --------------------------------------------------------------------------------
 
 import BookDetailsModal from '../BookDetailsModal';
 import SearchBar from '../SearchBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faClock } from '@fortawesome/free-solid-svg-icons';
 
+// -- Context --------------------------------------------------------------------------------------
+
 import AuthContext from '../../context/auth-context';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './BrowseListContent.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function BrowseListContent(props: {
   categories: string[];
@@ -34,12 +44,12 @@ export default function BrowseListContent(props: {
   const authContext = useContext(AuthContext);
   const browserHistory = useHistory();
 
-  // -- Data Fetch Operations ----------------------------------------------------------------------
-
   const [notifications] = useState<string[]>(props.userBooks.notifications);
   const [borrowedCurr] = useState<string[]>(props.userBooks.borrowedCurr);
   const [borrowedPrev] = useState<string[]>(props.userBooks.borrowedPrev);
   const [awaiting] = useState<string[]>(props.userBooks.awaiting);
+
+  // -- Data Fetch Operations --------------------------------------------------
 
   const [searchQuery, setSearchQuery] = useState<{
     query: string;
@@ -69,27 +79,22 @@ export default function BrowseListContent(props: {
         { ...searchQuery },
         'book search failed'
       );
-      console.log(response);
 
       if (!response) return;
 
       console.log('updated');
-      console.log(props.userBooks, props.borrowLimit);
 
       const findState = (bookID: string, quantity: number): string => {
-        console.log(bookID, quantity);
         let state = '';
         if (
           awaiting.indexOf(bookID) === -1 &&
           borrowedCurr.indexOf(bookID) === -1 &&
           notifications.indexOf(bookID) === -1
         ) {
-          console.log('atleast any');
           if (awaiting.length + borrowedCurr.length < props.borrowLimit) {
             state = quantity > 0 ? 'borrowable' : 'notifiable';
           }
         } else {
-          console.log('none');
           if (borrowedCurr.indexOf(bookID) !== -1) {
             state = awaiting.indexOf(bookID) !== -1 ? 'awaiting' : 'borrowed';
           } else {
@@ -203,7 +208,6 @@ export default function BrowseListContent(props: {
               style={{ marginLeft: '1rem' }}
               checked={searchQuery.author}
               onChange={() => {
-                // setSearchItemListFetched(false);
                 setSearchQuery({
                   query: searchQuery.query,
                   category: searchQuery.category,
@@ -331,65 +335,6 @@ export default function BrowseListContent(props: {
                         )}
                       </button>
                     )}
-
-                    {/* {borrowedCurr.length + awaiting.length < borrowLimit &&
-                      searchItem.quantity > 0 &&
-                      borrowedCurr.indexOf(searchItem.bookID) === -1 &&
-                      awaiting.indexOf(searchItem.bookID) === -1 && (
-                        <button
-                          className={`search-item-button-bor ${
-                            searchItem.bookID === borrowingID ? 'search-item-button-rolling' : ''
-                          }`}
-                          onClick={() => {
-                            if (borrowingID || subscribingID) return;
-                            setBorrowingID(searchItem.bookID);
-                            borrowHandler(searchItem.bookID);
-                          }}
-                        >
-                          {searchItem.bookID === borrowingID && <div className="rolling-3"></div>}
-                          {searchItem.bookID !== borrowingID && (
-                            <React.Fragment>
-                              BORROW
-                              <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
-                            </React.Fragment>
-                          )}
-                        </button>
-                      )}
-                    {borrowedCurr.length + awaiting.length < borrowLimit &&
-                      searchItem.quantity > 0 &&
-                      borrowedCurr.indexOf(searchItem.bookID) === -1 &&
-                      awaiting.indexOf(searchItem.bookID) !== -1 && (
-                        <h4 className="search-item-no-btn-text search-item-borrowed">awaited</h4>
-                      )}
-                    {searchItem.quantity > 0 && borrowedCurr.indexOf(searchItem.bookID) !== -1 && (
-                      <h4 className="search-item-no-btn-text search-item-borrowed">borrowed</h4>
-                    )}
-                    {borrowedCurr.length + awaiting.length < borrowLimit &&
-                      searchItem.quantity <= 0 &&
-                      notifications.indexOf(searchItem.bookID) === -1 && (
-                        <button
-                          className={`search-item-button-req ${
-                            searchItem.bookID === subscribingID ? 'search-item-button-rolling' : ''
-                          }`}
-                          onClick={() => {
-                            if (borrowingID || subscribingID) return;
-                            setSubscribingID(searchItem.bookID);
-                            subscribeHandler(searchItem.bookID);
-                          }}
-                        >
-                          {searchItem.bookID === subscribingID && <div className="rolling-3"></div>}
-                          {searchItem.bookID !== subscribingID && (
-                            <React.Fragment>
-                              NOTIFY
-                              <FontAwesomeIcon icon={faArrowRight} className="input-field-icon" />
-                            </React.Fragment>
-                          )}
-                        </button>
-                      )}
-                    {searchItem.quantity <= 0 &&
-                      notifications.indexOf(searchItem.bookID) !== -1 && (
-                        <h4 className="search-item-no-btn-text search-item-borrowed">borrowed</h4>
-                      )} */}
                   </div>
                 </div>
               </div>

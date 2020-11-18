@@ -1,13 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+// - Utilities -------------------------------------------------------------------------------------
+
 import { fetchGraphQLResponse } from '../utils/HttpUtils';
+
+// -- Subcomponents --------------------------------------------------------------------------------
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
+// -- Context --------------------------------------------------------------------------------------
+
 import AuthContext from '../context/auth-context';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './NavBar.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function NavBar() {
   const authContext = useContext(AuthContext);
@@ -32,7 +42,7 @@ export default function NavBar() {
     })();
   }, []);
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <nav className="container-fluid">

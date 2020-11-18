@@ -2,14 +2,24 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { ITransaction } from '../../@types/transaction';
 
+// -- Utilities ------------------------------------------------------------------------------------
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 import { dateString, outstanding, remainingDays } from '../../utils/DateUtils';
 
+// -- Subcomponents --------------------------------------------------------------------------------
+
 import BookDetailsModal from '../BookDetailsModal';
+
+// -- Context --------------------------------------------------------------------------------------
 
 import AuthContext from '../../context/auth-context';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './HistoryContent.scss';
+
+// -- Components -----------------------------------------------------------------------------------
 
 export default function HistoryContent() {
   const authContext = useContext(AuthContext);
@@ -22,7 +32,7 @@ export default function HistoryContent() {
     }
   }, [authContext.type]);
 
-  // -- Data Fetch Operations ----------------------------------------------------------------------
+  // -- Data Fetch Operations --------------------------------------------------
 
   const [userHistory, setUserHistory] = useState<(ITransaction & { remaining: number })[]>([]);
   const [historyFetched, setHistoryFetched] = useState(false);
@@ -64,7 +74,7 @@ export default function HistoryContent() {
     })();
   }, []);
 
-  // -- Date operations ----------------------------------------------------------------------------
+  // -- Date operations --------------------------------------------------------
 
   const getTransactionStatusStyle = (
     borrowDateISO: string,
@@ -74,16 +84,16 @@ export default function HistoryContent() {
       ? remainingDays(borrowDateISO, allowedDays) >= 0
         ? 'status-pending'
         : 'status-pending-overdue'
-      : outstanding(borrowDateISO, returnDateISO, allowedDays) >= 0
+      : outstanding(borrowDateISO, returnDateISO, allowedDays) > 0
       ? 'status-returned-overdue'
       : 'status-returned';
   };
 
-  // -- Transient states ---------------------------------------------------------------------------
+  // -- Transient states -------------------------------------------------------
 
   const [viewingBookID, setViewingBookID] = useState<string | null>(null);
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <div id="history-content" className="container">

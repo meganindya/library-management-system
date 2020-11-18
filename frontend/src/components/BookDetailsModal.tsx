@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
+
 import { IBook } from '../@types/book';
+
+// -- Utilities ------------------------------------------------------------------------------------
 
 import { fetchGraphQLResponse } from '../utils/HttpUtils';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './BookDetailsModal.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function BookDetailsModal(props: {
   book: IBook | null;
@@ -39,7 +46,7 @@ export default function BookDetailsModal(props: {
     })();
   }
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <div id="book-details-modal">

@@ -1,18 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import { IUser } from '../../@types/user';
 import { ICategory } from '../../@types/book';
 
+// -- Utilities ------------------------------------------------------------------------------------
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
+
+// -- Subcomponents --------------------------------------------------------------------------------
 
 import BrowseGreetContent from './BrowseGreetContent';
 import BrowseListContent from './BrowseListContent';
 
+// -- Context --------------------------------------------------------------------------------------
+
 import AuthContext from '../../context/auth-context';
+import { IAwaiting } from '../../@types/awaiting';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function BrowseContent() {
   const authContext = useContext(AuthContext);
 
-  // -- Data Fetch Operations ----------------------------------------------------------------------
+  // -- Data Fetch Operations --------------------------------------------------
 
   const [categories, setCategories] = useState<string[]>([]);
   // fetch list of categories on mount
@@ -29,6 +39,11 @@ export default function BrowseContent() {
       );
 
       if (!response) return;
+
+      if (response.errors) {
+        alert(response.errors.map((error: Error) => error.message));
+        return;
+      }
 
       setCategories(response.data.categories.map((category: ICategory) => category.name));
     })();
@@ -57,13 +72,14 @@ export default function BrowseContent() {
 
       if (!response) return;
 
-      setNotifications(
-        response.data.user.notifications.map(
-          (notification: { bookID: string }) => notification.bookID
-        )
-      );
-      setBorrowedCurr(response.data.user.borrowedCurr);
-      setBorrowedPrev(response.data.user.borrowedPrev);
+      if (response.errors) {
+        alert(response.errors.map((error: Error) => error.message));
+      } else {
+        const responseData: IUser = response.data.user;
+        setNotifications(responseData.notifications.map((notification) => notification.bookID));
+        setBorrowedCurr(responseData.borrowedCurr);
+        setBorrowedPrev(responseData.borrowedPrev);
+      }
 
       const responseAwaiting = await fetchGraphQLResponse(
         `query awaiting($userID: String!) {
@@ -79,13 +95,12 @@ export default function BrowseContent() {
 
       if (!responseAwaiting) return;
 
-      setAwaiting(
-        responseAwaiting.data.awaiting.map(
-          (entry: { book: { bookID: string } }) => entry.book.bookID
-        )
-      );
-
-      console.log(notifications, borrowedCurr, borrowedPrev, awaiting);
+      if (responseAwaiting.errors) {
+        alert(responseAwaiting.errors.map((error: Error) => error.message));
+      } else {
+        const responseAwaitingData: IAwaiting[] = responseAwaiting.data.awaiting;
+        setAwaiting(responseAwaitingData.map((transaction) => transaction.book.bookID));
+      }
     })();
   }, []);
 
@@ -95,7 +110,7 @@ export default function BrowseContent() {
     author: boolean;
   } | null>(null);
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return searchQuery ? (
     <BrowseListContent

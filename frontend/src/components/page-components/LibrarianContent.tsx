@@ -3,17 +3,25 @@ import { useHistory } from 'react-router-dom';
 
 import { IAwaiting } from '../../@types/awaiting';
 
+// -- Utilities ------------------------------------------------------------------------------------
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 import { dateString } from '../../utils/DateUtils';
 
+// -- Subcomponents --------------------------------------------------------------------------------
+
 import BookDetailsModal from '../BookDetailsModal';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './LibrarianContent.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function LibrarianContent(props: { pageName: string }) {
   const browserHistory = useHistory();
 
-  // -- Data Fetch Operations ----------------------------------------------------------------------
+  // -- Data Fetch Operations --------------------------------------------------
 
   const [awaiting, setAwaiting] = useState<IAwaiting[]>([]);
   const [awaitingFetched, setAwaitingFetched] = useState(false);
@@ -50,7 +58,7 @@ export default function LibrarianContent(props: { pageName: string }) {
     })();
   }, [waiting]);
 
-  // -- Callbacks ----------------------------------------------------------------------------------
+  // -- Callbacks --------------------------------------------------------------
 
   const confirmAwaitingHandler = async (userID: string, bookID: string): Promise<void> => {
     const response = await fetchGraphQLResponse(
@@ -86,11 +94,11 @@ export default function LibrarianContent(props: { pageName: string }) {
     browserHistory.push(`/${props.pageName}`);
   };
 
-  // -- Transient states ---------------------------------------------------------------------------
+  // -- Transient states -------------------------------------------------------
 
   const [viewingBookID, setViewingBookID] = useState<string | null>(null);
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <div id="awaiting-content" className="container">

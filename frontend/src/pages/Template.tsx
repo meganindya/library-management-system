@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import { useIdleTimer } from 'react-idle-timer';
 
+// -- Subcomponents --------------------------------------------------------------------------------
+
 import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
@@ -9,9 +11,15 @@ import HistoryContent from '../components/page-components/HistoryContent';
 import DashboardContent from '../components/page-components/DashboardContent';
 import LibrarianContent from '../components/page-components/LibrarianContent';
 
+// -- Context --------------------------------------------------------------------------------------
+
 import AuthContext from '../context/auth-context';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './Template.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function TemplatePage(props: { pageName: string }) {
   const authContext = useContext(AuthContext);
@@ -24,14 +32,14 @@ export default function TemplatePage(props: { pageName: string }) {
         authContext.tokenExpiration &&
         new Date().valueOf() - authContext.tokenExpiration.valueOf() >= 0
       ) {
-        console.log('Session expired, logging out');
+        alert('Session expired, logged out');
         authContext.logout();
       }
     },
     debounce: 500
   });
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <React.Fragment>

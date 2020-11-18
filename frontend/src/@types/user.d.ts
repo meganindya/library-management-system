@@ -9,13 +9,13 @@ export interface IUser {
     password: string;
     type: string;
     notifications: IBook[];
-    borrowedCurr: string[] | null;
-    borrowedPrev: string[] | null;
+    borrowedCurr: string[];
+    borrowedPrev: string[];
 }
 
 export interface IUserAuth {
     userID: string;
     type: string;
     token: string;
-    tokenExpiration: int;
+    tokenExpiration: number;
 }

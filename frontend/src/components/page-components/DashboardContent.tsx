@@ -5,6 +5,8 @@ import { IUser } from '../../@types/user';
 import { IAwaiting } from '../../@types/awaiting';
 import { ITransaction } from '../../@types/transaction';
 
+// -- Utilities ------------------------------------------------------------------------------------
+
 import { fetchGraphQLResponse } from '../../utils/HttpUtils';
 import {
   dateString,
@@ -14,11 +16,19 @@ import {
   remainingDaysString
 } from '../../utils/DateUtils';
 
+// -- Subcomponents --------------------------------------------------------------------------------
+
 import BookDetailsModal from '../BookDetailsModal';
+
+// -- Context --------------------------------------------------------------------------------------
 
 import AuthContext from '../../context/auth-context';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './DashboardContent.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function DashboardContent() {
   const authContext = useContext(AuthContext);
@@ -32,7 +42,7 @@ export default function DashboardContent() {
     }
   }, [authContext.type]);
 
-  // -- Data Fetch Operations ----------------------------------------------------------------------
+  // -- Data Fetch Operations --------------------------------------------------
 
   const [userDetails, setUserDetails] = useState<
     (Pick<IUser, 'userID' | 'email' | 'type' | 'notifications'> & { name: string }) | null
@@ -173,12 +183,12 @@ export default function DashboardContent() {
     })();
   }, []);
 
-  // -- Transient states ---------------------------------------------------------------------------
+  // -- Transient states -------------------------------------------------------
 
   const [viewingBookID, setViewingBookID] = useState<string | null>(null);
   const [returning, setReturning] = useState<string | null>(null);
 
-  // -- Callbacks ----------------------------------------------------------------------------------
+  // -- Callbacks --------------------------------------------------------------
 
   const unsubscribeHandler = async (bookID: string) => {
     const response = await fetchGraphQLResponse(
@@ -233,7 +243,7 @@ export default function DashboardContent() {
     browserHistory.push('/browse');
   };
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <div id="dashboard-content" className="container">

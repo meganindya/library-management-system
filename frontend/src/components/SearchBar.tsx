@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 
+// -- Subcomponents --------------------------------------------------------------------------------
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './SearchBar.scss';
+
+// -- Component ------------------------------------------------------------------------------------
 
 export default function SearchBar(props: {
   searchHandler: Function;
@@ -12,11 +18,11 @@ export default function SearchBar(props: {
 }) {
   const [hasText, setHasText] = useState(false);
 
-  // -- Referenced elements ------------------------------------------------------------------------
+  // -- Referenced elements ----------------------------------------------------
 
   const searchEl = React.createRef<HTMLInputElement>();
 
-  // -- Callbacks ----------------------------------------------------------------------------------
+  // -- Callbacks --------------------------------------------------------------
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -39,7 +45,7 @@ export default function SearchBar(props: {
     }
   };
 
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <form onSubmit={submitHandler} className="search-bar">

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+// -- Subcomponents --------------------------------------------------------------------------------
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBookReader,
@@ -11,10 +13,14 @@ import {
   faPlaneArrival
 } from '@fortawesome/free-solid-svg-icons';
 
+// -- Stylesheet -----------------------------------------------------------------------------------
+
 import './SideBar.scss';
 
+// -- Component ------------------------------------------------------------------------------------
+
 export default function SideBar(props: { activeLinkName: string; isLibrarian: boolean }) {
-  // -- Render -------------------------------------------------------------------------------------
+  // -- Render -----------------------------------------------------------------
 
   return (
     <div id="sidebar">
