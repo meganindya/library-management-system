@@ -8,7 +8,7 @@ There are two types of users: **student** and **faculty**. They can browse books
 
 ### So far (project in progress)
 
-The project is built using the _MERN_ stack. `TypeScript` instead of conventional `JavaScript` is used throught.
+The project is built using the _MERN_ stack plus `PostgreSQL` and `GraphQL`. `TypeScript` instead of conventional `JavaScript` is used throught.
 
 #### Front end
 
@@ -22,29 +22,48 @@ The project is built using the _MERN_ stack. `TypeScript` instead of conventiona
 - GraphQL (Node JS)
 - Mongo DB (Atlas - AWS)
 - Mongoose
+- PostgreSQL (AWS)
 
 ### Further intended
 
 - RabbitMQ
-- PostgreSQL (GCP)
 
 ## How to Run
 
-### Setup Database
+### Setup Databases
 
-- Create a MongoDB Atlas account and then create a cluster.
+#### MongoDB
+
+- Create a **MongoDB Atlas** account and create a cluster.
 - Open collections in the cluster and visit the `Command Line Tools` tab.
 - Scroll down to `Data Import and Export Tools` section and copy the import string. It should look like `mongoimport --uri mongodb+srv://<USERNAME>:<PASSWORD>@cluster0.snhzr.mongodb.net/<DATABASE> --collection <COLLECTION> --type <FILETYPE> --file <FILENAME>`
-- Install MongoDB Tools and then open terminal.
-- Follow for all 4 files in [dummy database content](./data/json/): paste the string from above while filling the data in the `<...>` parts — for `DATABASE` use `library`, for `COLLECTION` use `authors`, `books`, `users`, `transactions` one at a time, for `FILETYPE` use `json`, and finally for `FILENAME` provide path to each file relative to the terminal's PWD.
+- Install **MongoDB Tools** and then open terminal.
+- Follow for all 3 files in [dummy database content](./data/MongoDB/json/): paste the string from above while filling the data in the `<...>` parts — for `DATABASE` use `library`, for `COLLECTION` use `authors`, `books`, `users`, one at a time, for `FILETYPE` use `json`, and finally for `FILENAME` provide path to each file relative to the terminal's PWD.
+
+#### PostgreSQL
+
+- Create an **ElephantSQL** account and create an instance.
+- Install **PostgreSQL** (installs **pgAdmin**).
+- Launch `pgAdmin` -> Right Click on `Servers` (left panel) -> `Create Server`.
+- Fill in details (name, host, database, username, password) which you'll get once you create the ElephantSQL instance.
+- After Server is added, expand it (left panel) -> expand `Databases` then scroll down to find your database and expand it -> expand `Schemas` -> expand `Public`.
+- Right click on `Tables` -> `Create Table` for each table according to the schema:
+    `Joins are not being used here so it doesn't matter whether you use PRIMARY KEYs (PKs), but it serves as a constraint`
+  - "shelf" ("bookID" VARCHAR(16) PK, "quantity" numeric)
+  - "notifications" ("userID" VARCHAR(16) PK, "bookID" VARCHAR(16) PK)
+  - "awaiting" ("userID" VARCHAR(16) PK, "bookID" VARCHAR(16) PK, "type" VARCHAR(8), "createdAt" TIMESTAMP without Timezone)
+  - "transactions" ("transID" VARCHAR(16) PK, "userID" VARCHAR(16), "bookID" VARCHAR(16), "borrowDate" TIMESTAMP without Timezone, "returnDate" TIMESTAMP without Timezone - can be NULL)
+- For each table, Right click on table name after expanding `Tables` -> visit `Tools` (menu bar) -> click `Import/Export` -> Select [file path](./data/PostgreSQL/) followed by filename for each `.csv` file corresponding to each of the 4 tables, and import the dummy data.
 
 ### Steps
 
 - Install Node JS
 - Clone Repository
+- Setup Databases
 - Navigate to each of `frontend` and `backend` directories and run (in terminal) `npm ci`
-- Thereafter, in `frontend` directory and run `npm start`
-- Thereafter, in `backend` directory and run `npm run dev`
+- In `frontend` directory, run `npm start`
+- In `backend` directory, edit the contents of `.env` file with your databases configuration information
+- In `backend` directory, run `npm run dev`
 - Launch web app from `localhost:3000`
 - (optional) Launch GraphiQL app from `localhost:8000/api`
 
