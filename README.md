@@ -23,10 +23,7 @@ The project is built using the _MERN_ stack plus `PostgreSQL` and `GraphQL`. `Ty
 - Mongo DB (Atlas - AWS)
 - Mongoose
 - PostgreSQL (AWS)
-
-### Further intended
-
-- RabbitMQ
+- AMQP (RabbitMQ)
 
 ## How to Run
 
@@ -60,9 +57,11 @@ The project is built using the _MERN_ stack plus `PostgreSQL` and `GraphQL`. `Ty
 - Install Node JS
 - Clone Repository
 - Setup Databases
+- Install RabbitMQ
 - Navigate to each of `frontend` and `backend` directories and run (in terminal) `npm ci`
 - In `frontend` directory, run `npm start`
 - In `backend` directory, edit the contents of `.env` file with your databases configuration information
+- Start RabbitMQ service
 - In `backend` directory, run `npm run dev`
 - Launch web app from `localhost:3000`
 - (optional) Launch GraphiQL app from `localhost:8000/api`
