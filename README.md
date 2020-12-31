@@ -4,6 +4,10 @@
 
 There are two types of users: **student** and **faculty**. They can browse books available. For students the maximum duration to hold a title is 30 days and for faculty it is 180 days. 5 and 8 are the upper limits of holding number of books for student and faculty respectively. Same title cannot be issued to a user. Holding a title more than the speculated duration will be charged ₹ 1/- per day. A mail will be sent as a warning two days before the due date of each title held.
 
+## Demo
+
+View [demo discussion](https://github.com/meganindya/library-management-system/discussions/7).
+
 ## Tech Stack
 
 ### So far (project in progress)
