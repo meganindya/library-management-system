@@ -16,18 +16,30 @@ The project is built using the _MERN_ stack plus `PostgreSQL` and `GraphQL`. `Ty
 
 #### Front end
 
-- React JS
+- React
 - SASS
 
 #### Back end
 
-- Node JS
+- Node
 - Express
-- GraphQL (Node JS)
+- GraphQL.js
 - Mongo DB (Atlas - AWS)
 - Mongoose
 - PostgreSQL (AWS)
 - AMQP (RabbitMQ)
+
+### Architecture
+
+- The application has a **loosely coupled** frontend and backend architecture.
+- The [**frontend**](https://github.com/meganindya/library-management-system/tree/main/frontend) is implemented in _React 17_ and _SASS_.
+- The [**backend**](https://github.com/meganindya/library-management-system/tree/main/backend) is implemented in _Node.js_ and _Express.js_.
+- The [**communication API**](https://github.com/meganindya/library-management-system/tree/main/backend/src/graphql) is implemented in _GraphQL.js_ which is configured in the backend.
+- A **polygot DBMS** is used &mdash; [stationary data handling](https://github.com/meganindya/library-management-system/tree/main/backend/src/models) is done by (_NoSQL_) _MongoDB_ via _Mongoose_, while [transaction data handling](https://github.com/meganindya/library-management-system/tree/main/backend/src/graphql/resolvers) is done by (_SQL_) _PostgreSQL_.
+- Both the **DBMS are cloud hosted** &mdash; [_MongoDB Atlas_](https://github.com/meganindya/library-management-system/blob/ecda25807b2b96060efb4f6ed51b5a4195f677ef/backend/src/app.ts#L37) is used for _MongoDB_, while [_ElephantSQL_](https://github.com/meganindya/library-management-system/blob/ecda25807b2b96060efb4f6ed51b5a4195f677ef/backend/src/app.ts#L49) is used for _PostgreSQL_.
+- A single channel **message queue** is implemented via _RabbitMQ_ to communicate between transaction resolvers of the API and the backend operations.
+
+**Note:** `I encountered some problems with my implementation of the message queue via RabbitMQ. The stringified JSON had some problems, and so, I've reversed the changes by directly resetting the main branch. I'll fix that and push the feature soon.`
 
 ## How to Run
 
